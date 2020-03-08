@@ -63,7 +63,7 @@ $( document ).ready(function() {
 			$(parentDiv).find("#vcrControls").children().attr("disabled",false);
 
 			$(parentDiv).find("#answerTruth").remove();
-			$(parentDiv).find("#dataViz").after("<div id=answerTruth style='font-size:40px'><img width='8%' style='padding-left:2%' src='correct-checkmark.svg'></img></div>");
+			$(parentDiv).find("#dataViz").after("<div id=answerTruth style='font-size:40px'><img width='8%' style='padding-left:2%' src='../resources/correct-checkmark.svg'></img></div>");
 			var fwdButton = $(parentDiv).find("#jmpStepFwd");			
 						
 			var timeout = 0;			
@@ -82,7 +82,7 @@ $( document ).ready(function() {
 		}		
 		else{
 			$(parentDiv).find("#answerTruth").remove();
-			$(parentDiv).find("#dataViz").after("<div id=answerTruth><img width='8%' style='padding-left:2%' src='incorrect-cross.svg'></img></div>");		
+			$(parentDiv).find("#dataViz").after("<div id=answerTruth><img width='8%' style='padding-left:2%' src='../resources/incorrect-cross.svg'></img></div>");		
 
 		}
 
@@ -137,7 +137,7 @@ $( document ).ready(function() {
 		
 		}
 		else{
-			 $(parentDiv).find(".chevron-container").html("<img width='40%' style='padding-left:2%' src='incorrect-cross.svg'></img>");
+			 $(parentDiv).find(".chevron-container").html("<img width='40%' style='padding-left:2%' src='../resources/incorrect-cross.svg'></img>");
 
 		}
 
