@@ -34,11 +34,9 @@ def main():
     for py in sys.argv[1:]:
         js = run_pytutor(py)
         div = py.replace(".", "_").replace("/", "_")
-        code = EMBEDDING.replace("DIV", div).replace("TRACE", js)
-        # Commented this out since we are now just writing to the directory. Now, don't have to copy and paste it.
-        # print(code)
-        
+        code = EMBEDDING.replace("DIV", div).replace("TRACE", js)  
         while(True):
+            # for-loop to constantly prompt the user to enter in a valid choice, Y or N.
             userChoice = input("Are you writing to an existing file? (Y/N)").lower()
             if (userChoice.strip() == "y"):
                 writeToExistingFile(code)
@@ -51,21 +49,23 @@ def main():
             else:
                 print("Error! Not a valid choice.")
 
-# TODO consider if it is necessary to break this up into two separate methods. They are essentially doing the exact same thing..
-
 def writeToExistingFile(code):
+    # Switches current working directory to pages, so that it'll print it into the file.
     os.chdir("../pages/")
 
     fileName = input("What is the file named?")
+    # Might need to write some error-checking, in case any non-valid characters are typed.
     fileName += ".html"
     files = os.listdir()
+    # Checking if the file exists in the pages directory.
     for file in files:
         if str(file) == fileName:
-            f = open(fileName, 'w')
+            f = open(fileName, 'a')
             f.write(code)
             f.close()
             return
     print("Error! There is no file with your inputted name," + str(fileName))
+    # This only occurs if there is no valid file.
     while(True):
         userChoice = input("Would you like to create a new file? (Y/N)").lower()
         if (userChoice.strip() == "y"):
