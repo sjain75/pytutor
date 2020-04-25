@@ -66,17 +66,16 @@ def writeToExistingFile(code):
             return
     print("Error! There is no file with your inputted name," + str(fileName))
     # This only occurs if there is no valid file.
-    while(True):
+    try:
         userChoice = input("Would you like to create a new file? (Y/N)").lower()
         if (userChoice.strip() == "y"):
             writeToNewFile(code)
-            break
         elif (userChoice.strip() == "n"):
             return
         else:
-            print("Error! Not a valid choice.")
-    
-
+            raise NameError()
+    except NameError:
+        print("Invalid file!")
 
 def writeToNewFile(code):
     # Switch to the pages directory, where we will save our information.
