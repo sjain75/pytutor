@@ -1,0 +1,42 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    /*color: white;*/
+}
+
+.navbar {
+    background-color: #1D8CF8;
+}
+
+body {
+    background-color: #1E1E2F;
+}
+
+h2 {
+    color: white;
+}
+
+.problem {
+    margin-bottom: 100px;
+}
+
+.manualQuestionDiv {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+.button {
+    background-color: #1D8CF8;
+    border-radius: 10px;
+    border: none;
+}
+
+#v1__globals {
+    color: black;
+}
+
+.typeLabel {
+    color: white;
+}
