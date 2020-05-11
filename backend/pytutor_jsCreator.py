@@ -35,6 +35,10 @@ def main():
         js = run_pytutor(py)
         div = py.replace(".", "_").replace("/", "_")
         code = EMBEDDING.replace("DIV", div).replace("TRACE", js)  
+        print("Check templateFile.html in the pages file to see an example")
+        #this might cause some bugs, check if changing directory here changes anything.
+        os.chdir("../pages/")
+        printToTemplate(js)
         while(True):
             # for-loop to constantly prompt the user to enter in a valid choice, Y or N.
             userChoice = input("Are you writing to an existing file? (Y/N)").lower()
@@ -49,9 +53,16 @@ def main():
             else:
                 print("Error! Not a valid choice.")
 
+def printToTemplate(js):
+    js = "  var trace = " + js
+    with open('templateFile.html') as f:
+        lines = f.read().splitlines()
+    lines[140] = js
+    with open('templateFile.html', 'w') as f:
+        for item in lines:
+            f.write("%s\n" % item)
+
 def writeToExistingFile(code):
-    # Switches current working directory to pages, so that it'll print it into the file.
-    os.chdir("../pages/")
 
     fileName = input("What is the file named?")
     # Might need to write some error-checking, in case any non-valid characters are typed.
@@ -78,8 +89,6 @@ def writeToExistingFile(code):
         print("Invalid file!")
 
 def writeToNewFile(code):
-    # Switch to the pages directory, where we will save our information.
-    os.chdir("../pages/")
 
     # Prompt to name the new file
     fileName = input("What would you like the new file to be named?")
