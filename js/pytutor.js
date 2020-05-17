@@ -109,15 +109,13 @@ $( document ).ready(function() {
 		}
 		script = $(parentDiv).prev().text();
 		script = script.substring(script.search("manualAnswer")); //get code that evaluateds trace array
-		console.log(script);
 		eval(script); //evaulate script
-		userAnswer = $(parentDiv).find("#manualAnswer").val();
+		userAnswer = $(parentDiv).find(".manualAnswer").val();
 		answerTruth = userAnswer==manualAnswer;
-		$(parentDiv.prev().prev()).find("#manualAnswerTruth").remove();
+		$(parentDiv).find(".manualAnswerTruth").remove();
 
 		if(answerTruth){
-			$(parentDiv).find(".title-bar-chevron-container").html('<div aria-label="Activity completed" id="ember6016" class="zb-chevron title-bar-chevron orange large check filled ember-view"> </div>');
-			$(parentDiv).find(".chevron-container").html('<div aria-label="Question completed" id="ember6023" class="zb-chevron question-chevron orange medium check filled ember-view"> </div>');
+			$(parentDiv).find(".manualAnswer").after("<img class=manualAnswerTruth width='4%' style='padding-left:2%' src='../resources/correct-checkmark.svg'></img>");
 			if(username!=""){
 				if(!($(parentDiv).attr("sent")=="updated")){
 					activity=($(parentDiv).prev().prev().attr("id"));
@@ -137,23 +135,22 @@ $( document ).ready(function() {
 		
 		}
 		else{
-			 $(parentDiv).find(".chevron-container").html("<img width='40%' style='padding-left:2%' src='../resources/incorrect-cross.svg'></img>");
-
+			 $(parentDiv).find(".manualAnswer").after("<img class=manualAnswerTruth width='4%' style='padding-left:2%' src='../resources/incorrect-cross.svg'></img>");
 		}
 
 	};
 
 
-	questionHtmlString = '<div content_resource_id="32241403" class="manualQuestionDiv interactive-activity-container short-answer-content-resource participation large ember-view"><div class="activity-title-bar" data-ember-action="" data-ember-action-6015="6015"> <span aria-hidden="true" class="activity-type"> <div class="type">participation</div> <div class="label">activity</div> </span> <div class="separator"></div> <h6 class="activity-description"> <div class="activity-title">"""manualQuestionTitle"""</div><div class="title-bar-chevron-container"> </div> <!----></h6> </div> <div class="activity-payload"> <div class="activity-instructions"> </div> <div id="ember6017" class="content-resource short-answer-payload ember-view"> <div id="ember6019" class="question-set-question short-answer-question ember-view"><div class="question"> <div class="setup flex-row"> <div class="label">1)</div> <div class="text">"""manualQuestion"""</div> </div> <div class="question-container flex-row"> <div class="input"> <pre><textarea cols="20" rows="1" spellcheck="false" autocapitalize="false" id="manualAnswer" class="zb-text-area hide-scrollbar ember-text-area ember-view"></textarea></pre> <div class="buttons flex-row"> <button class="submitManual button" class="check-button zb-button primary raised ember-view"><!----> <span class="title">Check</span> </button> <button id="ember6022" class="show-answer-button zb-button secondary ember-view button"><!----> <span class="title">Show answer</span> </button> </div> </div> </div> </div> <div role="alert" aria-atomic="true" class="explanation "> <!----></div> <!----> <div class="chevron-container"> </div> </div> </div> <!----></div> </div>';
-
+	questionHtmlString=`<div content_resource_id="32241403" class="manualQuestionDiv">
+				<div>"""manualQuestion"""</div> 
+				<div style="display:flex; justify-content:center;"><textarea cols="20" rows="1" spellcheck="false" autocapitalize="false" class="manualAnswer"></textarea></div>
+				<div><button class="submitManual button">Check</button></div>
+			</div>`
 	//Take the simple div with class manual question and make it fancier. Runs at page load for each div with class "manualQuestion"
 	$(".manualQuestion").each(function(){
 		manualQuestionString= $(this).text();
-		manualTitleString = $(this).prev().prev().prev().text(); 
-		console.log(manualTitleString);
 		privateQuestionHtml=questionHtmlString;
 		privateQuestionHtml = privateQuestionHtml.replace('"""manualQuestion"""',manualQuestionString);
-		privateQuestionHtml = privateQuestionHtml.replace('"""manualQuestionTitle"""',manualTitleString);
 
 		$(this).after(privateQuestionHtml);
 		$(this).remove();
