@@ -1,0 +1,7 @@
+{
+  "name": "pytutor",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
