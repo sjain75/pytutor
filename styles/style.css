@@ -1,16 +1,19 @@
-
+h2:not(:first-of-type) {
+    margin-top: 50px;
+}
 
 .problem {
-    margin-bottom: 100px;
+    /* margin-bottom: 100px; */
 }
 
 .manualQuestionDiv {
     display: flex;
-    width: 100%;
+    width: 14vw;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    /* align-items: center; */
     color: white;
+    margin: 0 auto;
 }
 
 #v1__globals {

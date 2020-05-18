@@ -143,7 +143,7 @@ $( document ).ready(function() {
 
 	questionHtmlString=`<div content_resource_id="32241403" class="manualQuestionDiv">
 				<div>"""manualQuestion"""</div> 
-				<div style="display:flex; justify-content:center;"><textarea cols="20" rows="1" spellcheck="false" autocapitalize="false" class="manualAnswer"></textarea></div>
+				<div><textarea style="margin-bottom: 5px" cols="20" rows="1" spellcheck="false" autocapitalize="false" class="manualAnswer"></textarea></div>
 				<div><button class="submitManual button">Check</button></div>
 			</div>`
 	//Take the simple div with class manual question and make it fancier. Runs at page load for each div with class "manualQuestion"
