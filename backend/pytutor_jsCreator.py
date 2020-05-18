@@ -84,11 +84,16 @@ def updateFileHeader(lines):
 def createNewFile(codeList, codeName):
     with open("defaultPageLayout.html") as file:
         lines = file.read().splitlines()
-    # Next step, don't hardcode this i... Find a way to locate this i without hardcoding.
 
     updateFileHeader(lines)
-    
-    i = 135
+
+    # This loop identifies where to insert code.
+    i = 0
+    for x in lines:
+        if x == "<div id=\"lec-07_w19_py\"></div>":
+            break
+        i += 1
+
     for x in codeList:
         lines[i] = x
         i += 1
