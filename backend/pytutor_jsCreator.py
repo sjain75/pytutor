@@ -32,123 +32,38 @@ def main():
         sys.exit(1)
 
     for py in sys.argv[1:]:
-        print("Working on file " + py + "...")
         js = run_pytutor(py)
         div = py.replace(".", "_").replace("/", "_")
-        code = EMBEDDING.replace("DIV", div).replace("TRACE", js)
-        codeList = code.split("\n")
-        print("Creating a template file...")
-        os.chdir("../pages/")
-        createNewFile(codeList, "templateFile.html")
+        code = EMBEDDING.replace("DIV", div).replace("TRACE", js)  
         print("Check templateFile.html in the pages file to see an example")
-
+        #this might cause some bugs, check if changing directory here changes anything.
+        os.chdir("../pages/")
+        printToTemplate(js)
         while(True):
             # for-loop to constantly prompt the user to enter in a valid choice, Y or N.
             userChoice = input("Are you writing to an existing file? (Y/N)").lower()
             if (userChoice.strip() == "y"):
-                writeToExistingFile(codeList)
+                writeToExistingFile(code)
                 print("File has been writen to!")
                 break
             elif (userChoice.strip() == "n"):
-                writeToNewFile(codeList)
+                writeToNewFile(code)
                 print("File has been written to!")
                 break
             else:
                 print("Error! Not a valid choice.")
-        # Reset to original location so that if the user enters more than one file, will repeat the processs
-        # without errors.
-        os.chdir("../backend/")
 
-def updateFileHeader(lines):
-    # We are updating the title header.
-    i = 0
-    for x in lines:
-        if x == "<h1>Template File, title would appear here!</h1>":
-            break
-        i += 1
-
-    header = input("What would you like to name your worksheet?")
-    header = "<h1>" + header + "</h1>"
-    lines[i] = header
-
-    # Updating the problem number.
-    # i = 0
-    # for x in lines:
-    #     if x.encode('unicode_escape').decode() == "<h2 class=\"my-3\">Worksheet Problem 404</h2>":
-    #         break
-    #     i += 1
-    problemNumber = input("What worksheet problem is this (an integer value)?")
-    title = "<h2 class=\"my-3\">Worksheet Problem " + problemNumber + "</h2>"
-    lines[134] = title
-
-def createNewFile(codeList, codeName):
-    with open("defaultPageLayout.html") as file:
-        lines = file.read().splitlines()
-    # Next step, don't hardcode this i... Find a way to locate this i without hardcoding.
-
-    updateFileHeader(lines)
-    
-    i = 135
-    for x in codeList:
-        lines[i] = x
-        i += 1
-
-    with open(codeName, 'w') as file:
+def printToTemplate(js):
+    js = "  var trace = " + js
+    with open('templateFile.html') as f:
+        lines = f.read().splitlines()
+    lines[140] = js
+    with open('templateFile.html', 'w') as f:
         for item in lines:
-            file.write("%s\n" % item)
-    # copies all the lines over.
+            f.write("%s\n" % item)
 
-def createNewHeaders(lines):
-    return 0
-    # TODO figure this section out!
+def writeToExistingFile(code):
 
-def addToFile(codeList, fileName):
-    # Will detect <!--###-->, prompting the program to add new files here.
-    with open (fileName) as file:
-        lines = file.read().splitlines()
-    
-    # Locate the location of the comment <!--###-->
-    i = 0
-    for x in lines:
-        if x == "<!--###-->":
-            break
-        else:
-            i += 1
-
-    # need to create a new list that has more space allocated for the new problem.
-    newList = [None] * (len(codeList) + len(lines))
-
-    j = 0
-    # Copy over lines into newList.
-    for x in lines:
-        newList[j] = x
-        j += 1
-
-    lines = newList
-
-    createNewHeaders(lines)
-
-    # codeList[0] is always an empty line character.
-    codeList[0] = "<h2>Worksheet Problem " + input("What worksheet problem is this (an integer value)?") + "</h2>"
-
-    # Enter new lines of code at that index found above.
-    for x in codeList:
-        lines[i] = x
-        i += 1
-
-    # Add end tags.
-    lines[len(lines) - 1] = "</html>"
-    lines[len(lines) - 2] = "</body>"
-    lines[len(lines) - 3] = "<!--###-->"
-
-    with open(fileName, 'w') as file:
-        for item in lines:
-            file.write("%s\n" % item)
-    # copies all the lines over.
-    
-    
-
-def writeToExistingFile(codeList):
     fileName = input("What is the file named?")
     # Might need to write some error-checking, in case any non-valid characters are typed.
     fileName += ".html"
@@ -157,23 +72,24 @@ def writeToExistingFile(codeList):
     for file in files:
         if str(file) == fileName:
             f = open(fileName, 'a')
-            addToFile(codeList, fileName)
+            f.write(code)
             f.close()
             return
-    
     print("Error! There is no file with your inputted name," + str(fileName))
     # This only occurs if there is no valid file.
-    while(True):
+    try:
         userChoice = input("Would you like to create a new file? (Y/N)").lower()
         if (userChoice.strip() == "y"):
-            writeToNewFile(codeList)
+            writeToNewFile(code)
         elif (userChoice.strip() == "n"):
             return
         else:
-            print("Invalid choice!")
+            raise NameError()
+    except NameError:
+        print("Invalid file!")
 
+def writeToNewFile(code):
 
-def writeToNewFile(codeList):
     # Prompt to name the new file
     fileName = input("What would you like the new file to be named?")
     fileName += ".html"
@@ -182,7 +98,7 @@ def writeToNewFile(codeList):
         
     # Testing to see if the code prints.
     f = open(fileName, 'w')
-    createNewFile(codeList, fileName)
+    f.write(code)
     f.close()
     # This functions. Now, have to find a way to store the new html pages to somewhere...
 
