@@ -115,7 +115,7 @@ $( document ).ready(function() {
 		$(parentDiv).find(".manualAnswerTruth").remove();
 
 		if(answerTruth){
-			$(parentDiv).find(".manualAnswer").after("<img class=manualAnswerTruth width='4%' style='padding-left:2%' src='../resources/correct-checkmark.svg'></img>");
+			$(parentDiv).find(".manualAnswer").after("<img class=manualAnswerTruth width='13%' style='padding-left:2%' src='../resources/correct-checkmark.svg'></img>");
 			if(username!=""){
 				if(!($(parentDiv).attr("sent")=="updated")){
 					activity=($(parentDiv).prev().prev().attr("id"));
@@ -135,7 +135,7 @@ $( document ).ready(function() {
 		
 		}
 		else{
-			 $(parentDiv).find(".manualAnswer").after("<img class=manualAnswerTruth width='4%' style='padding-left:2%' src='../resources/incorrect-cross.svg'></img>");
+			 $(parentDiv).find(".manualAnswer").after("<img class=manualAnswerTruth width='13%' style='padding-left:2%' src='../resources/incorrect-cross.svg'></img>");
 		}
 
 	};
@@ -143,7 +143,7 @@ $( document ).ready(function() {
 
 	questionHtmlString=`<div content_resource_id="32241403" class="manualQuestionDiv">
 				<div>"""manualQuestion"""</div> 
-				<div><textarea style="margin-bottom: 5px" cols="20" rows="1" spellcheck="false" autocapitalize="false" class="manualAnswer"></textarea></div>
+				<div style="margin-bottom: 5px;"><textarea style="width: 85%;" cols="20" rows="1" spellcheck="false" autocapitalize="false" class="manualAnswer"></textarea></div>
 				<div><button class="submitManual button">Check</button></div>
 			</div>`
 	//Take the simple div with class manual question and make it fancier. Runs at page load for each div with class "manualQuestion"
