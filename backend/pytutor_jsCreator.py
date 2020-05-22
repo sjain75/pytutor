@@ -26,12 +26,13 @@ def run_pytutor(py):
     return json.dumps(json.loads(js))
 
 def main():
-
     if len(sys.argv) < 2:
         print("Usage: python pytutor.py file1.py [file2.py, ...]")
         sys.exit(1)
 
-    for py in sys.argv[1:]:
+    # Only 1 input file
+    elif len(sys.argv) == 2:
+        py = sys.argv[1]
         print("Working on file " + py + "...")
         js = run_pytutor(py)
         div = py.replace(".", "_").replace("/", "_")
@@ -55,9 +56,33 @@ def main():
                 break
             else:
                 print("Error! Not a valid choice.")
-        # Reset to original location so that if the user enters more than one file, will repeat the processs
-        # without errors.
+    
+    # More than 1 input file.
+    else:
+        # Creating initial template file.
+        py = sys.argv[1]
+        print("Working on file " + py + "...")
+        js = run_pytutor(py)
+        div = py.replace(".", "_").replace("/", "_")
+        code = EMBEDDING.replace("DIV", div).replace("TRACE", js)
+        codeList = code.split("\n")
+        print("Creating a template file...")
+        os.chdir("../pages/")
+        createNewFile(codeList, "templateFile.html")
         os.chdir("../backend/")
+
+        # Adding on to the end of the template file.
+        for py in sys.argv[2:]:
+            js = run_pytutor(py)
+            div = py.replace(".", "_").replace("/", "_")
+            code = EMBEDDING.replace("DIV", div).replace("TRACE", js)
+            codeList = code.split("\n")
+            os.chdir("../pages/")
+            addToFile(codeList, "templateFile.html")
+            os.chdir("../backend/")
+
+        # Creating actual file.
+    
 
 def updateFileHeader(lines):
     # We are updating the title header.
@@ -84,16 +109,11 @@ def updateFileHeader(lines):
 def createNewFile(codeList, codeName):
     with open("defaultPageLayout.html") as file:
         lines = file.read().splitlines()
+    # Next step, don't hardcode this i... Find a way to locate this i without hardcoding.
 
     updateFileHeader(lines)
-
-    # This loop identifies where to insert code.
-    i = 0
-    for x in lines:
-        if x == "<div id=\"lec-07_w19_py\"></div>":
-            break
-        i += 1
-
+    
+    i = 135
     for x in codeList:
         lines[i] = x
         i += 1
@@ -102,10 +122,6 @@ def createNewFile(codeList, codeName):
         for item in lines:
             file.write("%s\n" % item)
     # copies all the lines over.
-
-def createNewHeaders(lines):
-    return 0
-    # TODO figure this section out!
 
 def addToFile(codeList, fileName):
     # Will detect <!--###-->, prompting the program to add new files here.
@@ -130,8 +146,6 @@ def addToFile(codeList, fileName):
         j += 1
 
     lines = newList
-
-    createNewHeaders(lines)
 
     # codeList[0] is always an empty line character.
     codeList[0] = "<h2>Worksheet Problem " + input("What worksheet problem is this (an integer value)?") + "</h2>"

@@ -130,10 +130,9 @@ python pytutor.py lec-08/practice1.py lec-08/practice2.py lec-08/practice3.py le
     </div>
   </div>
 </div>
-<h1>Worksheet 2</h1>
+<h1>1</h1>
 
-<h2 class="my-3">Worksheet Problem 2</h2>
-
+<h2 class="my-3">Worksheet Problem 1</h2>
 
 <div id="testPyFile_py"></div>
 <script type="text/javascript">
@@ -141,12 +140,6 @@ python pytutor.py lec-08/practice1.py lec-08/practice2.py lec-08/practice3.py le
   addVisualizerToPage(trace, 'testPyFile_py',  {startingInstruction: 0, hideCode: false, lang: "py3", disableHeapNesting: true});
 </script>
 
-<h2>Worksheet Problem 2</h2>
-<div id="testPyFile2_py"></div>
-<script type="text/javascript">
-  var trace = {"code": "def a():\n    print(\"a\")\n\nprint(\"B\")\na()", "trace": [{"line": 1, "event": "step_line", "func_name": "<module>", "globals": {}, "ordered_globals": [], "stack_to_render": [], "heap": {}, "stdout": ""}, {"line": 4, "event": "step_line", "func_name": "<module>", "globals": {"a": ["REF", 1]}, "ordered_globals": ["a"], "stack_to_render": [], "heap": {"1": ["FUNCTION", "a()", null]}, "stdout": ""}, {"line": 5, "event": "step_line", "func_name": "<module>", "globals": {"a": ["REF", 1]}, "ordered_globals": ["a"], "stack_to_render": [], "heap": {"1": ["FUNCTION", "a()", null]}, "stdout": "B\n"}, {"line": 1, "event": "call", "func_name": "a", "globals": {"a": ["REF", 1]}, "ordered_globals": ["a"], "stack_to_render": [{"func_name": "a", "is_parent": false, "frame_id": 1, "parent_frame_id_list": [], "encoded_locals": {}, "ordered_varnames": [], "is_zombie": false, "is_highlighted": true, "unique_hash": "a_f1"}], "heap": {"1": ["FUNCTION", "a()", null]}, "stdout": "B\n"}, {"line": 2, "event": "step_line", "func_name": "a", "globals": {"a": ["REF", 1]}, "ordered_globals": ["a"], "stack_to_render": [{"func_name": "a", "is_parent": false, "frame_id": 1, "parent_frame_id_list": [], "encoded_locals": {}, "ordered_varnames": [], "is_zombie": false, "is_highlighted": true, "unique_hash": "a_f1"}], "heap": {"1": ["FUNCTION", "a()", null]}, "stdout": "B\n"}, {"line": 2, "event": "return", "func_name": "a", "globals": {"a": ["REF", 1]}, "ordered_globals": ["a"], "stack_to_render": [{"func_name": "a", "is_parent": false, "frame_id": 1, "parent_frame_id_list": [], "encoded_locals": {"__return__": null}, "ordered_varnames": ["__return__"], "is_zombie": false, "is_highlighted": true, "unique_hash": "a_f1"}], "heap": {"1": ["FUNCTION", "a()", null]}, "stdout": "B\na\n"}, {"line": 5, "event": "return", "func_name": "<module>", "globals": {"a": ["REF", 1]}, "ordered_globals": ["a"], "stack_to_render": [], "heap": {"1": ["FUNCTION", "a()", null]}, "stdout": "B\na\n"}]};
-  addVisualizerToPage(trace, 'testPyFile2_py',  {startingInstruction: 0, hideCode: false, lang: "py3", disableHeapNesting: true});
-</script>
 
 <!--###-->
 </body>
