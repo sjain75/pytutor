@@ -33,56 +33,87 @@ def main():
     # Only 1 input file
     elif len(sys.argv) == 2:
         py = sys.argv[1]
-        print("Working on file " + py + "...")
-        js = run_pytutor(py)
-        div = py.replace(".", "_").replace("/", "_")
-        code = EMBEDDING.replace("DIV", div).replace("TRACE", js)
-        codeList = code.split("\n")
+        codeList = generateTrace(py)
+
+        # Template file creation.
         print("Creating a template file...")
         os.chdir("../pages/")
+        print("Working on file " + py + "...")
         createNewFile(codeList, "templateFile.html")
         print("Check templateFile.html in the pages file to see an example")
 
-        while(True):
-            # for-loop to constantly prompt the user to enter in a valid choice, Y or N.
-            userChoice = input("Are you writing to an existing file? (Y/N)").lower()
-            if (userChoice.strip() == "y"):
-                writeToExistingFile(codeList)
-                print("File has been writen to!")
-                break
-            elif (userChoice.strip() == "n"):
-                writeToNewFile(codeList)
-                print("File has been written to!")
-                break
-            else:
-                print("Error! Not a valid choice.")
+        # Checking to see if the file exists within the pages directory.
+        print("*******CREATING/ADDING TO FILE*******")
+        fileName = input("What is the file name?") + ".html"
+        files = os.listdir()
+        for file in files:
+            if str(file) == fileName:
+                userChoice = input("This file already exists. Would you like to append it to the already existing file? (Y/N)")
+                if userChoice.lower().strip() == "y":
+                    addToFile(codeList, fileName)
+                    return
+
+        # Else, will print to existing file.
+        print("Printing/Overwriting to a new file...")
+        writeToNewFile(codeList, fileName)
     
     # More than 1 input file.
     else:
         # Creating initial template file.
         py = sys.argv[1]
-        print("Working on file " + py + "...")
-        js = run_pytutor(py)
-        div = py.replace(".", "_").replace("/", "_")
-        code = EMBEDDING.replace("DIV", div).replace("TRACE", js)
-        codeList = code.split("\n")
+        codeList = generateTrace(py)
         print("Creating a template file...")
         os.chdir("../pages/")
+        print("Working on file " + py + "...")
         createNewFile(codeList, "templateFile.html")
         os.chdir("../backend/")
 
         # Adding on to the end of the template file.
         for py in sys.argv[2:]:
-            js = run_pytutor(py)
-            div = py.replace(".", "_").replace("/", "_")
-            code = EMBEDDING.replace("DIV", div).replace("TRACE", js)
-            codeList = code.split("\n")
+            print("Working on file " + py + "...")
+            codeList = generateTrace(py)
             os.chdir("../pages/")
             addToFile(codeList, "templateFile.html")
             os.chdir("../backend/")
 
         # Creating actual file.
+        print("*******CREATING/ADDING TO FILE*******")
+        fileName = input("What is the file name?") + ".html"
+        os.chdir("../pages/")
+        files = os.listdir()
+        for file in files:
+            if str(file) == fileName:
+                userChoice = input("This file already exists. Would you like to append it to the already existing file? (Y/N)")
+                if userChoice.lower().strip() == "y":
+                    for py in sys.argv[2:]:
+                        codeList = generateTrace(py)
+                        addToFile(codeList, fileName)
+                    return
+        
+
+        # If we need to overwrite/create a new file, this runs.
+        print("Printing/Overwriting to a new file...")
+        
+        os.chdir("../backend/")
+        py = sys.argv[1]
+        codeList = generateTrace(py)
+        os.chdir("../pages/")
+        writeToNewFile(codeList, fileName)
+        os.chdir("../backend/")
+
+        for py in sys.argv[2:]:
+            codeList = generateTrace(py)
+            os.chdir("../pages/")
+            addToFile(codeList, fileName)
+            os.chdir("../backend/")
     
+
+def generateTrace(py):
+    js = run_pytutor(py)
+    div = py.replace(".", "_").replace("/", "_")
+    code = EMBEDDING.replace("DIV", div).replace("TRACE", js)
+    codeList = code.split("\n")
+    return codeList
 
 def updateFileHeader(lines):
     # We are updating the title header.
@@ -164,38 +195,9 @@ def addToFile(codeList, fileName):
         for item in lines:
             file.write("%s\n" % item)
     # copies all the lines over.
-    
-    
 
-def writeToExistingFile(codeList):
-    fileName = input("What is the file named?")
-    # Might need to write some error-checking, in case any non-valid characters are typed.
-    fileName += ".html"
-    files = os.listdir()
-    # Checking if the file exists in the pages directory.
-    for file in files:
-        if str(file) == fileName:
-            f = open(fileName, 'a')
-            addToFile(codeList, fileName)
-            f.close()
-            return
-    
-    print("Error! There is no file with your inputted name," + str(fileName))
-    # This only occurs if there is no valid file.
-    while(True):
-        userChoice = input("Would you like to create a new file? (Y/N)").lower()
-        if (userChoice.strip() == "y"):
-            writeToNewFile(codeList)
-        elif (userChoice.strip() == "n"):
-            return
-        else:
-            print("Invalid choice!")
-
-
-def writeToNewFile(codeList):
-    # Prompt to name the new file
-    fileName = input("What would you like the new file to be named?")
-    fileName += ".html"
+# TODO check if we can just scrap this method.
+def writeToNewFile(codeList, fileName):
 
     #TODO test for invalid characters, make sure the file has .html extension.
         
