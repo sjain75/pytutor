@@ -55,7 +55,7 @@ def main():
 
         # Else, will print to existing file.
         print("Printing/Overwriting to a new file...")
-        writeToNewFile(codeList, fileName)
+        createNewFile(codeList, fileName)
     
     # More than 1 input file.
     else:
@@ -81,13 +81,17 @@ def main():
         fileName = input("What is the file name?") + ".html"
         os.chdir("../pages/")
         files = os.listdir()
+        os.chdir("../backend/")
         for file in files:
             if str(file) == fileName:
                 userChoice = input("This file already exists. Would you like to append it to the already existing file? (Y/N)")
                 if userChoice.lower().strip() == "y":
-                    for py in sys.argv[2:]:
+                    for py in sys.argv[1:]:
+                        print("Working on file " + py + "...")
                         codeList = generateTrace(py)
+                        os.chdir("../pages/")
                         addToFile(codeList, fileName)
+                        os.chdir("../backend/")
                     return
         
 
@@ -98,10 +102,11 @@ def main():
         py = sys.argv[1]
         codeList = generateTrace(py)
         os.chdir("../pages/")
-        writeToNewFile(codeList, fileName)
+        createNewFile(codeList, fileName)
         os.chdir("../backend/")
 
         for py in sys.argv[2:]:
+            print("Working on file " + py + "...")
             codeList = generateTrace(py)
             os.chdir("../pages/")
             addToFile(codeList, fileName)
@@ -186,26 +191,29 @@ def addToFile(codeList, fileName):
         lines[i] = x
         i += 1
 
-    # Add end tags.
+    # # Determine if we need to add a manual question.
+    # i = 0
+    # manualQuestion = ""
+    # for x in codeList:
+    #     if codeList[i].strip()[:6] == " # ___":
+    #         manualQuestion = generateManualQuestion(codeList[i][5:])
+    #         break
+    #     i += 1
+
+    # Add end tags
     lines[len(lines) - 1] = "</html>"
     lines[len(lines) - 2] = "</body>"
     lines[len(lines) - 3] = "<!--###-->"
+    # lines[len(lines) - 4] = manualQuestion
 
     with open(fileName, 'w') as file:
         for item in lines:
             file.write("%s\n" % item)
     # copies all the lines over.
 
-# TODO check if we can just scrap this method.
-def writeToNewFile(codeList, fileName):
-
-    #TODO test for invalid characters, make sure the file has .html extension.
-        
-    # Testing to see if the code prints.
-    f = open(fileName, 'w')
-    createNewFile(codeList, fileName)
-    f.close()
-    # This functions. Now, have to find a way to store the new html pages to somewhere...
+# def generateManualQuestion(question):
+#     question = "<div class=\"manualQuestion\">" + question + "</div>"
+#     return question
 
 if __name__ == '__main__':
      main()
