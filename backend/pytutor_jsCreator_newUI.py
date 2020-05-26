@@ -81,17 +81,13 @@ def main():
         fileName = input("What is the file name?") + ".html"
         os.chdir("../pages/")
         files = os.listdir()
-        os.chdir("../backend/")
         for file in files:
             if str(file) == fileName:
                 userChoice = input("This file already exists. Would you like to append it to the already existing file? (Y/N)")
                 if userChoice.lower().strip() == "y":
-                    for py in sys.argv[1:]:
-                        print("Working on file " + py + "...")
+                    for py in sys.argv[2:]:
                         codeList = generateTrace(py)
-                        os.chdir("../pages/")
                         addToFile(codeList, fileName)
-                        os.chdir("../backend/")
                     return
         
 
@@ -118,6 +114,8 @@ def generateTrace(py):
     div = py.replace(".", "_").replace("/", "_")
     code = EMBEDDING.replace("DIV", div).replace("TRACE", js)
     codeList = code.split("\n")
+    newDiv = "<div id=\"" + div + "\" class=\"problem\"></div>"
+    codeList[1] = newDiv
     return codeList
 
 def updateFileHeader(lines):
@@ -129,7 +127,7 @@ def updateFileHeader(lines):
         i += 1
 
     header = input("What would you like to name your worksheet?")
-    header = "<h1>" + header + "</h1>"
+    header = "<h1 class = \"problem\">" + header + "</h1>"
     lines[i] = header
 
     # Updating the problem number.
@@ -139,12 +137,13 @@ def updateFileHeader(lines):
     #         break
     #     i += 1
     problemNumber = input("What worksheet problem is this (an integer value)?")
-    title = "<h2 class=\"my-3\">Worksheet Problem " + problemNumber + "</h2>"
+    title = "<h2 class=\"my-3 problem\">Worksheet Problem " + problemNumber + "</h2>"
     lines[134] = title
 
 def createNewFile(codeList, codeName):
     with open("defaultPageLayout.html") as file:
         lines = file.read().splitlines()
+    # Next step, don't hardcode this i... Find a way to locate this i without hardcoding.
 
     updateFileHeader(lines)
     
@@ -183,18 +182,21 @@ def addToFile(codeList, fileName):
     lines = newList
 
     # codeList[0] is always an empty line character.
-    codeList[0] = "<h2>Worksheet Problem " + input("What worksheet problem is this (an integer value)?") + "</h2>"
+    codeList[0] = "<h2 class = \"problem\">Worksheet Problem " + input("What worksheet problem is this (an integer value)?") + "</h2>"
 
     # Enter new lines of code at that index found above.
-    # manualQuestion = ""
     for x in codeList:
-        # If detects that specific comment, we have located the manual question.
-        print(x)
-        # if x == " # ___":
-        #     manualQuestion = generateManualQuestion(i, codeList)
-        #     break
         lines[i] = x
         i += 1
+
+    # # Determine if we need to add a manual question.
+    # i = 0
+    # manualQuestion = ""
+    # for x in codeList:
+    #     if codeList[i].strip()[:6] == " # ___":
+    #         manualQuestion = generateManualQuestion(codeList[i][5:])
+    #         break
+    #     i += 1
 
     # Add end tags
     lines[len(lines) - 1] = "</html>"
@@ -207,8 +209,8 @@ def addToFile(codeList, fileName):
             file.write("%s\n" % item)
     # copies all the lines over.
 
-# def generateManualQuestion(indexOfQ, codeList):
-#     question = "<div class=\"manualQuestion\">" + codeList[indexOfQ + 1] + "</div>"
+# def generateManualQuestion(question):
+#     question = "<div class=\"manualQuestion\">" + question + "</div>"
 #     return question
 
 if __name__ == '__main__':

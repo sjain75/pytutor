@@ -8,4 +8,7 @@ print("C")
 a()
 b()
 
-# ___What is the final value printed? 
+# ___
+# What is the final value printed? 
+# ___
+# A
