@@ -152,6 +152,9 @@ def createNewFile(codeList, codeName):
         lines[i] = x
         i += 1
 
+    # Create prompts TODO
+    generateManualQuestion(lines)
+
     with open(codeName, 'w') as file:
         for item in lines:
             file.write("%s\n" % item)
@@ -189,29 +192,24 @@ def addToFile(codeList, fileName):
         lines[i] = x
         i += 1
 
-    # # Determine if we need to add a manual question.
-    # i = 0
-    # manualQuestion = ""
-    # for x in codeList:
-    #     if codeList[i].strip()[:6] == " # ___":
-    #         manualQuestion = generateManualQuestion(codeList[i][5:])
-    #         break
-    #     i += 1
+    generateManualQuestion(lines)
 
     # Add end tags
     lines[len(lines) - 1] = "</html>"
     lines[len(lines) - 2] = "</body>"
     lines[len(lines) - 3] = "<!--###-->"
-    # lines[len(lines) - 4] = manualQuestion
 
     with open(fileName, 'w') as file:
         for item in lines:
             file.write("%s\n" % item)
     # copies all the lines over.
 
-# def generateManualQuestion(question):
-#     question = "<div class=\"manualQuestion\">" + question + "</div>"
-#     return question
+def generateManualQuestion(lines):
+    question = "<div class = \"manualQuestion\">" + input("What is the manual question?") + "</div>"
+    lines[len(lines)-4] = question
+
+    answer = input("What is the answer to the question?")
+    lines[len(lines) - 6] = "  manualAnswer=\"" + answer + "\";"
 
 if __name__ == '__main__':
      main()
