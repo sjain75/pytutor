@@ -118,6 +118,22 @@ def generateTrace(py):
     div = py.replace(".", "_").replace("/", "_")
     code = EMBEDDING.replace("DIV", div).replace("TRACE", js)
     codeList = code.split("\n")
+
+    # Allocating space for the manual answer.
+    newList = [""] * (len(codeList) + 1)
+    limit = len(codeList) - 2
+    i = 0
+    for x in codeList:
+        if i == limit:
+            i += 1
+            break
+        else:
+            newList[i] = x
+            i += 1
+    
+    # Adding last script tag at end.    
+    newList[len(newList) - 2] = "</script>"
+    codeList = newList
     return codeList
 
 def updateFileHeader(lines):
@@ -185,32 +201,17 @@ def addToFile(codeList, fileName):
     # codeList[0] is always an empty line character.
     codeList[0] = "<h2>Worksheet Problem " + input("What worksheet problem is this (an integer value)?") + "</h2>"
 
-    # Enter new lines of code at that index found above.
-    # manualQuestion = ""
-    for x in codeList:
-        # If detects that specific comment, we have located the manual question.
-        print(x)
-        # if x == " # ___":
-        #     manualQuestion = generateManualQuestion(i, codeList)
-        #     break
-        lines[i] = x
-        i += 1
-
     # Add end tags
     lines[len(lines) - 1] = "</html>"
     lines[len(lines) - 2] = "</body>"
     lines[len(lines) - 3] = "<!--###-->"
-    # lines[len(lines) - 4] = manualQuestion
+
 
     with open(fileName, 'w') as file:
         for item in lines:
             file.write("%s\n" % item)
     # copies all the lines over.
-
-# def generateManualQuestion(indexOfQ, codeList):
-#     question = "<div class=\"manualQuestion\">" + codeList[indexOfQ + 1] + "</div>"
-#     return question
-
+    
 if __name__ == '__main__':
      main()
 

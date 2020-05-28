@@ -7,8 +7,3 @@ def b():
 print("C")
 a()
 b()
-
-# ___
-# What is the final value printed? 
-# ___
-# A
