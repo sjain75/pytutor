@@ -81,13 +81,17 @@ def main():
         fileName = input("What is the file name?") + ".html"
         os.chdir("../pages/")
         files = os.listdir()
+        os.chdir("../backend/")
         for file in files:
             if str(file) == fileName:
                 userChoice = input("This file already exists. Would you like to append it to the already existing file? (Y/N)")
                 if userChoice.lower().strip() == "y":
-                    for py in sys.argv[2:]:
+                    for py in sys.argv[1:]:
+                        print("Working on file " + py + "...")
                         codeList = generateTrace(py)
+                        os.chdir("../pages/")
                         addToFile(codeList, fileName)
+                        os.chdir("../backend/")
                     return
         
 
@@ -114,8 +118,22 @@ def generateTrace(py):
     div = py.replace(".", "_").replace("/", "_")
     code = EMBEDDING.replace("DIV", div).replace("TRACE", js)
     codeList = code.split("\n")
-    newDiv = "<div id=\"" + div + "\" class=\"problem\"></div>"
-    codeList[1] = newDiv
+
+    # Allocating space for the manual answer.
+    newList = [""] * (len(codeList) + 1)
+    limit = len(codeList) - 2
+    i = 0
+    for x in codeList:
+        if i == limit:
+            i += 1
+            break
+        else:
+            newList[i] = x
+            i += 1
+    
+    # Adding last script tag at end.    
+    newList[len(newList) - 2] = "</script>"
+    codeList = newList
     return codeList
 
 def updateFileHeader(lines):
@@ -127,7 +145,7 @@ def updateFileHeader(lines):
         i += 1
 
     header = input("What would you like to name your worksheet?")
-    header = "<h1 class = \"problem\">" + header + "</h1>"
+    header = "<h1>" + header + "</h1>"
     lines[i] = header
 
     # Updating the problem number.
@@ -137,13 +155,12 @@ def updateFileHeader(lines):
     #         break
     #     i += 1
     problemNumber = input("What worksheet problem is this (an integer value)?")
-    title = "<h2 class=\"my-3 problem\">Worksheet Problem " + problemNumber + "</h2>"
+    title = "<h2 class=\"my-3\">Worksheet Problem " + problemNumber + "</h2>"
     lines[134] = title
 
 def createNewFile(codeList, codeName):
     with open("defaultPageLayout.html") as file:
         lines = file.read().splitlines()
-    # Next step, don't hardcode this i... Find a way to locate this i without hardcoding.
 
     updateFileHeader(lines)
     
@@ -185,9 +202,9 @@ def addToFile(codeList, fileName):
     lines = newList
 
     # codeList[0] is always an empty line character.
-    codeList[0] = "<h2 class = \"problem\">Worksheet Problem " + input("What worksheet problem is this (an integer value)?") + "</h2>"
+    codeList[0] = "<h2>Worksheet Problem " + input("What worksheet problem is this (an integer value)?") + "</h2>"
 
-    # Enter new lines of code at that index found above.
+    # Copies over codeList items into lines.
     for x in codeList:
         lines[i] = x
         i += 1
@@ -198,6 +215,7 @@ def addToFile(codeList, fileName):
     lines[len(lines) - 1] = "</html>"
     lines[len(lines) - 2] = "</body>"
     lines[len(lines) - 3] = "<!--###-->"
+
 
     with open(fileName, 'w') as file:
         for item in lines:
