@@ -1,7 +1,7 @@
 import os, sys, json, subprocess
 from subprocess import check_output
 
-PYTUTOR = "/Users/ericz/Desktop/OnlinePythonTutor/v5-unity/generate_json_trace.py"
+PYTUTOR = "../resources/OnlinePythonTutor/v5-unity/generate_json_trace.py"
 # User path dependent. Had to change my name and my path to get to here. Only the OnlinePythonTutor stuff is
 # the same, but even so that is just because its path dependent.
 
