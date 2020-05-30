@@ -211,7 +211,7 @@ def addToFile(codeList, fileName):
 
     generateManualQuestion(lines)
 
-    # Add end tags
+    # Add end tags  
     lines[len(lines) - 1] = "</html>"
     lines[len(lines) - 2] = "</body>"
     lines[len(lines) - 3] = "<!--###-->"
