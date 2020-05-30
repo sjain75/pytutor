@@ -51,34 +51,79 @@ def pytutor_test(user, event):
                     ContentType='text/json')
         return (200, "called %d times" % count)
 
+
+'''
+The data structure of student
+    {
+        "studentID":id,
+        submissionTime1:{
+            "courseID":"a"
+            "correctAnswers"=[Q1,...,Qn]
+        },
+        submissionTime2{
+            "courseID":"b"
+            "correctAnswers"=[Q1,...,Qn]
+        }
+    }
+while each submission, the data in the report would change. 
+data structure of the report
+    {
+        "a":{
+            "submissionN": 55 #this is the total number of submission for this course
+            "correctTime":{
+                "Q1":42,
+                ...
+                "Qn":33,
+            },
+        "b":{
+            ...
+        }
+        }
+    }
+'''
 @route
 @user
 def addNewAnswer(user,event):
         '''Records answers using student ID as key and sections with answers as values.
        Ideally would give a list of the questions each person answered correctly.
        example: {studentID: {A: [Q1, ..., Qn], B: ... } } '''
+       '''change the data structure into each student a separated file,
+       example:{"studentID":id,"submissionTime":{"courseID":A,"correctAnswers":[]}
+       '''
         username=user['email']
         questionCode = event['questionCode']
         activityNum = questionCode.strip()[4:6]
         questionNum = questionCode.strip()[-4:-2]
         answerDict = {}
         questionList = []
-        path = 'pytutor/data.json'
-        data = s3().read_json_default(path, default={})
-        #return (200, "%s" % data)
-#        with open('data.txt') as json_file:
-#               data = json.load(json_file)
-        if username not in data:
-                data[username]={activityNum:[questionNum]}
+        submissionTime=event['submissionTime']
+        path = 'pytutor/student/'+username+'.json'
+        try:
+            data = s3().read_json_default(path, default={})
+        except:
+            data={"studentID":username}
+            with open("./templete.json",'w') as f:
+                f.write(json.dumps(data, indent=2)
+            with open("./templete.json",'rb')as f:
+                s3.upload_fileobj(f,BUCKET,path)
+        report=s3().read_json_default("report.json", default={})
+        if submissionTime not in data:
+            data[submissionTime]={
+                'courseID':activityNum,
+                'correctQ'=[]
+            }
+            if activityNum not in report:
+                report[activityNum]={
+                        "submissionN":0,
+                        "correctTime":{}
+                }
+            report[activityNum]["submissionN"]=report[activityNum]["submissionN"]+1
+        if questionCode not in report[activityNum]['correctTime']:
+            report[activityNum]['correctTime'][questions]=1
         else:
-                if activityNum not in data[username]:
-                        data[username][activityNum] = [questionNum]
-                else:
-                        data[username][activityNum].append(questionNum)
-
-        '''dict_ID[username] = answerDict
-        for section in answerDict:
-            answerDict[activityNum] = questionList.append(questionNum)'''
+            report[activityNum]['correctTime'][questions]=report[activityNum]['correctTime'][questions]+1
+        data[submissionTime]['correctQ'].append(questionCode)
+        s3.put_object(Bucket=Bucket,Key="report.json",Body=bytes(json.dumps(report,indent=2),'utf-8'),ContentType='text/json')
         s3().put_object(Bucket=BUCKET,
                     Key=path,
                     Body=bytes(json.dumps(data, indent=2), 'utf-8'),
@@ -100,22 +145,31 @@ def isAnswered(user,event):
         questionNum = questionCode.strip()[-4:-2]
         answerDict = {}
         questionList = []
-        path = 'pytutor/data.json'
-        data = s3().read_json_default(path, default={})
+        submissionTime=event['submissionTime']
+
+        path = 'pytutor/student/'+username+'.json'
+        try:
+            data = s3().read_json_default(path, default={})
+        expect:
+            return(200,"false")
         #return (200, "%s" % data)
-#        with open('data.txt') as json_file:
-#               data = json.load(json_file)
+        '''
+        with open('data.txt') as json_file:
+               data = json.load(json_file)
         if username not in data:
                 return(200,"false")
                 #data[username]={activityNum:[questionNum]}
-        else:
-                if activityNum not in data[username]:
-                        return(200,"false")
-                        #data[username][activityNum] = [questionNum]
-                else:
-                    if questionNum in data[username][activityNum]:
-                        return (200, questionCode)
-        return (200, "false")
+       else:
+ '''
+
+        for key in data.keys():
+            if key!='studentID':
+                if data[key]['courseID']==activityNum:
+                    if questionNum in data[key][correctQ]:
+                        return (200,questionCode)
+
+        return (200,"false")
+
 
 #def deadlineFx():
 #'''Checks for deadline errors'''
@@ -129,4 +183,30 @@ def feedback(studentTime, deadline):
         else:
                 strDeadline = (str(studentTime) + ' is past the deadline')
         return(False)
+
+'''
+After input the userID, the getTimeLog would return the timelog like
+{
+	submissionTime1: courseID,
+	submissionTime2: courseID,
+	....
+}
+'''
+
+@route
+@user
+def getTimeLog(user):
+    username=user['email']
+    path = 'pytutor/student/'+username+'.json'
+	try:
+		data = s3().read_json_default(path, default={})
+	except:
+		return (200,"")
+	timelog={}
+	for key in data.keys():
+		if key != "studentID":
+			timelog[key]=data[key]["courseID"]
+	timelogJson=json.dumps(timelog,indent=2)
+	return (200,timelogJson)
+
 
