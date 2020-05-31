@@ -224,6 +224,9 @@ def addToFile(codeList, fileName):
 
 def generateManualQuestion(lines):
     question = "<div class = \"manualQuestion\">" + input("What is the manual question?") + "</div>"
+    stepNumber = input("What step will this question apply to?")
+    # Do we want the stepNumber in quotations? TODO
+    question = "<div step = " + stepNumber + " class = \"manualQuestion\">" + question + "</div>"
     lines[len(lines)-4] = question
 
     answer = input("What is the answer to the question?")
