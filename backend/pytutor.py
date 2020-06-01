@@ -209,4 +209,24 @@ def getTimeLog(user):
 	timelogJson=json.dumps(timelog,indent=2)
 	return (200,timelogJson)
 
-
+'''
+The detail would like
+	{
+        "courseID":"a",
+        "correctAnswers"=[Q1,...,Qn],
+        "Time":submissionTime
+        }
+'''
+@route
+@user
+def getDetail(user,event):
+	username=user['email']
+    submissionTime=event['submissionTime']
+    path = 'pytutor/student/'+username+'.json'
+    try:
+        data = s3().read_json_default(path, default={})
+        detail=data[submissionTime]
+        detail["Time"]=submissionTime
+        return (200,json.dumps(detail,indent=2))
+    except:
+    	return (200,{})
