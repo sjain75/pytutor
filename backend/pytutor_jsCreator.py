@@ -1,7 +1,7 @@
 import os, sys, json, subprocess
 from subprocess import check_output
 
-PYTUTOR = "/Users/ericz/Desktop/OnlinePythonTutor/v5-unity/generate_json_trace.py"
+PYTUTOR = "../resources/OnlinePythonTutor/v5-unity/generate_json_trace.py"
 # User path dependent. Had to change my name and my path to get to here. Only the OnlinePythonTutor stuff is
 # the same, but even so that is just because its path dependent.
 
@@ -221,18 +221,16 @@ def addToFile(codeList, fileName):
     # copies all the lines over.
 
 def generateManualQuestion(lines):
-    question = "<div class = \"manualQuestion\">" + input("What is the manual question?") + "</div>"
+    question = input("What is the manual question?")
 
     stepNumber = input("What step will this question apply to?")
     # Do we want the stepNumber in quotations? TODO
-    
+
     question = "<div step = " + stepNumber + " class = \"manualQuestion\">" + question + "</div>"
     lines[len(lines)-4] = question
 
     answer = input("What is the answer to the question?")
     lines[len(lines) - 6] = "  manualAnswer=\"" + answer + "\";"
-
-
 
 if __name__ == '__main__':
      main()
