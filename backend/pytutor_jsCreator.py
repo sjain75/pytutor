@@ -1,7 +1,7 @@
 import os, sys, json, subprocess
 from subprocess import check_output
 
-PYTUTOR = "../resources/OnlinePythonTutor/v5-unity/generate_json_trace.py"
+PYTUTOR = "/Users/ericz/Desktop/OnlinePythonTutor/v5-unity/generate_json_trace.py"
 # User path dependent. Had to change my name and my path to get to here. Only the OnlinePythonTutor stuff is
 # the same, but even so that is just because its path dependent.
 
@@ -81,17 +81,13 @@ def main():
         fileName = input("What is the file name?") + ".html"
         os.chdir("../pages/")
         files = os.listdir()
-        os.chdir("../backend/")
         for file in files:
             if str(file) == fileName:
                 userChoice = input("This file already exists. Would you like to append it to the already existing file? (Y/N)")
                 if userChoice.lower().strip() == "y":
-                    for py in sys.argv[1:]:
-                        print("Working on file " + py + "...")
+                    for py in sys.argv[2:]:
                         codeList = generateTrace(py)
-                        os.chdir("../pages/")
                         addToFile(codeList, fileName)
-                        os.chdir("../backend/")
                     return
         
 
@@ -118,7 +114,9 @@ def generateTrace(py):
     div = py.replace(".", "_").replace("/", "_")
     code = EMBEDDING.replace("DIV", div).replace("TRACE", js)
     codeList = code.split("\n")
-
+    newDiv = "<div id=\"" + div + "\" class=\"problem\"></div>"
+    codeList[1] = newDiv
+    
     # Allocating space for the manual answer.
     newList = [""] * (len(codeList) + 1)
     limit = len(codeList) - 2
@@ -145,7 +143,7 @@ def updateFileHeader(lines):
         i += 1
 
     header = input("What would you like to name your worksheet?")
-    header = "<h1>" + header + "</h1>"
+    header = "<h1 class = \"problem\">" + header + "</h1>"
     lines[i] = header
 
     # Updating the problem number.
@@ -155,12 +153,13 @@ def updateFileHeader(lines):
     #         break
     #     i += 1
     problemNumber = input("What worksheet problem is this (an integer value)?")
-    title = "<h2 class=\"my-3\">Worksheet Problem " + problemNumber + "</h2>"
+    title = "<h2 class=\"my-3 problem\">Worksheet Problem " + problemNumber + "</h2>"
     lines[134] = title
 
 def createNewFile(codeList, codeName):
     with open("defaultPageLayout.html") as file:
         lines = file.read().splitlines()
+    # Next step, don't hardcode this i... Find a way to locate this i without hardcoding.
 
     updateFileHeader(lines)
     
@@ -202,9 +201,9 @@ def addToFile(codeList, fileName):
     lines = newList
 
     # codeList[0] is always an empty line character.
-    codeList[0] = "<h2>Worksheet Problem " + input("What worksheet problem is this (an integer value)?") + "</h2>"
+    codeList[0] = "<h2 class = \"problem\">Worksheet Problem " + input("What worksheet problem is this (an integer value)?") + "</h2>"
 
-    # Copies over codeList items into lines.
+    # Enter new lines of code at that index found above.
     for x in codeList:
         lines[i] = x
         i += 1
@@ -216,7 +215,6 @@ def addToFile(codeList, fileName):
     lines[len(lines) - 2] = "</body>"
     lines[len(lines) - 3] = "<!--###-->"
 
-
     with open(fileName, 'w') as file:
         for item in lines:
             file.write("%s\n" % item)
@@ -224,13 +222,17 @@ def addToFile(codeList, fileName):
 
 def generateManualQuestion(lines):
     question = "<div class = \"manualQuestion\">" + input("What is the manual question?") + "</div>"
+
     stepNumber = input("What step will this question apply to?")
     # Do we want the stepNumber in quotations? TODO
+    
     question = "<div step = " + stepNumber + " class = \"manualQuestion\">" + question + "</div>"
     lines[len(lines)-4] = question
 
     answer = input("What is the answer to the question?")
     lines[len(lines) - 6] = "  manualAnswer=\"" + answer + "\";"
+
+
 
 if __name__ == '__main__':
      main()
