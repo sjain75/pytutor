@@ -116,22 +116,6 @@ def generateTrace(py):
     codeList = code.split("\n")
     newDiv = "<div id=\"" + div + "\" class=\"problem\"></div>"
     codeList[1] = newDiv
-    
-    # Allocating space for the manual answer.
-    newList = [""] * (len(codeList) + 1)
-    limit = len(codeList) - 2
-    i = 0
-    for x in codeList:
-        if i == limit:
-            i += 1
-            break
-        else:
-            newList[i] = x
-            i += 1
-    
-    # Adding last script tag at end.    
-    newList[len(newList) - 2] = "</script>"
-    codeList = newList
     return codeList
 
 def updateFileHeader(lines):
@@ -168,8 +152,25 @@ def createNewFile(codeList, codeName):
         lines[i] = x
         i += 1
 
-    # Create prompts TODO
-    generateManualQuestion(lines)
+    # Generating number of questions list.
+    listQuestions = generateListQuestions()
+
+    newList = [""] * (len(listQuestions) + len(lines))
+
+    # Copy over everything from lines into newList.
+    i = 0
+    for x in lines:
+        newList[i] = x
+        i += 1
+
+    lines = newList
+
+    # Add end tags.
+    lines[len(lines) - 1] = "</html>"
+    lines[len(lines) - 2] = "</body>"
+    lines[len(lines) - 3] = "<!--###-->"
+    
+    addManualQuestions(lines, listQuestions)
 
     with open(codeName, 'w') as file:
         for item in lines:
@@ -208,29 +209,69 @@ def addToFile(codeList, fileName):
         lines[i] = x
         i += 1
 
-    generateManualQuestion(lines)
+    listQuestions = generateListQuestions()
+
+    newList = [None] * (len(listQuestions) + len(lines))
+
+        # Copy over everything from lines into newList.
+    i = 0
+    for x in lines:
+        newList[i] = x
+        i += 1
+
+    lines = newList
 
     # Add end tags
     lines[len(lines) - 1] = "</html>"
     lines[len(lines) - 2] = "</body>"
     lines[len(lines) - 3] = "<!--###-->"
+    lines[len(lines) - 3 - len(listQuestions)] = "<!--###-->"
+
+    # Check references here TODO
+    addManualQuestions(lines, listQuestions)
 
     with open(fileName, 'w') as file:
         for item in lines:
             file.write("%s\n" % item)
     # copies all the lines over.
 
-def generateManualQuestion(lines):
+def generateManualQuestion():
     question = input("What is the manual question?")
 
     stepNumber = input("What step will this question apply to?")
     # Do we want the stepNumber in quotations? TODO
 
     question = "<div step = " + stepNumber + " class = \"manualQuestion\">" + question + "</div>"
-    lines[len(lines)-4] = question
+    return question
 
-    answer = input("What is the answer to the question?")
-    lines[len(lines) - 6] = "  manualAnswer=\"" + answer + "\";"
+def generateListQuestions():
+    numQuestions = input("How many manual questions do you want (an integer)?")
+    listQuestions = [None] * int(numQuestions)
+    for i in range(0,len(listQuestions)):
+        print("Generating question " + str(i + 1) + "...")
+        listQuestions[i] = generateManualQuestion()
+        i += 1
+    return listQuestions
+
+# Check references TODO
+def addManualQuestions(lines, listQuestions):
+    i = 0
+    for x in lines:
+        if x == "<!--###-->":
+            break
+        i += 1
+    # adding initial question to the list.
+    lines[i] = listQuestions[0]
+    i += 1
+    
+    # Will not check if the list of questions has more than just 1 question.
+    if len(listQuestions) == 1:
+        return
+    else:
+        for x in listQuestions[1:]:
+            lines[i] = x
+            i += 1
+
 
 if __name__ == '__main__':
      main()
