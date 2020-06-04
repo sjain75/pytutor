@@ -221,6 +221,11 @@ def addNewAnswer(user, event):
                     Body=bytes(json.dumps(report, indent=2), 'utf-8'),
                     ContentType='text/json')
 
+        return (200,"success")
+
+
+
+
 # def deadlineFx():
 #'''Checks for deadline errors'''
 @ route
