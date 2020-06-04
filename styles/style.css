@@ -8,7 +8,7 @@ h2:not(:first-of-type) {
 
 .manualQuestionDiv {
     display: flex;
-    width: 14vw;
+    width: 30vw;
     flex-direction: column;
     justify-content: center;
     /* align-items: center; */
