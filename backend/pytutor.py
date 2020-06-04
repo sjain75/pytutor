@@ -56,13 +56,22 @@ def pytutor_test(user, event):
 The data structure of student
     {
         "studentID":id,
-        submissionTime1:{
-            "courseID":"a"
-            "correctAnswers"=[Q1,...,Qn]
-        },
-        submissionTime2{
-            "courseID":"b"
-            "correctAnswers"=[Q1,...,Qn]
+        "numberOfWorksheet":n,
+        "numberOfSubmission":n,
+        "a":{
+        	"submissionTime":m,
+        	"lastGrade":n,
+        	"wrongA":[], #this is the answer which is not correct till now
+        	submissionTime1:{
+            	"grade":"10/20",
+            	"wrongQ":["Q1","Q3",..."Qn"]
+            	"totalTime":xxx
+        	},
+        	submissionTime2{
+            	...        
+            }
+        "b":{
+        	.....
         }
     }
 while each submission, the data in the report would change. 
@@ -70,11 +79,16 @@ data structure of the report
     {
         "a":{
             "submissionN": 55 #this is the total number of submission for this course
-            "correctTime":{
-                "Q1":42,
+            "submissionS":[30,29,28...] #the first else is the number of students have done this worksheet
+            							#The following element is the number of students get the correct answer of each question
+            "averageFGrade":10 #this is the average grade of the first attempt of the worksheet
+            "averageLGrade":20 #this is the average grade of the last attempt of the worksheet
+            "fullGrade":20 #this is the full mark of the worksheet
+            "averageFirstCorrect":{
+                "Q1":5,
                 ...
-                "Qn":33,
-            },
+                "Qn":10,
+            },#this should be the average attempt to make each question correct
         "b":{
             ...
         }
@@ -84,92 +98,125 @@ data structure of the report
 @route
 @user
 def addNewAnswer(user,event):
-        '''Records answers using student ID as key and sections with answers as values.
-       Ideally would give a list of the questions each person answered correctly.
-       example: {studentID: {A: [Q1, ..., Qn], B: ... } } '''
-       '''change the data structure into each student a separated file,
-       example:{"studentID":id,"submissionTime":{"courseID":A,"correctAnswers":[]}
-       '''
-        username=user['email']
-        questionCode = event['questionCode']
-        activityNum = questionCode.strip()[4:6]
-        questionNum = questionCode.strip()[-4:-2]
-        answerDict = {}
-        questionList = []
-        submissionTime=event['submissionTime']
+        username=event['user'] #this should be a unique identity of the user, maybe its email
+        worksheet=event['worksheetNo'] #This is the worksheet No.
+        time=event['timelog'] 
+        '''this would be a dict contains the time when students begin answer the worksheet and 
+        the time used for each question
+        for example
+        {
+        	"beginTime":xxxx,
+        	"totalTime":xxxx,(I would only use these two info)
+        	other info
+        }'''
+        response=event["response"]
+        '''
+        this should be a dict contains the answer the students made
+        which is similar to the correct answer
+        for example
+        {
+        	"Q1":xxx,
+        	"Q2":xxx,
+        	...
+        	"Qn":xxx
+        }
+        '''
         path = 'pytutor/student/'+username+'.json'
+        answer=s3().read_json_default(worksheet+".json", default={})
+        
+
+        report=s3().read_json_default("report.json", default={})
+        if worksheet not in report.keys():
+        	report[worksheet]={
+        		"submissionN": 0 #this is the total number of submission for this course
+            	"submissionS": [0] #this is the number of students have done this woeksheet
+            	"averageFGrade": 0 #this is the average grade of the first attempt of the worksheet
+            	"averageLGrade":0 #this is the average grade of the last attempt of the worksheet
+            	"fullGrade":len(response)
+            	"averageFirstCorrect":{}
+            }
+            for key in response.keys():
+            	report[worksheet]["averageFirstCorrect"][key]=0
+            	report[worksheet]["submissionS"].append(0)
+        	
+        report[worksheet][submissionN]+=1 	
+        
+
+
+
         try:
             data = s3().read_json_default(path, default={})
         except:
-            data={"studentID":username}
+            data={"studentID":username,
+            	  "numberOfWorksheet":0,
+                  "numberOfSubmission":0
+        	}
             with open("./templete.json",'w') as f:
                 f.write(json.dumps(data, indent=2)
             with open("./templete.json",'rb')as f:
                 s3.upload_fileobj(f,BUCKET,path)
-        report=s3().read_json_default("report.json", default={})
-        if submissionTime not in data:
-            data[submissionTime]={
-                'courseID':activityNum,
-                'correctQ'=[]
-            }
-            if activityNum not in report:
-                report[activityNum]={
-                        "submissionN":0,
-                        "correctTime":{}
-                }
-            report[activityNum]["submissionN"]=report[activityNum]["submissionN"]+1
-        if questionCode not in report[activityNum]['correctTime']:
-            report[activityNum]['correctTime'][questions]=1
-        else:
-            report[activityNum]['correctTime'][questions]=report[activityNum]['correctTime'][questions]+1
-        data[submissionTime]['correctQ'].append(questionCode)
-        s3.put_object(Bucket=Bucket,Key="report.json",Body=bytes(json.dumps(report,indent=2),'utf-8'),ContentType='text/json')
-        s3().put_object(Bucket=BUCKET,
+
+
+        data["numberOfSubmission"]+=1
+        if worksheet not in data.keys():
+        	data["numberOfSubmission"]+=1
+        	data[worksheet]={"submissionTime":0,
+        						"lastGrade":null,
+        						"wrongA":[]
+        					}
+        	for key in response.keys():					
+        		data[worksheet]["wrongA"].append(key)
+
+
+        fullGrade=len(response)
+        grade=0
+        wrongAnswer=[]
+        i=0
+        for key in response.keys:
+        	i+=1
+        	if response[key]==answer[key]:
+        		grade+=1
+        		if key in data[worksheet]["wrongA"]:
+        			data[worksheet]["wrongA"].remove(key)
+        			report[worksheet]["averageFirstCorrect"][key]=\
+        				(report[worksheet]["averageFirstCorrect"][key]*report[worksheet]["submissionS"][i]+\
+        				len(data[worksheet])-2)/(report[worksheet]["submissionS"][i]+1)
+        		report[worksheet]["submissionS"][i]+=1
+        	else:
+        		wrongAnswer.append(key)
+        # To calculate the grade
+
+
+
+        if len(data[worksheet])==3:
+        	# only if is it the first attempt of this worksheet, length is 3
+        	report[worksheet]["averageFGrade"]=\
+        		(report[worksheet]["averageFGrade"]*report[worksheet]["submissionS"][0]+\
+        		grade)/(report[worksheet]["submissionS"][0]+1)
+        	report[worksheet]["submissionS"][0]+=1
+
+
+       	report[worksheet]["averageLGrade"]=\
+        		(report[worksheet]["averageLGrade"]*(report[worksheet]["submissionS"][0]-1)+\
+        		grade)/(report[worksheet]["submissionS"][0])
+        # update the report info
+
+        data[worksheet]["submissionTime"]+=1
+        data[worksheet]["lastGrade"]=str(grade)+"/"+str(fullGrade)
+        data[worksheet][timelog["beginTime"]]={
+        	"grade":str(grade)+"/"+str(fullGrade),
+            "wrongQ":wrongAnswer,
+            "totalTime":timelog["totalTime"]
+        }
+		s3().put_object(Bucket=BUCKET,
                     Key=path,
                     Body=bytes(json.dumps(data, indent=2), 'utf-8'),
                     ContentType='text/json')
- 
-#        with open('data.txt', 'w') as outfile:
-#                json.dump(data, outfile)
-        return (200,"success")
 
-@route
-@user
-def isAnswered(user,event):
-        '''Records answers using student ID as key and sections with answers as values.
-       Ideally would give a list of the questions each person answered correctly.
-       example: {studentID: {A: [Q1, ..., Qn], B: ... } } '''
-        username=user['email']
-        questionCode = event['questionCode']
-        activityNum = questionCode.strip()[4:6]
-        questionNum = questionCode.strip()[-4:-2]
-        answerDict = {}
-        questionList = []
-        submissionTime=event['submissionTime']
-
-        path = 'pytutor/student/'+username+'.json'
-        try:
-            data = s3().read_json_default(path, default={})
-        expect:
-            return(200,"false")
-        #return (200, "%s" % data)
-        '''
-        with open('data.txt') as json_file:
-               data = json.load(json_file)
-        if username not in data:
-                return(200,"false")
-                #data[username]={activityNum:[questionNum]}
-       else:
- '''
-
-        for key in data.keys():
-            if key!='studentID':
-                if data[key]['courseID']==activityNum:
-                    if questionNum in data[key][correctQ]:
-                        return (200,questionCode)
-
-        return (200,"false")
-
+		s3().put_object(Bucket=BUCKET,
+                    Key="report.json",
+                    Body=bytes(json.dumps(report, indent=2), 'utf-8'),
+                    ContentType='text/json')
 
 #def deadlineFx():
 #'''Checks for deadline errors'''
@@ -184,13 +231,20 @@ def feedback(studentTime, deadline):
                 strDeadline = (str(studentTime) + ' is past the deadline')
         return(False)
 
+
+
+
+
+
 '''
 After input the userID, the getTimeLog would return the timelog like
 {
-	submissionTime1: courseID,
-	submissionTime2: courseID,
+	courseID:{
+		"totalSubmission"
+	}
 	....
 }
+'''
 '''
 
 @route
@@ -208,6 +262,7 @@ def getTimeLog(user):
 			timelog[key]=data[key]["courseID"]
 	timelogJson=json.dumps(timelog,indent=2)
 	return (200,timelogJson)
+	'''
 
 '''
 The detail would like
@@ -216,6 +271,7 @@ The detail would like
         "correctAnswers"=[Q1,...,Qn],
         "Time":submissionTime
         }
+'''
 '''
 @route
 @user
@@ -230,3 +286,4 @@ def getDetail(user,event):
         return (200,json.dumps(detail,indent=2))
     except:
     	return (200,{})
+'''
