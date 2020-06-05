@@ -99,6 +99,13 @@ data structure of the report
     }
 '''
 
+'''
+This function is to update the info in the report, used in the addNewAnswer
+'''
+def get_average(num,origin,newData):
+    update=(num*origin+newData)/(num+1)
+    return update
+
 
 @route
 @user
@@ -184,9 +191,10 @@ def addNewAnswer(user, event):
                 grade += 1
                 if key in data[worksheet]["wrongA"]:
                     data[worksheet]["wrongA"].remove(key)
-                    report[worksheet]["averageFirstCorrect"][key]=(report[worksheet]["averageFirstCorrect"][key] * report[worksheet]["submissionS"][i] +
-                        len(data[worksheet]) - 2) / (report[worksheet]["submissionS"][i] + 1)
-                report[worksheet]["submissionS"][i] += 1
+                    report[worksheet]["averageFirstCorrect"][key]=get_average(report[worksheet]["submissionS"][i],
+                                                                report[worksheet]["averageFirstCorrect"][key],
+                                                                len(data[worksheet]) - 2))
+                    report[worksheet]["submissionS"][i] += 1
             else:
                 wrongAnswer.append(key)
         # To calculate the grade
@@ -195,13 +203,14 @@ def addNewAnswer(user, event):
 
         if len(data[worksheet]) == 3:
             # only if is it the first attempt of this worksheet, length is 3
-            report[worksheet]["averageFGrade"]=(report[worksheet]["averageFGrade"] * report[worksheet]["submissionS"][0] +\
-                grade) / (report[worksheet]["submissionS"][0] + 1)
+            report[worksheet]["averageFGrade"]=get_average(report[worksheet]["submissionS"][0],
+                                                            report[worksheet]["averageFGrade"],grade)
             report[worksheet]["submissionS"][0] += 1
 
 
-        report[worksheet]["averageLGrade"]=(report[worksheet]["averageLGrade"] * (report[worksheet]["submissionS"][0] - 1) +\
-                grade) / (report[worksheet]["submissionS"][0])
+
+        report[worksheet]["averageLGrade"]=((report[worksheet]["submissionS"][0] - 1),
+                                            report[worksheet]["averageLGrade"],grade)
         # update the report info
 
         data[worksheet]["submissionTime"] += 1
@@ -247,12 +256,18 @@ def feedback(studentTime, deadline):
 '''
 After input the userID, the getTimeLog would return the timelog like
 {
-    courseID:{
-        "totalSubmission"
+    "user":userID
+    "submissionNum":x,
+    "worksheetNum":y,
+    "record":{
+        worksheet1:{
+            "NumOfSubmission":x,
+            "Grade":lastGrade,
+            "time":time
+
+        }
     }
-    ....
 }
-'''
 '''
 
 @route
@@ -264,15 +279,22 @@ def getTimeLog(user):
         data = s3().read_json_default(path, default={})
     except:
         return (200,"")
-    timelog={}
+    timelog={
+        "user":username,
+        "submissionNum":data["numberOfSubmission"],
+        "worksheetNum":data["numberOfWorksheet"],
+        "record":{}
+    }
     for key in data.keys():
-        if key != "studentID":
-            timelog[key]=data[key]["courseID"]
-    timelogJson=json.dumps(timelog,indent=2)
-    return (200,timelogJson)
+        if key!="studentID" and key != "numberOfSubmission" and key != "numberOfWorksheet":
+            timelog["record"][key]={
+                "NumOfSubmission":data[key]["submissionTime"],
+                "Grade":data[key]["lastGrade"],
+                "time":list(data[key])[-1]
+            }
+    return (200,json.dumps(timelog,indent=2))
 
-
-
+'''
 The detail would like
     {
         "courseID":"a",
