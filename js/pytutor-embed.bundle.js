@@ -3527,19 +3527,19 @@ var CodeDisplay = /** @class */ (function () {
             if (!exePts || exePts.length == 0) {
                 return;
             }
-            d.breakpointHere = !d.breakpointHere; // toggle
+            /*d.breakpointHere = !d.breakpointHere; // toggle
             if (d.breakpointHere) {
                 myCodOutput.owner.setBreakpoint(d);
                 d3.select(this.parentNode).select('td.lineNo').style('color', breakpointColor);
                 d3.select(this.parentNode).select('td.lineNo').style('font-weight', 'bold');
-                d3.select(this.parentNode).select('td.cod').style('color', breakpointColor);
+                //d3.select(this.parentNode).select('td.cod').style('color', breakpointColor);
             }
             else {
                 myCodOutput.owner.unsetBreakpoint(d);
                 d3.select(this.parentNode).select('td.lineNo').style('color', '');
                 d3.select(this.parentNode).select('td.lineNo').style('font-weight', '');
                 d3.select(this.parentNode).select('td.cod').style('color', '');
-            }
+            }*/
         });
     };
     CodeDisplay.prototype.updateCodOutput = function (smoothTransition) {
