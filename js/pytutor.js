@@ -37,7 +37,7 @@ $( document ).ready(function() {
 
 	$(".reload").on("click",reload);
 	var noClick = function() {
-		parentDiv =$(this).parents("div").last(); //find the parentDiv of the question based on the step clicked on 
+		parentDiv =$(this).parents("div.parentDiv").last(); //find the parentDiv of the question based on the step clicked on 
 		console.log(parentDiv);
 		var script = (parentDiv.next().text()); //get the trace value for this question
 		script = script.substring(0, script.search("addVisualizerToPage")); //get code that evaluateds trace array
