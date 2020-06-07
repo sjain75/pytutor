@@ -16,5 +16,5 @@ var sidebar = $('.sidebar ul')
 $('h2').each(function (index) {
     var number = $(this).text().split(" ");
     var number = number[number.length - 1];
-    sidebar.append('<li class="sidebar-item"><a href="#problem19">Problem ' + number +'</a></li>');
+    sidebar.append('<li class="sidebar-item"><a href="#problem' + number + '">Problem ' + number +'</a></li>');
 });
