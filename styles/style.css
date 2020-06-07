@@ -64,6 +64,10 @@ h2:not(:first-of-type) {
     
     #submenu {
         display: flex;
-        width: 100%;
+    }
+    .menubutton {
+        border: none;
+        padding: 5px 5px;
+        margin: 10px 10px;
     }
 }
