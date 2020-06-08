@@ -54,266 +54,157 @@ def pytutor_test(user, event):
         return (200, "called %d times" % count)
 
 
+
+'''This function is to check if the response of the student is correct
+    If correct , return true, else return false
+    If there is some error, it would return errorcode
+    '''
+def checkAnswer(worksheetCode,questionCode,response):
+    path="pytutor/worksheets/answers/"+ worksheetCode+".json"
+    try:
+        worksheet=s3().read_json_default(path, default={})
+    except:
+        return "Wrong WorksheetCode"
+
+    if questionCode not in worksheet.keys():
+        return "Wrong QuestionCode"
+
+    if worksheet[questionCode]==response:
+        return true
+    else:
+        return false
+
+
 '''
-The data structure of student
-    {
-        "studentID":id,
-        "numberOfWorksheet":n,
-        "numberOfSubmission":n,
-        "a":{
-            "submissionTime":m,
-            "lastGrade":n,
-            "wrongA":[], #this is the answer which is not correct till now
-            submissionTime1:{
-                "grade":"10/20",
-                "wrongQ":["Q1","Q3",..."Qn"]
-                "totalTime":xxx
+structure of student record
+{
+    "studentID":id,
+    "numberOfWorksheetAttempted":2,
+    "WorksheetCode1":{
+        questionsAttempted: ,
+        questionCorrectlyAttempted: ,
+        q1:{
+            numAttempts:    [numAttemptsTIllCorrect, totalNumAttempts]
+            isCorrect:  False/True #once they have correctly attempted becomes true,
+                                                else False
+            attemts:[
+                        [timeStamp, attemptedAnswer],
+                        [timeStamp, attemptedAnswer],
+                        [timeStamp, attemptedAnswer]                                
+                    ]
             },
-            submissionTime2{
-                ...
-            }
-        "b":{
+        q2:{
+                 ...
+            },
+                   
+            ....
+        }
+    "WorksheetCode2":{
             .....
         }
-    }
-while each submission, the data in the report would change.
-data structure of the report
-    {
-        "a":{
-            "submissionN": 55 #this is the total number of submission for this course
-            # the first else is the number of students have done this worksheet
-            "submissionS":[30,29,28...]
-                                        # The following element is the number of students get the correct answer of each question
-            "averageFGrade":10 #this is the average grade of the first attempt of the worksheet
-            "averageLGrade":20 #this is the average grade of the last attempt of the worksheet
-            "fullGrade":20 #this is the full mark of the worksheet
-            "averageFirstCorrect":{
-                "Q1":5,
-                ...
-                "Qn":10,
-            },#this should be the average attempt to make each question correct
-        "b":{
-            ...
-        }
-        }
-    }
+    } 
 '''
-
 '''
-This function is to update the info in the report, used in the addNewAnswer
+TODO: add report function
 '''
-def get_average(num,origin,newData):
-    update=(num*origin+newData)/(num+1)
-    return update
-
-
 @route
 @user
 def addNewAnswer(user, event):
-        # this should be a unique identity of the user, maybe its email
-        username = event['user']
-        worksheet = event['worksheetNo']  # This is the worksheet No.
-        time = event['timelog']
-        '''this would be a dict contains the time when students begin answer the worksheet and
-        the time used for each question
-        for example
-        {
-            "beginTime":xxxx,
-            "totalTime":xxxx,(I would only use these two info)
-            other info
-        }'''
-        response = event["response"]
-        '''
-        this should be a dict contains the answer the students made
-        which is similar to the correct answer
-        for example
-        {
-            "Q1":xxx,
-            "Q2":xxx,
-            ...
-            "Qn":xxx
-        }
-        '''
-        path = 'pytutor/student/' + username + '.json'
-        answer = s3().read_json_default(worksheet + ".json", default={})
+    username = event["netId"]
+    worksheetCode = event['worksheetCode']
+    questionCode=event[questionCode]
+    response = event["response"]
+    path = 'pytutor/student/' + username + '.json'
+    localTime=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    result={
+        "statusCode": 200,
+        "success": true,
+        "errorCode": "NoError",
+        "fnExecuted":"addNewAnswer",
+        "isCorrect": []   
+    }
+    isCorrect=checkAnswer(worksheetCode,questionCode,response)
+    if isCorrect!= true and isCorrect!=false:
+        result["success"]=false
+        result["errorCode"]=isCorrect
+        return result
 
-        report = s3().read_json_default("report.json", default={})
-        if worksheet not in report.keys():
-            report[worksheet] = {
-                "submissionN": 0
-                "submissionS": [0]
-                # this is the number of students have done this woeksheet
-                "averageFGrade": 0
-                # the average grade of the first attempt of the worksheet
-                "averageLGrade": 0
-                # the average grade of the last attempt of the worksheet
-                "fullGrade": len(response)
-                "averageFirstCorrect": {}
-            }
-            for key in response.keys():
-                report[worksheet]["averageFirstCorrect"][key] = 0
-                report[worksheet]["submissionS"].append(0)
-
-        report[worksheet][submissionN] += 1
-
-        try:
-            data = s3().read_json_default(path, default={})
-        except:
-            data = {"studentID": username,
-                    "numberOfWorksheet": 0,
-                    "numberOfSubmission": 0
+    try:
+        sturdent=s3().read_json_default(path, default={})   
+    except:
+        student = {"studentID":username,
+                    "numberOfWorksheetAttempted":0
                     }
-            with open("./templete.json", 'w') as f:
-                f.write(json.dumps(data, indent=2)
+        with open("./templete.json", 'w') as f:
+            f.write(json.dumps(student, indent=2)
 
-            with open("./templete.json", 'rb') as f:
-                s3.upload_fileobj(f, BUCKET, path)
+        with open("./templete.json", 'rb') as f:
+            s3.upload_fileobj(f, BUCKET, path)
 
-
-        data["numberOfSubmission"] += 1
-        if worksheet not in data.keys():
-            data["numberOfSubmission"] += 1
-            data[worksheet]={"submissionTime": 0,
-                                "lastGrade": null,
-                                "wrongA": []
+    if worksheetCode not in student.keys():
+        student["numberOfWorksheetAttempted"]+=1
+        student[worksheetCode]={"questionsAttempted": 0,
+                                "questionCorrectlyAttempted":0
                             }
-            for key in response.keys():
-                data[worksheet]["wrongA"].append(key)
-
-
-        fullGrade=len(response)
-        grade=0
-        wrongAnswer=[]
-        i=0
-        for key in response.keys:
-            i += 1
-            if response[key] == answer[key]:
-                grade += 1
-                if key in data[worksheet]["wrongA"]:
-                    data[worksheet]["wrongA"].remove(key)
-                    report[worksheet]["averageFirstCorrect"][key]=get_average(report[worksheet]["submissionS"][i],
-                                                                report[worksheet]["averageFirstCorrect"][key],
-                                                                len(data[worksheet]) - 2))
-                    report[worksheet]["submissionS"][i] += 1
-            else:
-                wrongAnswer.append(key)
-        # To calculate the grade
-
-
-
-        if len(data[worksheet]) == 3:
-            # only if is it the first attempt of this worksheet, length is 3
-            report[worksheet]["averageFGrade"]=get_average(report[worksheet]["submissionS"][0],
-                                                            report[worksheet]["averageFGrade"],grade)
-            report[worksheet]["submissionS"][0] += 1
-
-
-
-        report[worksheet]["averageLGrade"]=((report[worksheet]["submissionS"][0] - 1),
-                                            report[worksheet]["averageLGrade"],grade)
-        # update the report info
-
-        data[worksheet]["submissionTime"] += 1
-        data[worksheet]["lastGrade"]=str(grade) + "/" + str(fullGrade)
-        data[worksheet][timelog["beginTime"]]={
-            "grade": str(grade) + "/" + str(fullGrade),
-            "wrongQ": wrongAnswer,
-            "totalTime": timelog["totalTime"]
+            
+    if questionCode not is student[worksheetCode].keys():
+        student[worksheetCode][questionCode]={
+            "numAttempts":    [-1, 0]
+            "isCorrect":  false
+            "attempts":[]
         }
-        s3().put_object(Bucket=BUCKET,
-                    Key=path,
-                    Body=bytes(json.dumps(data, indent=2), 'utf-8'),
-                    ContentType='text/json')
+        student[worksheetCode]["questionsAttempted"]+=1
 
-        s3().put_object(Bucket=BUCKET,
-                    Key="report.json",
-                    Body=bytes(json.dumps(report, indent=2), 'utf-8'),
-                    ContentType='text/json')
+    student[worksheetCode][questionCode]["attempts"].append([localTime,response])
+    student[worksheetCode][questionCode]["numAttempts"][1]+=1
 
-        return (200,"success")
+    if isCorrect==true and student[worksheetCode][questionCode]["isCorrect"]==false:
+        student[worksheetCode][questionCode]["numAttempts"][0]=student[worksheetCode][questionCode]["numAttempts"][1]
+        student[worksheetCode][questionCode]["isCorrect"]=true
+        student[worksheetCode]["questionCorrectlyAttempted"]+=1
+        
+    s3().put_object(Bucket=BUCKET,
+                Key=path,
+                Body=bytes(json.dumps(data, indent=2), 'utf-8'),
+                ContentType='text/json')
 
-
-
-
-# def deadlineFx():
-#'''Checks for deadline errors'''
-@ route
-@ user
-def feedback(studentTime, deadline):
-        '''Worked, we put this in Json File, Try/Except on time/deadline,
-       ask for data for a particular students data and form it as a string'''
-        if studentTime <= deadline:
-                return True
-        else:
-                strDeadline=(str(studentTime) + ' is past the deadline')
-        return(False)
-
-
-
-
+    result["isCorrect"].append({
+                        "questionCode":questionCode,
+                        "isCorrect":isCorrect
+                    })
+    return result
 
 
 '''
-After input the userID, the getTimeLog would return the timelog like
-{
-    "user":userID
-    "submissionNum":x,
-    "worksheetNum":y,
-    "record":{
-        worksheet1:{
-            "NumOfSubmission":x,
-            "Grade":lastGrade,
-            "time":time
-
-        }
-    }
-}
+This function is to reload the record of one worksheet of the user
 '''
-
 @route
 @user
-def getTimeLog(user):
-    username=user['email']
-    path = 'pytutor/student/'+username+'.json'
-    try:
-        data = s3().read_json_default(path, default={})
-    except:
-        return (200,"")
-    timelog={
-        "user":username,
-        "submissionNum":data["numberOfSubmission"],
-        "worksheetNum":data["numberOfWorksheet"],
-        "record":{}
+def reload(user, event):
+    username = event["netId"]
+    worksheetCode = event['worksheetCode']
+    path = 'pytutor/student/' + username + '.json'
+    result={
+        "statusCode": 200,
+        "success": true,
+        "errorCode": "NoError",
+        "fnExecuted":"reload",
+        "isCorrect": []   
     }
-    for key in data.keys():
-        if key!="studentID" and key != "numberOfSubmission" and key != "numberOfWorksheet":
-            timelog["record"][key]={
-                "NumOfSubmission":data[key]["submissionTime"],
-                "Grade":data[key]["lastGrade"],
-                "time":list(data[key])[-1]
-            }
-    return (200,json.dumps(timelog,indent=2))
-
-'''
-The detail would like
-    {
-        "courseID":"a",
-        "correctAnswers"=[Q1,...,Qn],
-        "Time":submissionTime
-        }
-
-
-@route
-@user
-def getDetail(user,event):
-    username=user['email']
-    submissionTime=event['submissionTime']
-    path = 'pytutor/student/'+username+'.json'
     try:
-        data = s3().read_json_default(path, default={})
-        detail=data[submissionTime]
-        detail["Time"]=submissionTime
-        return (200,json.dumps(detail,indent=2))
+        sturdent=s3().read_json_default(path, default={})
     except:
-        return (200,{})
-'''
+        result["success"]=false
+        result["errorCode"]="Wrong User"
+        return result
+    if worksheetCode not in student.keys():
+        result["success"]=false
+        result["errorCode"]="Wrong WorksheetCode"
+        return result
+
+    for key in student[worksheetCode].keys():
+        if key != "questionsAttempted" and key !="questionCorrectlyAttempted":
+            result["isCorrect"].append({"questionCode":key,
+                                        "isCorrect":student[worksheetCode][key]["isCorrect"]})
+
+    return result
