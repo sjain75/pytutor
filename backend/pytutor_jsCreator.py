@@ -2,15 +2,16 @@ import os, sys, json, subprocess
 from subprocess import check_output
 
 PYTUTOR = "../resources/OnlinePythonTutor/v5-unity/generate_json_trace.py"
-# User path dependent. Had to change my name and my path to get to here. Only the OnlinePythonTutor stuff is
-# the same, but even so that is just because its path dependent.
-
-# Depends on location as well now. 
-# General format: (have to be within the Pytutor/backend directory)
-# python pytutor_jsCreator.py (directory name, should be within the document. See calendars.py for example)
-
 
 EMBEDDING = """
+<div id="DIV"></div>
+<script type="text/javascript">
+  var trace = TRACE;
+  addVisualizerToPage(trace, 'DIV',  {START, hideCode: false, lang: "py3", disableHeapNesting: true});
+</script>
+"""
+
+STORY_EMBEDDING = """
 <div id="DIV"></div>
 <script type="text/javascript">
   var trace = TRACE;
@@ -33,14 +34,17 @@ def main():
     # Only 1 input file
     elif len(sys.argv) == 2:
         py = sys.argv[1]
-        codeList = generateTrace(py)
 
-        # Template file creation.
-        print("Creating a template file...")
-        os.chdir("../pages/")
-        print("Working on file " + py + "...")
-        createNewFile(codeList, "templateFile.html")
-        print("Check templateFile.html in the pages file to see an example")
+        # Generate only story/trace questions at first.
+        print("Generating ONLY story/trace questions in trace.html...")
+        codeList = generateTrace(py, STORY_EMBEDDING)
+        generateInitialPage(codeList, 1, False, "trace.html")
+
+        print("******TEMPLATEFILE CREATION******")
+        # Change to original directory so that the python files can be located again
+        os.chdir("../backend/")
+        codeList = generateTrace(py, EMBEDDING)
+        generateInitialPage(codeList, 1, True, "templateFile.html")
 
         # Checking to see if the file exists within the pages directory.
         print("*******CREATING/ADDING TO FILE*******")
@@ -50,31 +54,32 @@ def main():
             if str(file) == fileName:
                 userChoice = input("This file already exists. Would you like to append it to the already existing file? (Y/N)")
                 if userChoice.lower().strip() == "y":
-                    addToFile(codeList, fileName)
+                    addToFile(codeList, fileName, True)
                     return
+                else:
+                    userChoice = input("Are you sure? By selecting yes, you will overwrite the pre-existing file. (Y/N)")
+                    if userChoice.lower().strip() == "n":
+                        sys.exit(1)
 
-        # Else, will print to existing file.
-        print("Printing/Overwriting to a new file...")
-        createNewFile(codeList, fileName)
+        # Deleting old file, then creating the new one by just renaming the templateFile.
+        os.remove(fileName)
+        os.rename("templateFile.html", fileName)
     
     # More than 1 input file.
     else:
-        # Creating initial template file.
         py = sys.argv[1]
-        codeList = generateTrace(py)
-        print("Creating a template file...")
-        os.chdir("../pages/")
-        print("Working on file " + py + "...")
-        createNewFile(codeList, "templateFile.html")
+        # Generating ONLY trace/story questions
+        print("Generating ONLY story/trace questions in trace.html...")
+        codeList = generateTrace(py, STORY_EMBEDDING)
+        generateInitialPage(codeList, 1, False, "trace.html", STORY_EMBEDDING)
         os.chdir("../backend/")
+        generateInitialPage(codeList, 2, False, "trace.html", STORY_EMBEDDING)
 
-        # Adding on to the end of the template file.
-        for py in sys.argv[2:]:
-            print("Working on file " + py + "...")
-            codeList = generateTrace(py)
-            os.chdir("../pages/")
-            addToFile(codeList, "templateFile.html")
-            os.chdir("../backend/")
+        print("******TEMPLATEFILE CREATION******")
+        codeList = generateTrace(py, EMBEDDING)
+        generateInitialPage(codeList, 1, True, "templateFile.html")
+        os.chdir("../backend/")
+        generateInitialPage(codeList, 2, True, "templateFile.html")
 
         # Creating actual file.
         print("*******CREATING/ADDING TO FILE*******")
@@ -86,33 +91,46 @@ def main():
                 userChoice = input("This file already exists. Would you like to append it to the already existing file? (Y/N)")
                 if userChoice.lower().strip() == "y":
                     for py in sys.argv[2:]:
-                        codeList = generateTrace(py)
-                        addToFile(codeList, fileName)
+                        codeList = generateTrace(py, EMBEDDING)
+                        addToFile(codeList, fileName, True)
                     return
-        
+                else:
+                    userChoice = input("Are you sure? By selecting yes, you will overwrite the pre-existing file. (Y/N)")
+                    if userChoice.lower().strip() == "n":
+                        sys.exit(1)
 
-        # If we need to overwrite/create a new file, this runs.
-        print("Printing/Overwriting to a new file...")
-        
-        os.chdir("../backend/")
+        # Deleting old file, then creating the new one by just renaming the templateFile.
+        os.remove(fileName)
+        os.rename("templateFile.html", fileName)
+    
+# TODO figure out better name, clean this method up cuz its disgusting.
+def generateInitialPage(codeList, inputs, headers, fileName, embedding=EMBEDDING):
+    if inputs == 1:
         py = sys.argv[1]
-        codeList = generateTrace(py)
+        print("Check " + fileName + "...")
         os.chdir("../pages/")
-        createNewFile(codeList, fileName)
-        os.chdir("../backend/")
-
+        print("Working on file " + py + "...")
+        createNewFile(codeList, fileName, headers)
+    else:
+        # Adding on to the end of the template file.
         for py in sys.argv[2:]:
             print("Working on file " + py + "...")
-            codeList = generateTrace(py)
+            codeList = generateTrace(py, embedding)
             os.chdir("../pages/")
-            addToFile(codeList, fileName)
+            addToFile(codeList, fileName, headers)
             os.chdir("../backend/")
-    
 
-def generateTrace(py):
+def generateTrace(py, embedding):
     js = run_pytutor(py)
     div = py.replace(".", "_").replace("/", "_")
-    code = EMBEDDING.replace("DIV", div).replace("TRACE", js)
+    
+    # Checks if START is an existing keyword in the given embedding.
+    if "START" in embedding:
+        start = "startingInstruction:" + str((int(input("What step do you want the trace to begin at (an integer)?")) - 1))
+        code = embedding.replace("DIV", div).replace("TRACE", js).replace("START", start)
+    else:
+        code = embedding.replace("DIV", div).replace("TRACE", js)
+
     codeList = code.split("\n")
     newDiv = "<div id=\"" + div + "\" class=\"problem\"></div>"
     codeList[1] = newDiv
@@ -130,54 +148,52 @@ def updateFileHeader(lines):
     header = "<h1 class = \"problem\">" + header + "</h1>"
     lines[i] = header
 
-    # Updating the problem number.
-    # i = 0
-    # for x in lines:
-    #     if x.encode('unicode_escape').decode() == "<h2 class=\"my-3\">Worksheet Problem 404</h2>":
-    #         break
-    #     i += 1
+    # Update the problem number.
     problemNumber = input("What worksheet problem is this (an integer value)?")
     title = "<h2 class=\"my-3 problem\">Worksheet Problem " + problemNumber + "</h2>"
     lines[134] = title
 
-def createNewFile(codeList, codeName):
+def createNewFile(codeList, codeName, headers):
     with open("defaultPageLayout.html") as file:
         lines = file.read().splitlines()
-    # Next step, don't hardcode this i... Find a way to locate this i without hardcoding.
-
-    updateFileHeader(lines)
+    
+    # Generates headers ONLY if headers parameter is true.
+    if headers:
+        updateFileHeader(lines)
     
     i = 135
     for x in codeList:
         lines[i] = x
         i += 1
 
-    # Generating number of questions list.
-    listQuestions = generateListQuestions()
+    # Generating number of questions list. Only occurs if headers is equal to true.
+    if headers:
+        listQuestions = generateListQuestions()
+        newList = [""] * (len(listQuestions) + len(lines))
 
-    newList = [""] * (len(listQuestions) + len(lines))
+        # Copy over everything from lines into newList.
+        i = 0
+        for x in lines:
+            newList[i] = x
+            i += 1
 
-    # Copy over everything from lines into newList.
-    i = 0
-    for x in lines:
-        newList[i] = x
-        i += 1
-
-    lines = newList
+        lines = newList
 
     # Add end tags.
     lines[len(lines) - 1] = "</html>"
     lines[len(lines) - 2] = "</body>"
     lines[len(lines) - 3] = "<!--###-->"
     
-    addManualQuestions(lines, listQuestions)
+    # Only occurs if headers is equal to true.
+    if headers:
+        addManualQuestions(lines, listQuestions)
 
     with open(codeName, 'w') as file:
         for item in lines:
             file.write("%s\n" % item)
     # copies all the lines over.
 
-def addToFile(codeList, fileName):
+def addToFile(codeList, fileName, headers):
     # Will detect <!--###-->, prompting the program to add new files here.
     with open (fileName) as file:
         lines = file.read().splitlines()
@@ -201,34 +217,33 @@ def addToFile(codeList, fileName):
 
     lines = newList
 
-    # codeList[0] is always an empty line character.
-    codeList[0] = "<h2 class = \"problem\">Worksheet Problem " + input("What worksheet problem is this (an integer value)?") + "</h2>"
+    if headers:
+        # codeList[0] is always an empty line character.
+        codeList[0] = "<h2 class = \"problem\">Worksheet Problem " + input("What worksheet problem is this (an integer value)?") + "</h2>"
 
     # Enter new lines of code at that index found above.
     for x in codeList:
         lines[i] = x
         i += 1
-
-    listQuestions = generateListQuestions()
-
-    newList = [None] * (len(listQuestions) + len(lines))
-
+    
+    if headers:
+        listQuestions = generateListQuestions()
+        newList = [None] * (len(listQuestions) + len(lines))
         # Copy over everything from lines into newList.
-    i = 0
-    for x in lines:
-        newList[i] = x
-        i += 1
-
-    lines = newList
+        i = 0
+        for x in lines:
+            newList[i] = x
+            i += 1
+        lines = newList
 
     # Add end tags
     lines[len(lines) - 1] = "</html>"
     lines[len(lines) - 2] = "</body>"
     lines[len(lines) - 3] = "<!--###-->"
-    lines[len(lines) - 3 - len(listQuestions)] = "<!--###-->"
 
-    # Check references here TODO
-    addManualQuestions(lines, listQuestions)
+    if headers:
+        lines[len(lines) - 3 - len(listQuestions)] = "<!--###-->"
+        addManualQuestions(lines, listQuestions)
 
     with open(fileName, 'w') as file:
         for item in lines:
