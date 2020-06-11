@@ -52,27 +52,6 @@ def pytutor_test(user, event):
         return (200, "called %d times" % count)
 
 
-
-'''This function is to check if the response of the student is correct
-    If correct , return True, else return False
-    If there is some error, it would return errorcode
-    '''
-def checkAnswer(worksheetCode,questionCode,response):
-    path="pytutor/worksheets/answers/"+ worksheetCode+".json"
-    try:
-        worksheet=s3().read_json_default(path, default={})
-    except:
-        return ("Wrong WorksheetCode",None)
-
-    if questionCode not in worksheet.keys():
-        return ("Wrong QuestionCode",None)
-
-    if worksheet[questionCode]==response:
-        return (None,True)
-    else:
-        return (None,False)
-
-
 '''
 structure of student record
 {
@@ -105,8 +84,8 @@ structure of student record
 '''
 TODO: add report function
 '''
-# @router
-# @user
+@route
+@user
 def addNewAnswer(user, event):
     student=Student(event,s3(),BUCKET)
     student.getFile()
@@ -115,12 +94,17 @@ def addNewAnswer(user, event):
 '''
 This function is to reload the record of one worksheet of the user
 '''
-# @router
-# @user
+@route
+@user
 def reload(user, event):
     student=Student(event,s3(),BUCKET)
     return student.reload()
 
+@route
+@user
+def isAnswered(user,event):
+    student=Student(event,s3(),BUCKET)
+    return student.isAnswered()
 
 class Student(object):
     def __init__(self, event,s3,bucket):
@@ -128,7 +112,7 @@ class Student(object):
         self.worksheetCode = event['worksheetCode']
         self.questionCode=event["questionCode"]
         self.response = event["response"]
-        self.path = 'pytutor/student/' + self.username + '.json'
+        self.path = 'student/' + self.username + '.json'
         self.localTime=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.student={}
         self.s3=s3
@@ -136,7 +120,7 @@ class Student(object):
 
     def getFile(self):
         try:
-            self.sturdent=s3.read_json_default(path, default={})   
+            self.student=(self.s3).read_json_default(self.path, default={})  
         except:
             self.student = {"studentID":self.username,
                     "numberOfWorksheetAttempted":0
@@ -179,22 +163,30 @@ class Student(object):
             self.student[self.worksheetCode]["questionCorrectlyAttempted"]+=1
         
         self.s3.put_object(Bucket=self.bucket,
-                Key=path,
-                Body=bytes(json.dumps(data, indent=2), 'utf-8'),
+                Key=self.path,
+                Body=bytes(json.dumps(self.student, indent=2), 'utf-8'),
                 ContentType='text/json')
 
         result["isCorrect"].append({
                     "questionCode":self.questionCode,
-                    "isCorrect":self.isCorrect
+                    "isCorrect":isCorrect
                     })
         return result
 
     '''This function is to check if the response of the student is correct
     If correct , return True, else return False
     If there is some error, it would return errorcode
+    example of answer :
+    {
+    worksheetCode: [WorksheetCode],
+    totalNumOfQuestions:  #,    
+    q1:Answer,
+    q2:Answer,
+    ...
+    }
     '''
     def checkAnswer(self):
-        path="pytutor/worksheets/answers/"+ self.worksheetCode+".json"
+        path="worksheets/answers/"+ self.worksheetCode+".json"
         try:
             self.worksheet=self.s3.read_json_default(path, default={})
         except:
@@ -203,7 +195,7 @@ class Student(object):
         if self.questionCode not in self.worksheet.keys():
             return ("Wrong QuestionCode",None)
 
-        if self.worksheet[questionCode]==response:
+        if self.worksheet[self.questionCode]==self.response:
             return (None,True)
         else:
             return (None,False)
@@ -217,10 +209,8 @@ class Student(object):
             "isCorrect": []   
         }
         try:
-            self.sturdent=self.s3.read_json_default(self.path, default={})
+            self.student=self.s3.read_json_default(self.path, default={})
         except:
-            result["success"]=False
-            result["errorCode"]="Wrong User"
             return result
         if self.worksheetCode not in self.student.keys():
             result["success"]=False
@@ -233,3 +223,45 @@ class Student(object):
                                         "isCorrect":self.student[self.worksheetCode][key]["isCorrect"]})
 
         return result
+
+    def isAnswered(self):
+        result={
+            "statusCode": 200,
+            "success": True,
+            "errorCode": "NoError",
+            "fnExecuted":"isAnswered",
+            "isCorrect": []   
+        }
+        try:
+            path="worksheets/answers/"+ self.worksheetCode+".json"
+            self.worksheet=self.s3.read_json_default(path, default={})
+        except:
+            result["success"]=False
+            result["errorCode"]="Wrong WorksheetCode"
+            return result
+        questionList=[]
+        for key in self.worksheet.keys():
+            if key!="worksheetCode" and key!="totalNumOfQuestions":
+                questionList.append(key)
+            
+        try:
+            self.student=self.s3.read_json_default(self.path, default={})
+            thisWorksheet=self.student[self.worksheetCode]
+        except:
+            for key in questionList:
+                result["isCorrect"].append({"questionCode":key,
+                    "isCorrect":False})
+            return result
+
+        for key in questionList:
+            if key not in thisWorksheet.keys():
+                result["isCorrect"].append({"questionCode":key,
+                    "isCorrect":False})
+            else if thisWorksheet[key]["isCorrect"]==False:
+                result["isCorrect"].append({"questionCode":key,
+                    "isCorrect":False})
+            else:
+                result["isCorrect"].append({"questionCode":key,
+                    "isCorrect":True})
+        return result
+
