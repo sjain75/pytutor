@@ -16,41 +16,6 @@ import json
 import random
 import time
 
-# from lambda_framework import *
-
-# #!/usr/bin/env python
-# import cgitb
-# cgitb.enable()
-# #from flask import Flask, escape, request
-# import json
-# try:
-#         task = requests.GET('task')
-# except:
-#         print("task was not completed!")
-# if(task=="newAnswer"):
-#         username = requests.GET('netID')
-#         questionCode = requests.GET('questionCode')
-#         activityNum = questionCode.strip()[4:6]
-#         questionNum = questionCode.strip()[-4:-2]
-#         addNewAnswer(username, activityNum, questionNum)
-#         return json.dumps(True)
-# elif(task=="studentResults"):
-#         username = requests.POST['username']
-# else:
-#         return json.dumps(False)
-
-
-# dict_ID = {}
-
-def pytutor_test(user, event):
-        path = 'pytutor/dev-test.json'
-        count = s3().read_json_default(path, default=1)
-        s3().put_object(Bucket=BUCKET,
-                    Key=path,
-                    Body=bytes(json.dumps(count + 1, indent=2), 'utf-8'),
-                    ContentType='text/json')
-        return (200, "called %d times" % count)
-
 
 '''
 structure of student record
@@ -87,9 +52,28 @@ TODO: add report function
 @route
 @user
 def addNewAnswer(user, event):
+    result={
+            "statusCode": 200,
+            "success": True,
+            "errorCode": "NoError",
+            "fnExecuted":"addNewAnswer",
+            "isCorrect": []   
+        }
     student=Student(event,s3(),BUCKET)
     student.getFile()
-    return student.upload()
+    errorCode,isCorrect=student.upload()
+    if errorCode!=None:
+        result["success"]=False
+        result["errorCode"]=errorCode
+        return result
+    result["isCorrect"].append({
+                    "questionCode":student.questionCode,
+                    "isCorrect":isCorrect
+                    })
+    report=Report(event,s3(),BUCKET)
+    report.getFile()
+    report.upload(student.student,student.questionCode)
+    return result
 
 '''
 This function is to reload the record of one worksheet of the user
@@ -97,14 +81,44 @@ This function is to reload the record of one worksheet of the user
 @route
 @user
 def reload(user, event):
+    result={
+            "statusCode": 200,
+            "success": True,
+            "errorCode": "NoError",
+            "fnExecuted":"reload",
+            "isCorrect": []   
+        }
     student=Student(event,s3(),BUCKET)
-    return student.reload()
+    errorCode,answerList= student.reload()
+    if errorCode!=None:
+        result["success"]=False
+        result["errorCode"]=errorCode
+        return result
+    result["isCorrect"]=answerList
+    return result
 
+'''
+This function is to reload the report
+'''
 @route
 @user
-def isAnswered(user,event):
-    student=Student(event,s3(),BUCKET)
-    return student.isAnswered()
+def getReport(user,event):
+    result={
+            "statusCode": 200,
+            "success": True,
+            "errorCode": "NoError",
+            "fnExecuted":"getReport",
+            "report":{}
+        }
+    report=Report(event)
+    errorCode=report.getFile()
+    if errorCode!=None:
+        result["success"]=False
+        result["errorCode"]=errorCode
+        return result
+
+    result["report"]=report.getReport()
+    return result
 
 class Student(object):
     def __init__(self, event,s3,bucket):
@@ -128,18 +142,10 @@ class Student(object):
 
 
     def upload(self):
-        result={
-            "statusCode": 200,
-            "success": True,
-            "errorCode": "NoError",
-            "fnExecuted":"addNewAnswer",
-            "isCorrect": []   
-        }
+       
         errorCode,isCorrect=self.checkAnswer()
         if errorCode!=None:
-            result["success"]=False
-            result["errorCode"]=errorCode
-            return result
+            return (errorCode,isCorrect)
         if self.worksheetCode not in self.student.keys():
             self.student["numberOfWorksheetAttempted"]+=1
             self.student[self.worksheetCode]={"questionsAttempted": 0,
@@ -167,11 +173,8 @@ class Student(object):
                 Body=bytes(json.dumps(self.student, indent=2), 'utf-8'),
                 ContentType='text/json')
 
-        result["isCorrect"].append({
-                    "questionCode":self.questionCode,
-                    "isCorrect":isCorrect
-                    })
-        return result
+    
+        return (errorCode,isCorrect)
 
     '''This function is to check if the response of the student is correct
     If correct , return True, else return False
@@ -201,67 +204,96 @@ class Student(object):
             return (None,False)
 
     def reload(self):
-        result={
-            "statusCode": 200,
-            "success": True,
-            "errorCode": "NoError",
-            "fnExecuted":"reload",
-            "isCorrect": []   
-        }
+        answerList=[]        
         try:
             self.student=self.s3.read_json_default(self.path, default={})
         except:
-            return result
+            return (None,answerList)
         if self.worksheetCode not in self.student.keys():
-            result["success"]=False
-            result["errorCode"]="Wrong WorksheetCode"
-            return result
+            return ("Wrong WorksheetCode",anwerList)
 
         for key in self.student[self.worksheetCode].keys():
             if key != "questionsAttempted" and key !="questionCorrectlyAttempted":
-                result["isCorrect"].append({"questionCode":key,
+                answerList.append({"questionCode":key,
                                         "isCorrect":self.student[self.worksheetCode][key]["isCorrect"]})
 
-        return result
+        return (None,answerList)
 
-    def isAnswered(self):
-        result={
-            "statusCode": 200,
-            "success": True,
-            "errorCode": "NoError",
-            "fnExecuted":"isAnswered",
-            "isCorrect": []   
-        }
+'''
+//NewReportForEveryWorksheet
+pytutor/worksheets/report/worksheetcode.json
+{
+    WorksheetCode:"a",
+    "attemptedBy":[student1, student2, ...] , //attempted at least 1 question
+    "completedBy": [], //studentWho attempted all questions
+    questions:{
+                questionCode1:{
+                numberOfStudentAttempted:
+                numberOfStudentsCorrectlyAttmpted:
+                averageNumOfAttemptsToCorrectlyAttempt:},
+                questionCode2:{
+                numberOfStudentAttempted:
+                numberOfStudentsCorrectlyAttmpted:
+                averageNumOfAttemptsToCorrectlyAttempt:}, ...
+            }
+}
+'''    
+class Report:
+    def __init__(self,event,s3,bucket):
+        self.worksheetCode = event['worksheetCode']
+        self.path="pytutor/worksheets/report/"+self.worksheetCode+".json"  
+        self.report={}
+
+
+    def getFile(self):
         try:
-            path="worksheets/answers/"+ self.worksheetCode+".json"
-            self.worksheet=self.s3.read_json_default(path, default={})
+            self.report=(self.s3).read_json_default(self.path, default={})  
         except:
-            result["success"]=False
-            result["errorCode"]="Wrong WorksheetCode"
-            return result
-        questionList=[]
-        for key in self.worksheet.keys():
-            if key!="worksheetCode" and key!="totalNumOfQuestions":
-                questionList.append(key)
-            
-        try:
-            self.student=self.s3.read_json_default(self.path, default={})
-            thisWorksheet=self.student[self.worksheetCode]
-        except:
-            for key in questionList:
-                result["isCorrect"].append({"questionCode":key,
-                    "isCorrect":False})
-            return result
+            self.report = {
+                "WorksheetCode":self.worksheetcode,
+                "attemptedBy":[] , //attempted at least 1 question
+                "completedBy": [], //studentWho attempted all questions
+                "questions":{}
+            }
+            try:
+                worksheetPath="worksheets/answers/"+self.worksheetCode+".json"
+                worksheet=(self.s3).read_json_default(worksheetPath, default={})  
+            except:
+                return "Wrong WorksheetCode"
+            for key in worksheet.keys():
+                if key!= "worksheetCode" and key !="totalNumOfQuestions":
+                    self.report["questions"][key]={"numberOfStudentAttempted":0,
+                                        "numberOfStudentsCorrectlyAttmpted":0,
+                                    "averageNumOfAttemptsToCorrectlyAttempt":0}
+        return None
 
-        for key in questionList:
-            if key not in thisWorksheet.keys():
-                result["isCorrect"].append({"questionCode":key,
-                    "isCorrect":False})
-            else if thisWorksheet[key]["isCorrect"]==False:
-                result["isCorrect"].append({"questionCode":key,
-                    "isCorrect":False})
-            else:
-                result["isCorrect"].append({"questionCode":key,
-                    "isCorrect":True})
-        return result
+    def updateReport(self,student,questionCode):
+        if student["studentID"] not in self.report["attemptedBy"]:
+            self.report["attemptedBy"].append(student["studentID"])
 
+        if student["worksheetCode"][questionCode]["numAttempts"][1]==1:
+            self.report[questions][questionCode]["numberOfStudentAttempted"]+=1
+
+        if student["worksheetCode"][questionCode]["numAttempts"][0]==student["worksheetCode"][questionCode]["numAttempts"][1]:
+            self.report["questions"][questionCode]["averageNumOfAttemptsToCorrectlyAttempt"]=\
+                (self.report["questions"][questionCode]["averageNumOfAttemptsToCorrectlyAttempt"]*\
+                self.report["questions"][questionCode]["numberOfStudentsCorrectlyAttmpted"]+\
+                student["worksheetCode"][questionCode]["numAttempts"][0])/\
+                (self.report["questions"][questionCode]["numberOfStudentsCorrectlyAttmpted"]+1)
+           
+            self.report["questions"][questionCode]["numberOfStudentsCorrectlyAttmpted"]+=1
+
+            if student["worksheetCode"]["questionCorrectlyAttempted"]==len(self.report["questions"]):
+                self.report["completedBy"].append(student["studentID"])
+
+        self.s3.put_object(Bucket=self.bucket,
+                Key=self.path,
+                Body=bytes(json.dumps(self.report, indent=2), 'utf-8'),
+                ContentType='text/json')
+
+        return 0
+
+
+    def getReport(self):
+        del self.report["worksheetCode"]
+        return self.report
