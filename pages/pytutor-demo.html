@@ -1223,56 +1223,59 @@ python pytutor.py lec-08/practice1.py lec-08/practice2.py lec-08/practice3.py le
 </div>
     
 <div id="submenu">
-    <button class="menubutton" id="b19" onclick="display19()">Problem 19</button>
-    <button class="menubutton" id="b20" onclick="display20()">Problem 20</button>
-    <button class="menubutton" id="b21" onclick="display21()">Problem 21</button>
-    <button class="menubutton" id="b22" onclick="display22()">Problem 22</button>
+    <button class="button menubutton" id="previousButton" onclick="displayPrevious()">Previous</button>
+    <button class="button menubutton" id="nextButton" onclick="displayNext()">Next</button>
 </div>
     
 <script>
-    function display19() {
-        var p19 = document.getElementById("p19");
-        p19.style.display = "initial";
-        var p20 = document.getElementById("p20");
-        p20.style.display = "none";
-        var p21 = document.getElementById("p21");
-        p21.style.display = "none";
-        var p22 = document.getElementById("p22");
-        p22.style.display = "none";
+    const start = 19;
+    var current = start;
+    var currentProblem = document.getElementById(`p${current}`);
+    while (currentProblem != null) {
+        current++;
+        currentProblem = document.getElementById(`p${current}`);
+    }
+    const end = current - 1;
+    current = start;
+    var previousButton = document.getElementById("previousButton");
+    var nextButton = document.getElementById("nextButton");
+    if (window.matchMedia("(max-width: 768px)").matches) {
+        currentProblem = document.getElementById(`p${start}`);
+        currentProblem.style.display = "initial";
+        for (var i=start+1; i<=end; i++) {
+            currentProblem = document.getElementById(`p${i}`);
+            currentProblem.style.display = "none";
+        }
+        previousButton.style.display = "none";
+    }
+    
+    function displayPrevious() {
+        if (current == start + 1) {
+            previousButton.style.display = "none";
+        }
+        if (current == end) {
+            nextButton.style.display = "initial";
+        }
+        currentProblem = document.getElementById(`p${current}`);
+        currentProblem.style.display = "none";
+        current--;
+        currentProblem = document.getElementById(`p${current}`);
+        currentProblem.style.display = "initial";
     }
 
-    function display20() {
-        var p19 = document.getElementById("p19");
-        p19.style.display = "none";
-        var p20 = document.getElementById("p20");
-        p20.style.display = "initial";
-        var p21 = document.getElementById("p21");
-        p21.style.display = "none";
-        var p22 = document.getElementById("p22");
-        p22.style.display = "none";
+    function displayNext() {
+        if (current == end - 1) {
+            nextButton.style.display = "none";
+        }
+        if (current == start) {
+            previousButton.style.display = "initial";
+        }
+        currentProblem = document.getElementById(`p${current}`);
+        currentProblem.style.display = "none";
+        current++;
+        currentProblem = document.getElementById(`p${current}`);
+        currentProblem.style.display = "initial";
     }
-
-    function display21() {
-        var p19 = document.getElementById("p19");
-        p19.style.display = "none";
-        var p20 = document.getElementById("p20");
-        p20.style.display = "none";
-        var p21 = document.getElementById("p21");
-        p21.style.display = "initial";
-        var p22 = document.getElementById("p22");
-        p22.style.display = "none";
-    }
-
-    function display22() {
-        var p19 = document.getElementById("p19");
-        p19.style.display = "none";
-        var p20 = document.getElementById("p20");
-        p20.style.display = "none";
-        var p21 = document.getElementById("p21");
-        p21.style.display = "none";
-        var p22 = document.getElementById("p22");
-        p22.style.display = "initial";
-    }    
 </script>
 
 <script type="text/javascript" src="../js/style.js"></script>
