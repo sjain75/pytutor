@@ -72,8 +72,9 @@ def addNewAnswer(user, event):
                     })
     report=Report(event,s3(),BUCKET)
     report.getFile()
-    report.upload(student.student,student.questionCode)
+    report.updateReport(student.student,student.questionCode)
     return result
+
 
 '''
 This function is to reload the record of one worksheet of the user
@@ -87,7 +88,7 @@ def reload(user, event):
             "errorCode": "NoError",
             "fnExecuted":"reload",
             "isCorrect": []   
-        }
+    }
     student=Student(event,s3(),BUCKET)
     errorCode,answerList= student.reload()
     if errorCode!=None:
@@ -110,7 +111,7 @@ def getReport(user,event):
             "fnExecuted":"getReport",
             "report":{}
         }
-    report=Report(event)
+    report=Report(event,s3(),BUCKET)
     errorCode=report.getFile()
     if errorCode!=None:
         result["success"]=False
@@ -119,7 +120,7 @@ def getReport(user,event):
 
     result["report"]=report.getReport()
     return result
-
+    
 class Student(object):
     def __init__(self, event,s3,bucket):
         self.username = event["netId"]
@@ -132,6 +133,15 @@ class Student(object):
         self.s3=s3
         self.bucket=bucket
 
+    def read_json_default(self,path,default):
+        try :
+            response=self.s3.get_object(Bucket=self.bucket, Key=path)
+            return json.loads(response['Body'].read().decode('utf-8'))
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == "NoSuchKey":
+                return default
+            raise e
+
     def getFile(self):
         try:
             self.student=(self.s3).read_json_default(self.path, default={})  
@@ -142,7 +152,6 @@ class Student(object):
 
 
     def upload(self):
-       
         errorCode,isCorrect=self.checkAnswer()
         if errorCode!=None:
             return (errorCode,isCorrect)
@@ -179,14 +188,6 @@ class Student(object):
     '''This function is to check if the response of the student is correct
     If correct , return True, else return False
     If there is some error, it would return errorcode
-    example of answer :
-    {
-    worksheetCode: [WorksheetCode],
-    totalNumOfQuestions:  #,    
-    q1:Answer,
-    q2:Answer,
-    ...
-    }
     '''
     def checkAnswer(self):
         path="worksheets/answers/"+ self.worksheetCode+".json"
@@ -219,6 +220,8 @@ class Student(object):
 
         return (None,answerList)
 
+        
+        
 '''
 //NewReportForEveryWorksheet
 pytutor/worksheets/report/worksheetcode.json
@@ -243,16 +246,26 @@ class Report:
         self.worksheetCode = event['worksheetCode']
         self.path="pytutor/worksheets/report/"+self.worksheetCode+".json"  
         self.report={}
+        self.s3=s3
+        self.bucket=bucket
 
+    def read_json_default(self,path,default):
+        try :
+            response=self.s3.get_object(Bucket=self.bucket, Key=path)
+            return json.loads(response['Body'].read().decode('utf-8'))
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == "NoSuchKey":
+                return default
+            raise e
 
     def getFile(self):
         try:
-            self.report=(self.s3).read_json_default(self.path, default={})  
+            self.report=self.read_json_default(self.path, default={})  
         except:
             self.report = {
-                "WorksheetCode":self.worksheetcode,
-                "attemptedBy":[] , //attempted at least 1 question
-                "completedBy": [], //studentWho attempted all questions
+                "WorksheetCode":self.worksheetCode,
+                "attemptedBy":[] ,
+                "completedBy": [],
                 "questions":{}
             }
             try:
@@ -271,19 +284,19 @@ class Report:
         if student["studentID"] not in self.report["attemptedBy"]:
             self.report["attemptedBy"].append(student["studentID"])
 
-        if student["worksheetCode"][questionCode]["numAttempts"][1]==1:
-            self.report[questions][questionCode]["numberOfStudentAttempted"]+=1
+        if student[self.worksheetCode][questionCode]["numAttempts"][1]==1:
+            self.report["questions"][questionCode]["numberOfStudentAttempted"]+=1
 
-        if student["worksheetCode"][questionCode]["numAttempts"][0]==student["worksheetCode"][questionCode]["numAttempts"][1]:
+        if student[self.worksheetCode][questionCode]["numAttempts"][0]==student[self.worksheetCode][questionCode]["numAttempts"][1]:
             self.report["questions"][questionCode]["averageNumOfAttemptsToCorrectlyAttempt"]=\
                 (self.report["questions"][questionCode]["averageNumOfAttemptsToCorrectlyAttempt"]*\
                 self.report["questions"][questionCode]["numberOfStudentsCorrectlyAttmpted"]+\
-                student["worksheetCode"][questionCode]["numAttempts"][0])/\
+                student[self.worksheetCode][questionCode]["numAttempts"][0])/\
                 (self.report["questions"][questionCode]["numberOfStudentsCorrectlyAttmpted"]+1)
            
             self.report["questions"][questionCode]["numberOfStudentsCorrectlyAttmpted"]+=1
 
-            if student["worksheetCode"]["questionCorrectlyAttempted"]==len(self.report["questions"]):
+            if student[self.worksheetCode]["questionCorrectlyAttempted"]==len(self.report["questions"]):
                 self.report["completedBy"].append(student["studentID"])
 
         self.s3.put_object(Bucket=self.bucket,
@@ -295,5 +308,5 @@ class Report:
 
 
     def getReport(self):
-        del self.report["worksheetCode"]
+        del self.report["WorksheetCode"]
         return self.report
