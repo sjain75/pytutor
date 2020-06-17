@@ -57,13 +57,14 @@ def main():
             else:
                 break
 
+        # TODO notice repetitions in this code to above... Maybe find a way to condense this?
         files = os.listdir()
         for file in files:
             if str(file) == fileName:
                 while(True):
                     userChoice = input("This file already exists. Would you like to append it to the already existing file? (Y/N)")
                     if userChoice.lower().strip() == "y":
-                        addToFile(codeList, fileName, True)
+                        copyTemplateOver(fileName)
                         return
                     elif userChoice.lower().strip() == "n":
                         userChoice = input("Are you sure? By selecting yes, you will overwrite the pre-existing file. (Y/N)")
@@ -110,11 +111,7 @@ def main():
                 while(True):
                     userChoice = input("This file already exists. Would you like to append it to the already existing file? (Y/N)")
                     if userChoice.lower().strip() == "y":
-                        for py in sys.argv[1:]:
-                            os.chdir("../backend/")
-                            codeList = generateTrace(py, EMBEDDING)
-                            os.chdir("../pages/")
-                            addToFile(codeList, fileName, True)
+                        copyTemplateOver(fileName)
                         return
                     elif userChoice.lower().strip() == "n":
                         userChoice = input("Are you sure? By selecting yes, you will overwrite the pre-existing file. (Y/N)")
@@ -123,6 +120,49 @@ def main():
                             break
         
         os.rename("templateFile.html", fileName)
+
+# This method copies over all the template file questions into the fileName.
+def copyTemplateOver(fileName):
+    with open ('templateFile.html') as file:
+        lines = file.read().splitlines()
+
+    # Line 135 (so index 134) onwards is what we want to keep and append to new worksheet file.
+    necessaryLines = [None] * (len(lines) - 134)
+
+    i = 0
+    for x in lines[134:]:
+        necessaryLines[i] = x
+        i += 1
+    
+    # necessaryLines now contains all the questions that we want to copy over.
+
+    # now, we will begin to copy the questions over to the actual worksheet.
+    with open (fileName) as file:
+        lines = file.read().splitlines()
+    
+    # Allocate enough space to fit the new questions.
+    fileList = [None] * (len(lines) + len(necessaryLines) - 3)
+
+    # locate <!--###--> while simaultaneously filling up fileList with necessary information.
+    i = 0
+    for x in lines:
+        if lines[i] == "<!--###-->":
+            fileList[i] = lines[i]
+            break
+        else:
+            fileList[i] = lines[i]
+            i += 1
+
+    # Copy over all the information into new List.
+    for x in necessaryLines:
+        fileList[i] = x
+        i += 1
+    
+    # Rewrite files over.
+    with open(fileName, 'w') as file:
+        for item in fileList:
+            file.write("%s\n" % item)
+
     
 # TODO figure out better name, clean this method up cuz its disgusting.
 def generateInitialPage(codeList, inputs, headers, fileName, embedding=EMBEDDING):
