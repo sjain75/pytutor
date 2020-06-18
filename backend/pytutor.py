@@ -15,7 +15,9 @@
 import json
 import random
 import time
-
+def s3():
+    return 0
+BUCKET="bucket"
 
 '''
 structure of student record
@@ -29,7 +31,7 @@ structure of student record
             numAttempts:    [numAttemptsTIllCorrect, totalNumAttempts]
             isCorrect:  False/True #once they have correctly attempted becomes True,
                                                 else False
-            attemts:[
+            attempts:[
                         [timeStamp, attemptedAnswer],
                         [timeStamp, attemptedAnswer],
                         [timeStamp, attemptedAnswer]                                
@@ -49,9 +51,9 @@ structure of student record
 '''
 TODO: add report function
 '''
-@route
-@user
-def addNewAnswer(user, event):
+# @route
+# @user
+def addNewAnswer(user, event,s3=s3()):
     result={
             "statusCode": 200,
             "success": True,
@@ -59,7 +61,7 @@ def addNewAnswer(user, event):
             "fnExecuted":"addNewAnswer",
             "isCorrect": []   
         }
-    student=Student(event,s3(),BUCKET)
+    student=Student(event,s3,BUCKET)
     student.getFile()
     errorCode,isCorrect=student.upload()
     if errorCode!=None:
@@ -70,7 +72,7 @@ def addNewAnswer(user, event):
                     "questionCode":student.questionCode,
                     "isCorrect":isCorrect
                     })
-    report=Report(event,s3(),BUCKET)
+    report=Report(event,s3,BUCKET)
     report.getFile()
     report.updateReport(student.student,student.questionCode)
     return result
@@ -79,9 +81,9 @@ def addNewAnswer(user, event):
 '''
 This function is to reload the record of one worksheet of the user
 '''
-@route
-@user
-def reload(user, event):
+# @route
+# @user
+def reload(user, event,s3=s3()):
     result={
             "statusCode": 200,
             "success": True,
@@ -89,8 +91,9 @@ def reload(user, event):
             "fnExecuted":"reload",
             "isCorrect": []   
     }
-    student=Student(event,s3(),BUCKET)
+    student=Student(event,s3,BUCKET)
     errorCode,answerList= student.reload()
+    print(errorCode)
     if errorCode!=None:
         result["success"]=False
         result["errorCode"]=errorCode
@@ -101,9 +104,9 @@ def reload(user, event):
 '''
 This function is to reload the report
 '''
-@route
-@user
-def getReport(user,event):
+# @route
+# @user
+def getReport(user,event,s3=s3()):
     result={
             "statusCode": 200,
             "success": True,
@@ -111,7 +114,7 @@ def getReport(user,event):
             "fnExecuted":"getReport",
             "report":{}
         }
-    report=Report(event,s3(),BUCKET)
+    report=Report(event,s3,BUCKET)
     errorCode=report.getFile()
     if errorCode!=None:
         result["success"]=False
@@ -144,7 +147,7 @@ class Student(object):
 
     def getFile(self):
         try:
-            self.student=(self.s3).read_json_default(self.path, default={})  
+            self.student=self.read_json_default(self.path, default={})  
         except:
             self.student = {"studentID":self.username,
                     "numberOfWorksheetAttempted":0
@@ -192,7 +195,7 @@ class Student(object):
     def checkAnswer(self):
         path="worksheets/answers/"+ self.worksheetCode+".json"
         try:
-            self.worksheet=self.s3.read_json_default(path, default={})
+            self.worksheet=self.read_json_default(path, default={})
         except:
             return ("Wrong WorksheetCode",None)
 
@@ -207,11 +210,11 @@ class Student(object):
     def reload(self):
         answerList=[]        
         try:
-            self.student=self.s3.read_json_default(self.path, default={})
+            self.student=self.read_json_default(self.path, default={})
         except:
             return (None,answerList)
         if self.worksheetCode not in self.student.keys():
-            return ("Wrong WorksheetCode",anwerList)
+            return ("Wrong WorksheetCode",answerList)
 
         for key in self.student[self.worksheetCode].keys():
             if key != "questionsAttempted" and key !="questionCorrectlyAttempted":
@@ -270,7 +273,7 @@ class Report:
             }
             try:
                 worksheetPath="worksheets/answers/"+self.worksheetCode+".json"
-                worksheet=(self.s3).read_json_default(worksheetPath, default={})  
+                worksheet=self.read_json_default(worksheetPath, default={})  
             except:
                 return "Wrong WorksheetCode"
             for key in worksheet.keys():
