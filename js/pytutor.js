@@ -103,7 +103,7 @@ $( document ).ready(function() {
 	var notLoggedInAttempt = false;
 	var manualCheck = function(){
 		parentDiv = $(this).closest(".manualQuestionDiv");
-		username = $("span#useremail").text();
+		username = "sjain75"
 		if(username==""){
 			if(!notLoggedInAttempt){
 				notLoggedInAttempt = true;
