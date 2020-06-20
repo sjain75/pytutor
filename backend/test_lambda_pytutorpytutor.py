@@ -1,5 +1,5 @@
 from moto import mock_s3
-from pytutor import *
+from lambda_pytutor import *
 import boto3
 import json
 
