@@ -1,3 +1,5 @@
+var manualQuestionStack={};
+var manualAnswer = "B";
 $( document ).ready(function() {
 	$("[id=vcrControls]").children().attr("disabled",true);
 	
@@ -37,7 +39,7 @@ $( document ).ready(function() {
 
 	$(".reload").on("click",reload);
 	var noClick = function() {
-		parentDiv =$(this).parents("div").last(); //find the parentDiv of the question based on the step clicked on 
+		parentDiv =$(this).parents("div.parentDiv").last(); //find the parentDiv of the question based on the step clicked on 
 		console.log(parentDiv);
 		var script = (parentDiv.next().text()); //get the trace value for this question
 		script = script.substring(0, script.search("addVisualizerToPage")); //get code that evaluateds trace array
@@ -78,7 +80,15 @@ $( document ).ready(function() {
 					break;
 			}	
 			$("[id=vcrControls]").children().attr("disabled",true);
-
+			
+			if($(parentDiv).next().next().hasClass("manualQuestionDiv")){
+				$(parentDiv).next().next().remove();
+			}
+			if(parentDiv.attr("id") in manualQuestionStack){
+				if(currInstr in manualQuestionStack[parentDiv.attr("id")]){
+					$(parentDiv).next().after(manualQuestionStack[parentDiv.attr("id")][currInstr]);
+				}
+			}
 		}		
 		else{
 			$(parentDiv).find("#answerTruth").remove();
@@ -93,7 +103,7 @@ $( document ).ready(function() {
 	var notLoggedInAttempt = false;
 	var manualCheck = function(){
 		parentDiv = $(this).closest(".manualQuestionDiv");
-		username = $("span#useremail").text();
+		username = "sjain75"
 		if(username==""){
 			if(!notLoggedInAttempt){
 				notLoggedInAttempt = true;
@@ -109,7 +119,7 @@ $( document ).ready(function() {
 		}
 		script = $(parentDiv).prev().text();
 		script = script.substring(script.search("manualAnswer")); //get code that evaluateds trace array
-		eval(script); //evaulate script
+		//eval(script); //evaulate script
 		userAnswer = $(parentDiv).find(".manualAnswer").val();
 		answerTruth = userAnswer==manualAnswer;
 		$(parentDiv).find(".manualAnswerTruth").remove();
@@ -149,10 +159,20 @@ $( document ).ready(function() {
 	//Take the simple div with class manual question and make it fancier. Runs at page load for each div with class "manualQuestion"
 	$(".manualQuestion").each(function(){
 		manualQuestionString= $(this).text();
-		privateQuestionHtml=questionHtmlString;
+		let privateQuestionHtml=questionHtmlString;
 		privateQuestionHtml = privateQuestionHtml.replace('"""manualQuestion"""',manualQuestionString);
+		let parentScriptText =$($(this).prevAll("script")[0]).text();
+		let parentScriptRefined  = parentScriptText.substring(parentScriptText.lastIndexOf("addVisualizerToPage")).split(", ");
 
-		$(this).after(privateQuestionHtml);
+		let parentStoryKey = parentScriptRefined[1].substring(1, parentScriptRefined[1].length-1);
+		let parentStoryBeginsAt = Number(parentScriptRefined[2].substring(parentScriptRefined[2].lastIndexOf(":")+1));
+		let questionStep = Number($(this).attr("step"));
+		if(!(parentStoryKey in manualQuestionStack)){
+			manualQuestionStack[parentStoryKey] = {};
+		}
+		manualQuestionStack[parentStoryKey][questionStep] = privateQuestionHtml;
+		if(parentStoryBeginsAt+1==questionStep){
+			$(this).after(privateQuestionHtml);}
 		$(this).remove();
 	});
 

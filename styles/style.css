@@ -8,7 +8,7 @@ h2:not(:first-of-type) {
 
 .manualQuestionDiv {
     display: flex;
-    width: 14vw;
+    width: 30vw;
     flex-direction: column;
     justify-content: center;
     /* align-items: center; */
@@ -22,4 +22,57 @@ h2:not(:first-of-type) {
 
 .typeLabel {
     color: white;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 50%;
+    transform: translate(0, -50%);
+    left: 15px;
+
+}
+
+.sidebar li {
+    text-align: center;
+    text-decoration: none;
+    list-style: none;
+    line-height: 100px;
+    height: 100px;
+    width: 100px;
+    background-color: white;
+    transition: 0.2s;
+}
+
+.sidebar li:hover {
+    background-color: #1D8CF8;
+}
+
+.sidebar li:hover a {
+    color: white;
+    text-decoration: none;
+}
+
+#submenu {
+    display: none;
+}
+
+@media screen and (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+    
+    #submenu {
+        display: flex;
+    }
+    
+    #previousButton {
+        margin-left: 5%;
+        margin right: auto;
+    }
+    
+    #nextButton {
+        margin-right: 5%;
+        margin-left: auto;
+    }
 }
