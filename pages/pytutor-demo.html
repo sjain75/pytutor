@@ -1,4 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <!--
@@ -8,174 +9,1275 @@
 -->
 
 <head>
-  <title>CS 301 - Function Scope</title>
-  <meta name="google-signin-scope" content="profile email">
-  <meta name="google-signin-client_id" content="531980636037-3a6miiekf2ao8d0n7qv1fkrev8cbvvdt.apps.googleusercontent.com">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <title>CS 301 - Function Scope</title>
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id"
+          content="1090832142704-uhrl2ggtu452cu3co24u8sc8kv11i3id.apps.googleusercontent.com">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+          integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
 
-<link rel="stylesheet" href="../styles/zybooks.css">
-  <script type="text/javascript" src="../js/pytutor-embed.bundle.js" charset="utf-8"></script>
-      <script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="../styles/theme.css">
+    <link rel="stylesheet" href="../styles/style.css">
+    
+<!--    <link rel="stylesheet" href="../styles/zybooks.css">-->
+    <script type="text/javascript" src="../js/pytutor-embed.bundle.js" charset="utf-8"></script>
+    <script>
         // this is a hack so that signin works, regardless of whether google or common.js
         // loads first
         var gapiLoaded = false
         var gapiLoadedCallback = null
 
         function gapiLoad() {
-        console.log("in gapiLoad")
-        gapiLoaded = true
-        if (gapiLoadedCallback != null) {
-        console.log("call gapi callback")
-        gapiLoadedCallback()
+            console.log("in gapiLoad")
+            gapiLoaded = true
+            if (gapiLoadedCallback != null) {
+                console.log("call gapi callback")
+                gapiLoadedCallback()
+            }
         }
-        }
-      </script>
+    </script>
 </head>
 
-<body style="background-color: white;">
+<body>
 
 <!-- dependencies -->
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-	    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-	    crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
-	    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-	    crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
-	    integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
-	    crossorigin="anonymous"></script>
-  <script type="text/javascript" src="../js/pytutor.js" charset="utf-8"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
+        integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
+        crossorigin="anonymous"></script>
+<script type="text/javascript" src="../js/pytutor.js" charset="utf-8"></script>
 
-    <!-- main js -->
+<!-- main js -->
 
-    <script src="../js/common.js"></script>
-    <script src="../js/submission.js"></script>
-    <script src="https://apis.google.com/js/platform.js?onload=gapiLoad" defer async></script>
+<script src="../js/common.js"></script>
+<script src="../js/submission.js"></script>
+<script src="https://apis.google.com/js/platform.js?onload=gapiLoad" defer async></script>
 
 <!--
 To auto-generate examples:
 
 python pytutor.py lec-08/practice1.py lec-08/practice2.py lec-08/practice3.py lec-08/lesson1.py lec-08/lesson2.py lec-08/lesson3.py lec-08/lesson4.py lec-08/lesson5.py lec-08/lesson6.py lec-08/lesson7.py lec-08/lesson8.py lec-08/lesson9.py lec-08/lesson10.py
 -->
-    <header>
-      <!-- Fixed navbar -->
-      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-        <a class="navbar-brand" href="schedule.html">Data Programming I</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="schedule.html">Schedule</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="syllabus.html">Syllabus</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="submission.html">Projects</a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Resources
-              </a>
-              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="status.html">Who is my TA?</a>
-                <a class="dropdown-item" href="status.html">When/where is my exam?</a>
-                <a class="dropdown-item" href="https://piazza.com/class/jzkcu4am8lmc3?cid=6">Office Hours</a>
-                <a class="dropdown-item" href="videos.html">Videos</a>
-                <a class="dropdown-item" href="https://github.com/tylerharter/caraza-harter-com/tree/master/tyler/cs301/fall19/materials/old-exams" target="_blank">Old Exams</a>
-                <a class="dropdown-item" href="datasets.html">Datasets</a>
-                <a class="dropdown-item" href="beyond-301.html">After CS 301</a>
-              </div>
-            </li>
+<header>
+    <!-- Fixed navbar -->
+    <nav class="navbar">
+        <h1 class="navbar-brand" style="color: white;">CS 301 - Tracing Functions</h1>
 
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Tools
-              </a>
-              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="https://piazza.com/class/jzkcu4am8lmc3" target="_blank">Piazza (Discussion)</a>
-                <a class="dropdown-item" href="https://canvas.wisc.edu/courses/169767/grades" target="_blank">Canvas (Grades)</a>
-                <a class="dropdown-item" href="surveys.html">Class Surveys</a>
-                <a class="dropdown-item" href="http://pythontutor.com/visualize.html#mode=edit" target="_blank">Python Tutor</a>
-                <a class="dropdown-item" href="reviewer.html">TA Only</a>
-              </div>
-            </li>
-
-            <li class="nav-item">
-              <button class="btn btn-outline-light my-2 my-sm-0" onclick="common.googleSignOut()" id="signout" style="display:none;">Logout</button>
-            </li>
-          </ul>
+        <div class="nav navbar-right">
+            <div id="signin"></div>
         </div>
-      </nav>
-    </header>
+
+        <!--      <a class="navbar-brand" href="schedule.html">Data Programming I</a>-->
+        <!--      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"-->
+        <!--        aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">-->
+        <!--        <span class="navbar-toggler-icon"></span>-->
+        <!--      </button>-->
+        <!--      <div class="collapse navbar-collapse" id="navbarCollapse">-->
+        <!--        <ul class="navbar-nav mr-auto">-->
+        <!--          <li class="nav-item">-->
+        <!--            <a class="nav-link" href="schedule.html">Schedule</a>-->
+        <!--          </li>-->
+        <!--          <li class="nav-item">-->
+        <!--            <a class="nav-link" href="syllabus.html">Syllabus</a>-->
+        <!--          </li>-->
+        <!--          <li class="nav-item">-->
+        <!--            <a class="nav-link" href="submission.html">Projects</a>-->
+        <!--          </li>-->
+        <!--          <li class="nav-item dropdown">-->
+        <!--            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"-->
+        <!--              aria-haspopup="true" aria-expanded="false">-->
+        <!--              Resources-->
+        <!--            </a>-->
+        <!--            <div class="dropdown-menu" aria-labelledby="navbarDropdown">-->
+        <!--              <a class="dropdown-item" href="status.html">Who is my TA?</a>-->
+        <!--              <a class="dropdown-item" href="status.html">When/where is my exam?</a>-->
+        <!--              <a class="dropdown-item" href="https://piazza.com/class/jzkcu4am8lmc3?cid=6">Office Hours</a>-->
+        <!--              <a class="dropdown-item" href="videos.html">Videos</a>-->
+        <!--              <a class="dropdown-item"-->
+        <!--                href="https://github.com/tylerharter/caraza-harter-com/tree/master/tyler/cs301/fall19/materials/old-exams"-->
+        <!--                target="_blank">Old Exams</a>-->
+        <!--              <a class="dropdown-item" href="datasets.html">Datasets</a>-->
+        <!--              <a class="dropdown-item" href="beyond-301.html">After CS 301</a>-->
+        <!--            </div>-->
+        <!--          </li>-->
+
+        <!--          <li class="nav-item dropdown">-->
+        <!--            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"-->
+        <!--              aria-haspopup="true" aria-expanded="false">-->
+        <!--              Tools-->
+        <!--            </a>-->
+        <!--            <div class="dropdown-menu" aria-labelledby="navbarDropdown">-->
+        <!--              <a class="dropdown-item" href="https://piazza.com/class/jzkcu4am8lmc3" target="_blank">Piazza-->
+        <!--                (Discussion)</a>-->
+        <!--              <a class="dropdown-item" href="https://canvas.wisc.edu/courses/169767/grades" target="_blank">Canvas-->
+        <!--                (Grades)</a>-->
+        <!--              <a class="dropdown-item" href="surveys.html">Class Surveys</a>-->
+        <!--              <a class="dropdown-item" href="http://pythontutor.com/visualize.html#mode=edit" target="_blank">Python-->
+        <!--                Tutor</a>-->
+        <!--              <a class="dropdown-item" href="reviewer.html">TA Only</a>-->
+        <!--            </div>-->
+        <!--          </li>-->
+
+        <!--          <li class="nav-item">-->
+        <!--            <button class="btn btn-outline-light my-2 my-sm-0" onclick="common.googleSignOut()" id="signout"-->
+        <!--              style="display:none;">Logout</button>-->
+        <!--          </li>-->
+        <!--        </ul>-->
+        <!--      </div>-->
+    </nav>
+</header>
 
 
+<!--<h2 class="my-3"></br></h2>-->
 
-<h2 class="my-3"></br></h2>
+<!--<div class="alert alert-dark" style="width:80%">-->
+<!--    <div class="row">-->
+<!--        <div class="col col-12">-->
 
-<div class="alert alert-dark" style="width:80%">
-  <div class="row">
-    <div class="col col-12">
-	<div id="signin"></div>
-	      </div> <!-- common.js will render this -->
-      <span id="useremail"></span>
-      <p>
-      Note: if you want your submission to be graded, you must use
-        your <b>&lt;netid&gt@wisc.edu</b> email to sign in (this will
-        redirect to wisc.edu to accept your password).
-      </p>
-      <p><b><button class="reload">Reload</button>&emsp; Please click on the reload button once you log in!</b></p>
-    </div>
-  </div>
+<!--        </div> &lt;!&ndash; common.js will render this &ndash;&gt;-->
+<!--        <span id="useremail"></span>-->
+<!--        <p>-->
+<!--            Note: if you want your submission to be graded, you must use-->
+<!--            your <b>&lt;netid&gt@wisc.edu</b> email to sign in (this will-->
+<!--            redirect to wisc.edu to accept your password).-->
+<!--        </p>-->
+<!--        <p><b>-->
+<!--            <button class="reload">Reload</button>&emsp; Please click on the reload button once you log in!</b></p>-->
+<!--    </div>-->
+<!--</div>-->
+<!--</div>-->
+
+
+<div class="problem" id="p19">
+    <h2 class="my-3" id="problem19">Worksheet Problem 19</h2>
+    <div class="parentDiv" id="lec-07_w19_py"></div>
+    <script type="text/javascript">
+        var trace = {
+            "code": "print(\"A\")\n\ndef foo():\n   print(\"B\")\nprint(\"C\")\nfoo()\nprint(\"D\")\nfoo()\n",
+            "trace": [{
+                "ordered_globals": [],
+                "stdout": "",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {},
+                "heap": {},
+                "line": 1,
+                "event": "step_line"
+            }, {
+                "ordered_globals": [],
+                "stdout": "A\n",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {},
+                "heap": {},
+                "line": 3,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\n",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 5,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\nC\n",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 6,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\nC\n",
+                "func_name": "foo",
+                "stack_to_render": [{
+                "frame_id": 1,
+                "encoded_locals": {},
+                "is_highlighted": true,
+                "is_parent": false,
+                "func_name": "foo",
+                "is_zombie": false,
+                "parent_frame_id_list": [],
+                "unique_hash": "foo_f1",
+                "ordered_varnames": []
+            }],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 3,
+                "event": "call"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\nC\n",
+                "func_name": "foo",
+                "stack_to_render": [{
+                "frame_id": 1,
+                "encoded_locals": {},
+                "is_highlighted": true,
+                "is_parent": false,
+                "func_name": "foo",
+                "is_zombie": false,
+                "parent_frame_id_list": [],
+                "unique_hash": "foo_f1",
+                "ordered_varnames": []
+            }],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 4,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\nC\nB\n",
+                "func_name": "foo",
+                "stack_to_render": [{
+                "frame_id": 1,
+                "encoded_locals": {"__return__": null},
+                "is_highlighted": true,
+                "is_parent": false,
+                "func_name": "foo",
+                "is_zombie": false,
+                "parent_frame_id_list": [],
+                "unique_hash": "foo_f1",
+                "ordered_varnames": ["__return__"]
+            }],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 4,
+                "event": "return"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\nC\nB\n",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 7,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\nC\nB\nD\n",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 8,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\nC\nB\nD\n",
+                "func_name": "foo",
+                "stack_to_render": [{
+                "frame_id": 2,
+                "encoded_locals": {},
+                "is_highlighted": true,
+                "is_parent": false,
+                "func_name": "foo",
+                "is_zombie": false,
+                "parent_frame_id_list": [],
+                "unique_hash": "foo_f2",
+                "ordered_varnames": []
+            }],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 3,
+                "event": "call"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\nC\nB\nD\n",
+                "func_name": "foo",
+                "stack_to_render": [{
+                "frame_id": 2,
+                "encoded_locals": {},
+                "is_highlighted": true,
+                "is_parent": false,
+                "func_name": "foo",
+                "is_zombie": false,
+                "parent_frame_id_list": [],
+                "unique_hash": "foo_f2",
+                "ordered_varnames": []
+            }],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 4,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\nC\nB\nD\nB\n",
+                "func_name": "foo",
+                "stack_to_render": [{
+                "frame_id": 2,
+                "encoded_locals": {"__return__": null},
+                "is_highlighted": true,
+                "is_parent": false,
+                "func_name": "foo",
+                "is_zombie": false,
+                "parent_frame_id_list": [],
+                "unique_hash": "foo_f2",
+                "ordered_varnames": ["__return__"]
+            }],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 4,
+                "event": "return"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\nC\nB\nD\nB\n",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 8,
+                "event": "return"
+            }]
+        };
+        addVisualizerToPage(trace, 'lec-07_w19_py', {
+            startingInstruction: 0,
+            hideCode: false,
+            lang: "py3",
+            disableHeapNesting: true,
+            verticalStack: window.matchMedia("(max-width: 768px)").matches
+        });
+        manualAnswer = "B"
+    </script>
+    <div class="manualQuestion">What is the last value that is printed?</div>
 </div>
-<h1>CS 301 - Tracing Functions</h1>
 
-<h2 class="my-3">Worksheet Problem 19</h2>
+<div class="sidebar">
+    <ul>
+        <!-- <li class="sidebar-item"><a href="#problem19">Problem 19</a></li>
+        <li class="sidebar-item"><a href="#problem20">Problem 20</a></li>
+        <li class="sidebar-item"><a href="#problem21">Problem 21</a></li>
+        <li class="sidebar-item"><a href="#problem22">Problem 22</a></li> -->
+    </ul>
+</div>
 
-<div id="lec-07_w19_py"></div>
-<script type="text/javascript">
-  var mobile = window.matchMedia("(max-width: 700px)").matches
-  var trace = {"code": "print(\"A\")\n\ndef foo():\n   print(\"B\")\nprint(\"C\")\nfoo()\nprint(\"D\")\nfoo()\n", "trace": [{"ordered_globals": [], "stdout": "", "func_name": "<module>", "stack_to_render": [], "globals": {}, "heap": {}, "line": 1, "event": "step_line"}, {"ordered_globals": [], "stdout": "A\n", "func_name": "<module>", "stack_to_render": [], "globals": {}, "heap": {}, "line": 3, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\n", "func_name": "<module>", "stack_to_render": [], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 5, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\nC\n", "func_name": "<module>", "stack_to_render": [], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 6, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\nC\n", "func_name": "foo", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "foo", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "foo_f1", "ordered_varnames": []}], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 3, "event": "call"}, {"ordered_globals": ["foo"], "stdout": "A\nC\n", "func_name": "foo", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "foo", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "foo_f1", "ordered_varnames": []}], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 4, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\nC\nB\n", "func_name": "foo", "stack_to_render": [{"frame_id": 1, "encoded_locals": {"__return__": null}, "is_highlighted": true, "is_parent": false, "func_name": "foo", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "foo_f1", "ordered_varnames": ["__return__"]}], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 4, "event": "return"}, {"ordered_globals": ["foo"], "stdout": "A\nC\nB\n", "func_name": "<module>", "stack_to_render": [], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 7, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\nC\nB\nD\n", "func_name": "<module>", "stack_to_render": [], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 8, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\nC\nB\nD\n", "func_name": "foo", "stack_to_render": [{"frame_id": 2, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "foo", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "foo_f2", "ordered_varnames": []}], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 3, "event": "call"}, {"ordered_globals": ["foo"], "stdout": "A\nC\nB\nD\n", "func_name": "foo", "stack_to_render": [{"frame_id": 2, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "foo", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "foo_f2", "ordered_varnames": []}], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 4, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\nC\nB\nD\nB\n", "func_name": "foo", "stack_to_render": [{"frame_id": 2, "encoded_locals": {"__return__": null}, "is_highlighted": true, "is_parent": false, "func_name": "foo", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "foo_f2", "ordered_varnames": ["__return__"]}], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 4, "event": "return"}, {"ordered_globals": ["foo"], "stdout": "A\nC\nB\nD\nB\n", "func_name": "<module>", "stack_to_render": [], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 8, "event": "return"}]};
-  addVisualizerToPage(trace, 'lec-07_w19_py',  {startingInstruction: 0, hideCode: false, lang: "py3", disableHeapNesting: true, verticalStack: mobile});
-manualAnswer = "B"
-</script>
+
 <!---<div id=manualQuestionDiv>
-	<div id="manualQuestion">What is the last value that is printed?</div>
-	<input id="manualAnswer"></input>
-	<button id="submitManual">Submit</button>
+  <div id="manualQuestion">What is the last value that is printed?</div>
+  <input id="manualAnswer"></input>
+  <button id="submitManual">Submit</button>
 
-	</div>---!>
-<div class="manualQuestion">What is the last value that is printed?</div>
+  </div> -->
 
-<h2>Worksheet Problem 20</h2>
-<div id="lec-07_w20_py"></div>
-<script type="text/javascript">
-  var mobile = window.matchMedia("(max-width: 700px)").matches
-  var trace = {"code": "print(\"A\")\n\ndef foo():\n   print(\"B\")\n   print(\"C\")\nfoo()\nprint(\"D\")\nfoo()\n", "trace": [{"ordered_globals": [], "stdout": "", "func_name": "<module>", "stack_to_render": [], "globals": {}, "heap": {}, "line": 1, "event": "step_line"}, {"ordered_globals": [], "stdout": "A\n", "func_name": "<module>", "stack_to_render": [], "globals": {}, "heap": {}, "line": 3, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\n", "func_name": "<module>", "stack_to_render": [], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 6, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\n", "func_name": "foo", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "foo", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "foo_f1", "ordered_varnames": []}], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 3, "event": "call"}, {"ordered_globals": ["foo"], "stdout": "A\n", "func_name": "foo", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "foo", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "foo_f1", "ordered_varnames": []}], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 4, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\nB\n", "func_name": "foo", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "foo", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "foo_f1", "ordered_varnames": []}], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 5, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\nB\nC\n", "func_name": "foo", "stack_to_render": [{"frame_id": 1, "encoded_locals": {"__return__": null}, "is_highlighted": true, "is_parent": false, "func_name": "foo", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "foo_f1", "ordered_varnames": ["__return__"]}], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 5, "event": "return"}, {"ordered_globals": ["foo"], "stdout": "A\nB\nC\n", "func_name": "<module>", "stack_to_render": [], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 7, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\nB\nC\nD\n", "func_name": "<module>", "stack_to_render": [], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 8, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\nB\nC\nD\n", "func_name": "foo", "stack_to_render": [{"frame_id": 2, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "foo", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "foo_f2", "ordered_varnames": []}], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 3, "event": "call"}, {"ordered_globals": ["foo"], "stdout": "A\nB\nC\nD\n", "func_name": "foo", "stack_to_render": [{"frame_id": 2, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "foo", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "foo_f2", "ordered_varnames": []}], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 4, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\nB\nC\nD\nB\n", "func_name": "foo", "stack_to_render": [{"frame_id": 2, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "foo", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "foo_f2", "ordered_varnames": []}], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 5, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\nB\nC\nD\nB\nC\n", "func_name": "foo", "stack_to_render": [{"frame_id": 2, "encoded_locals": {"__return__": null}, "is_highlighted": true, "is_parent": false, "func_name": "foo", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "foo_f2", "ordered_varnames": ["__return__"]}], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 5, "event": "return"}, {"ordered_globals": ["foo"], "stdout": "A\nB\nC\nD\nB\nC\n", "func_name": "<module>", "stack_to_render": [], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 8, "event": "return"}]};
-  addVisualizerToPage(trace, 'lec-07_w20_py',  {startingInstruction: 0, hideCode: false, lang: "py3", disableHeapNesting: true, verticalStack: mobile});
+<div class="problem" id="p20">
+    <h2 id="problem20">Worksheet Problem 20</h2>
+    <div class="parentDiv" id="lec-07_w20_py"></div>
+    <script type="text/javascript">
+        var trace = {
+            "code": "print(\"A\")\n\ndef foo():\n   print(\"B\")\n   print(\"C\")\nfoo()\nprint(\"D\")\nfoo()\n",
+            "trace": [{
+                "ordered_globals": [],
+                "stdout": "",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {},
+                "heap": {},
+                "line": 1,
+                "event": "step_line"
+            }, {
+                "ordered_globals": [],
+                "stdout": "A\n",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {},
+                "heap": {},
+                "line": 3,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\n",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 6,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\n",
+                "func_name": "foo",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "foo",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "foo_f1",
+                    "ordered_varnames": []
+                }],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 3,
+                "event": "call"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\n",
+                "func_name": "foo",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "foo",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "foo_f1",
+                    "ordered_varnames": []
+                }],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 4,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\nB\n",
+                "func_name": "foo",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "foo",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "foo_f1",
+                    "ordered_varnames": []
+                }],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 5,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\nB\nC\n",
+                "func_name": "foo",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {"__return__": null},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "foo",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "foo_f1",
+                    "ordered_varnames": ["__return__"]
+                }],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 5,
+                "event": "return"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\nB\nC\n",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 7,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\nB\nC\nD\n",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 8,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\nB\nC\nD\n",
+                "func_name": "foo",
+                "stack_to_render": [{
+                    "frame_id": 2,
+                    "encoded_locals": {},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "foo",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "foo_f2",
+                    "ordered_varnames": []
+                }],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 3,
+                "event": "call"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\nB\nC\nD\n",
+                "func_name": "foo",
+                "stack_to_render": [{
+                    "frame_id": 2,
+                    "encoded_locals": {},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "foo",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "foo_f2",
+                    "ordered_varnames": []
+                }],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 4,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\nB\nC\nD\nB\n",
+                "func_name": "foo",
+                "stack_to_render": [{
+                    "frame_id": 2,
+                    "encoded_locals": {},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "foo",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "foo_f2",
+                    "ordered_varnames": []
+                }],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 5,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\nB\nC\nD\nB\nC\n",
+                "func_name": "foo",
+                "stack_to_render": [{
+                    "frame_id": 2,
+                    "encoded_locals": {"__return__": null},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "foo",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "foo_f2",
+                    "ordered_varnames": ["__return__"]
+                }],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 5,
+                "event": "return"
+            }, {
+                "ordered_globals": ["foo"],
+                "stdout": "A\nB\nC\nD\nB\nC\n",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {"foo": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "foo()", null]},
+                "line": 8,
+                "event": "return"
+            }]
+        };
+        addVisualizerToPage(trace, 'lec-07_w20_py', {
+            startingInstruction: 0,
+            hideCode: false,
+            lang: "py3",
+            disableHeapNesting: true,
+            verticalStack: window.matchMedia("(max-width: 768px)").matches
+        });
+    </script>
+</div>
+
+<div class="problem" id="p21">
+    <h2 id="problem21">Worksheet Problem 21</h2>
+    <div class="parentDiv" id="lec-07_w21_py"></div>
+    <script type="text/javascript">
+        var trace = {
+            "code": "def func_c():\n   print(\"C\")\n\ndef func_b():\n   print(\"B1\")\n   func_c()\n   print(\"B2\")\n\ndef func_a():\n   print(\"A1\")\n   func_b()\n   print(\"A2\")\n\nfunc_a()\n",
+            "trace": [{
+                "ordered_globals": [],
+                "stdout": "",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {},
+                "heap": {},
+                "line": 1,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["func_c"],
+                "stdout": "",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {"func_c": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "func_c()", null]},
+                "line": 4,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["func_c", "func_b"],
+                "stdout": "",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {"func_c": ["REF", 1], "func_b": ["REF", 2]},
+                "heap": {"1": ["FUNCTION", "func_c()", null], "2": ["FUNCTION", "func_b()", null]},
+                "line": 9,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["func_c", "func_b", "func_a"],
+                "stdout": "",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]},
+                "heap": {
+                    "1": ["FUNCTION", "func_c()", null],
+                    "2": ["FUNCTION", "func_b()", null],
+                    "3": ["FUNCTION", "func_a()", null]
+                },
+                "line": 14,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["func_c", "func_b", "func_a"],
+                "stdout": "",
+                "func_name": "func_a",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "func_a",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_a_f1",
+                    "ordered_varnames": []
+                }],
+                "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]},
+                "heap": {
+                    "1": ["FUNCTION", "func_c()", null],
+                    "2": ["FUNCTION", "func_b()", null],
+                    "3": ["FUNCTION", "func_a()", null]
+                },
+                "line": 9,
+                "event": "call"
+            }, {
+                "ordered_globals": ["func_c", "func_b", "func_a"],
+                "stdout": "",
+                "func_name": "func_a",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "func_a",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_a_f1",
+                    "ordered_varnames": []
+                }],
+                "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]},
+                "heap": {
+                    "1": ["FUNCTION", "func_c()", null],
+                    "2": ["FUNCTION", "func_b()", null],
+                    "3": ["FUNCTION", "func_a()", null]
+                },
+                "line": 10,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["func_c", "func_b", "func_a"],
+                "stdout": "A1\n",
+                "func_name": "func_a",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "func_a",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_a_f1",
+                    "ordered_varnames": []
+                }],
+                "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]},
+                "heap": {
+                    "1": ["FUNCTION", "func_c()", null],
+                    "2": ["FUNCTION", "func_b()", null],
+                    "3": ["FUNCTION", "func_a()", null]
+                },
+                "line": 11,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["func_c", "func_b", "func_a"],
+                "stdout": "A1\n",
+                "func_name": "func_b",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {},
+                    "is_highlighted": false,
+                    "is_parent": false,
+                    "func_name": "func_a",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_a_f1",
+                    "ordered_varnames": []
+                }, {
+                    "frame_id": 2,
+                    "encoded_locals": {},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "func_b",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_b_f2",
+                    "ordered_varnames": []
+                }],
+                "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]},
+                "heap": {
+                    "1": ["FUNCTION", "func_c()", null],
+                    "2": ["FUNCTION", "func_b()", null],
+                    "3": ["FUNCTION", "func_a()", null]
+                },
+                "line": 4,
+                "event": "call"
+            }, {
+                "ordered_globals": ["func_c", "func_b", "func_a"],
+                "stdout": "A1\n",
+                "func_name": "func_b",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {},
+                    "is_highlighted": false,
+                    "is_parent": false,
+                    "func_name": "func_a",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_a_f1",
+                    "ordered_varnames": []
+                }, {
+                    "frame_id": 2,
+                    "encoded_locals": {},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "func_b",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_b_f2",
+                    "ordered_varnames": []
+                }],
+                "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]},
+                "heap": {
+                    "1": ["FUNCTION", "func_c()", null],
+                    "2": ["FUNCTION", "func_b()", null],
+                    "3": ["FUNCTION", "func_a()", null]
+                },
+                "line": 5,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["func_c", "func_b", "func_a"],
+                "stdout": "A1\nB1\n",
+                "func_name": "func_b",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {},
+                    "is_highlighted": false,
+                    "is_parent": false,
+                    "func_name": "func_a",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_a_f1",
+                    "ordered_varnames": []
+                }, {
+                    "frame_id": 2,
+                    "encoded_locals": {},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "func_b",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_b_f2",
+                    "ordered_varnames": []
+                }],
+                "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]},
+                "heap": {
+                    "1": ["FUNCTION", "func_c()", null],
+                    "2": ["FUNCTION", "func_b()", null],
+                    "3": ["FUNCTION", "func_a()", null]
+                },
+                "line": 6,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["func_c", "func_b", "func_a"],
+                "stdout": "A1\nB1\n",
+                "func_name": "func_c",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {},
+                    "is_highlighted": false,
+                    "is_parent": false,
+                    "func_name": "func_a",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_a_f1",
+                    "ordered_varnames": []
+                }, {
+                    "frame_id": 2,
+                    "encoded_locals": {},
+                    "is_highlighted": false,
+                    "is_parent": false,
+                    "func_name": "func_b",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_b_f2",
+                    "ordered_varnames": []
+                }, {
+                    "frame_id": 3,
+                    "encoded_locals": {},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "func_c",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_c_f3",
+                    "ordered_varnames": []
+                }],
+                "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]},
+                "heap": {
+                    "1": ["FUNCTION", "func_c()", null],
+                    "2": ["FUNCTION", "func_b()", null],
+                    "3": ["FUNCTION", "func_a()", null]
+                },
+                "line": 1,
+                "event": "call"
+            }, {
+                "ordered_globals": ["func_c", "func_b", "func_a"],
+                "stdout": "A1\nB1\n",
+                "func_name": "func_c",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {},
+                    "is_highlighted": false,
+                    "is_parent": false,
+                    "func_name": "func_a",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_a_f1",
+                    "ordered_varnames": []
+                }, {
+                    "frame_id": 2,
+                    "encoded_locals": {},
+                    "is_highlighted": false,
+                    "is_parent": false,
+                    "func_name": "func_b",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_b_f2",
+                    "ordered_varnames": []
+                }, {
+                    "frame_id": 3,
+                    "encoded_locals": {},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "func_c",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_c_f3",
+                    "ordered_varnames": []
+                }],
+                "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]},
+                "heap": {
+                    "1": ["FUNCTION", "func_c()", null],
+                    "2": ["FUNCTION", "func_b()", null],
+                    "3": ["FUNCTION", "func_a()", null]
+                },
+                "line": 2,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["func_c", "func_b", "func_a"],
+                "stdout": "A1\nB1\nC\n",
+                "func_name": "func_c",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {},
+                    "is_highlighted": false,
+                    "is_parent": false,
+                    "func_name": "func_a",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_a_f1",
+                    "ordered_varnames": []
+                }, {
+                    "frame_id": 2,
+                    "encoded_locals": {},
+                    "is_highlighted": false,
+                    "is_parent": false,
+                    "func_name": "func_b",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_b_f2",
+                    "ordered_varnames": []
+                }, {
+                    "frame_id": 3,
+                    "encoded_locals": {"__return__": null},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "func_c",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_c_f3",
+                    "ordered_varnames": ["__return__"]
+                }],
+                "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]},
+                "heap": {
+                    "1": ["FUNCTION", "func_c()", null],
+                    "2": ["FUNCTION", "func_b()", null],
+                    "3": ["FUNCTION", "func_a()", null]
+                },
+                "line": 2,
+                "event": "return"
+            }, {
+                "ordered_globals": ["func_c", "func_b", "func_a"],
+                "stdout": "A1\nB1\nC\n",
+                "func_name": "func_b",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {},
+                    "is_highlighted": false,
+                    "is_parent": false,
+                    "func_name": "func_a",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_a_f1",
+                    "ordered_varnames": []
+                }, {
+                    "frame_id": 2,
+                    "encoded_locals": {},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "func_b",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_b_f2",
+                    "ordered_varnames": []
+                }],
+                "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]},
+                "heap": {
+                    "1": ["FUNCTION", "func_c()", null],
+                    "2": ["FUNCTION", "func_b()", null],
+                    "3": ["FUNCTION", "func_a()", null]
+                },
+                "line": 7,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["func_c", "func_b", "func_a"],
+                "stdout": "A1\nB1\nC\nB2\n",
+                "func_name": "func_b",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {},
+                    "is_highlighted": false,
+                    "is_parent": false,
+                    "func_name": "func_a",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_a_f1",
+                    "ordered_varnames": []
+                }, {
+                    "frame_id": 2,
+                    "encoded_locals": {"__return__": null},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "func_b",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_b_f2",
+                    "ordered_varnames": ["__return__"]
+                }],
+                "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]},
+                "heap": {
+                    "1": ["FUNCTION", "func_c()", null],
+                    "2": ["FUNCTION", "func_b()", null],
+                    "3": ["FUNCTION", "func_a()", null]
+                },
+                "line": 7,
+                "event": "return"
+            }, {
+                "ordered_globals": ["func_c", "func_b", "func_a"],
+                "stdout": "A1\nB1\nC\nB2\n",
+                "func_name": "func_a",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "func_a",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_a_f1",
+                    "ordered_varnames": []
+                }],
+                "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]},
+                "heap": {
+                    "1": ["FUNCTION", "func_c()", null],
+                    "2": ["FUNCTION", "func_b()", null],
+                    "3": ["FUNCTION", "func_a()", null]
+                },
+                "line": 12,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["func_c", "func_b", "func_a"],
+                "stdout": "A1\nB1\nC\nB2\nA2\n",
+                "func_name": "func_a",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {"__return__": null},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "func_a",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "func_a_f1",
+                    "ordered_varnames": ["__return__"]
+                }],
+                "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]},
+                "heap": {
+                    "1": ["FUNCTION", "func_c()", null],
+                    "2": ["FUNCTION", "func_b()", null],
+                    "3": ["FUNCTION", "func_a()", null]
+                },
+                "line": 12,
+                "event": "return"
+            }, {
+                "ordered_globals": ["func_c", "func_b", "func_a"],
+                "stdout": "A1\nB1\nC\nB2\nA2\n",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]},
+                "heap": {
+                    "1": ["FUNCTION", "func_c()", null],
+                    "2": ["FUNCTION", "func_b()", null],
+                    "3": ["FUNCTION", "func_a()", null]
+                },
+                "line": 14,
+                "event": "return"
+            }]
+        };
+        addVisualizerToPage(trace, 'lec-07_w21_py', {
+            startingInstruction: 0,
+            hideCode: false,
+            lang: "py3",
+            disableHeapNesting: true,
+            verticalStack: window.matchMedia("(max-width: 768px)").matches
+        });
+    </script>
+</div>
+
+<div class="problem" id="p22">
+    <h2 id="problem22">Worksheet Problem 22</h2>
+    <div class="parentDiv" id="lec-07_w22_py"></div>
+    <script type="text/javascript">
+        var trace = {
+            "code": "def f():\n   print(\"A\")\n   return(\"B\")\n   print(\"C\")\nprint(\"D\")\nx = f()\nprint(\"E\")\nprint(x)\n",
+            "trace": [{
+                "ordered_globals": [],
+                "stdout": "",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {},
+                "heap": {},
+                "line": 1,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["f"],
+                "stdout": "",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {"f": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "f()", null]},
+                "line": 5,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["f"],
+                "stdout": "D\n",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {"f": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "f()", null]},
+                "line": 6,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["f"],
+                "stdout": "D\n",
+                "func_name": "f",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "f",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "f_f1",
+                    "ordered_varnames": []
+                }],
+                "globals": {"f": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "f()", null]},
+                "line": 1,
+                "event": "call"
+            }, {
+                "ordered_globals": ["f"],
+                "stdout": "D\n",
+                "func_name": "f",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "f",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "f_f1",
+                    "ordered_varnames": []
+                }],
+                "globals": {"f": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "f()", null]},
+                "line": 2,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["f"],
+                "stdout": "D\nA\n",
+                "func_name": "f",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "f",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "f_f1",
+                    "ordered_varnames": []
+                }],
+                "globals": {"f": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "f()", null]},
+                "line": 3,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["f"],
+                "stdout": "D\nA\n",
+                "func_name": "f",
+                "stack_to_render": [{
+                    "frame_id": 1,
+                    "encoded_locals": {"__return__": "B"},
+                    "is_highlighted": true,
+                    "is_parent": false,
+                    "func_name": "f",
+                    "is_zombie": false,
+                    "parent_frame_id_list": [],
+                    "unique_hash": "f_f1",
+                    "ordered_varnames": ["__return__"]
+                }],
+                "globals": {"f": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "f()", null]},
+                "line": 3,
+                "event": "return"
+            }, {
+                "ordered_globals": ["f", "x"],
+                "stdout": "D\nA\n",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {"x": "B", "f": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "f()", null]},
+                "line": 7,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["f", "x"],
+                "stdout": "D\nA\nE\n",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {"x": "B", "f": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "f()", null]},
+                "line": 8,
+                "event": "step_line"
+            }, {
+                "ordered_globals": ["f", "x"],
+                "stdout": "D\nA\nE\nB\n",
+                "func_name": "<module>",
+                "stack_to_render": [],
+                "globals": {"x": "B", "f": ["REF", 1]},
+                "heap": {"1": ["FUNCTION", "f()", null]},
+                "line": 8,
+                "event": "return"
+            }]
+        };
+        addVisualizerToPage(trace, 'lec-07_w22_py', {
+            startingInstruction: 0,
+            hideCode: false,
+            lang: "py3",
+            disableHeapNesting: true,
+            verticalStack: window.matchMedia("(max-width: 768px)").matches
+        });
+        manualAnswer = "B";
+    </script>
+    <div class="manualQuestion">What is the value of x at the end of the program's execution?</div>
+</div>
+    
+<div id="submenu">
+    <button class="button" id="previousButton" onclick="displayPrevious()">Previous</button>
+    <button class="button" id="nextButton" onclick="displayNext()">Next</button>
+</div>
+    
+<script>
+    const start = 19;
+    var current = start;
+    var currentProblem = document.getElementById(`p${current}`);
+    while (currentProblem != null) {
+        current++;
+        currentProblem = document.getElementById(`p${current}`);
+    }
+    const end = current - 1;
+    current = start;
+    var previousButton = document.getElementById("previousButton");
+    var nextButton = document.getElementById("nextButton");
+    if (window.matchMedia("(max-width: 768px)").matches) {
+        currentProblem = document.getElementById(`p${start}`);
+        currentProblem.style.display = "initial";
+        for (var i=start+1; i<=end; i++) {
+            currentProblem = document.getElementById(`p${i}`);
+            currentProblem.style.display = "none";
+        }
+        previousButton.style.display = "none";
+    }
+    
+    function displayPrevious() {
+        if (current == start + 1) {
+            previousButton.style.display = "none";
+        }
+        if (current == end) {
+            nextButton.style.display = "initial";
+        }
+        currentProblem = document.getElementById(`p${current}`);
+        currentProblem.style.display = "none";
+        current--;
+        currentProblem = document.getElementById(`p${current}`);
+        currentProblem.style.display = "initial";
+    }
+
+    function displayNext() {
+        if (current == end - 1) {
+            nextButton.style.display = "none";
+        }
+        if (current == start) {
+            previousButton.style.display = "initial";
+        }
+        currentProblem = document.getElementById(`p${current}`);
+        currentProblem.style.display = "none";
+        current++;
+        currentProblem = document.getElementById(`p${current}`);
+        currentProblem.style.display = "initial";
+    }
 </script>
 
-<h2>Worksheet Problem 21</h2>
-<div id="lec-07_w21_py"></div>
-<script type="text/javascript">
-  var mobile = window.matchMedia("(max-width: 700px)").matches
-  var trace = {"code": "def func_c():\n   print(\"C\")\n\ndef func_b():\n   print(\"B1\")\n   func_c()\n   print(\"B2\")\n\ndef func_a():\n   print(\"A1\")\n   func_b()\n   print(\"A2\")\n\nfunc_a()\n", "trace": [{"ordered_globals": [], "stdout": "", "func_name": "<module>", "stack_to_render": [], "globals": {}, "heap": {}, "line": 1, "event": "step_line"}, {"ordered_globals": ["func_c"], "stdout": "", "func_name": "<module>", "stack_to_render": [], "globals": {"func_c": ["REF", 1]}, "heap": {"1": ["FUNCTION", "func_c()", null]}, "line": 4, "event": "step_line"}, {"ordered_globals": ["func_c", "func_b"], "stdout": "", "func_name": "<module>", "stack_to_render": [], "globals": {"func_c": ["REF", 1], "func_b": ["REF", 2]}, "heap": {"1": ["FUNCTION", "func_c()", null], "2": ["FUNCTION", "func_b()", null]}, "line": 9, "event": "step_line"}, {"ordered_globals": ["func_c", "func_b", "func_a"], "stdout": "", "func_name": "<module>", "stack_to_render": [], "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]}, "heap": {"1": ["FUNCTION", "func_c()", null], "2": ["FUNCTION", "func_b()", null], "3": ["FUNCTION", "func_a()", null]}, "line": 14, "event": "step_line"}, {"ordered_globals": ["func_c", "func_b", "func_a"], "stdout": "", "func_name": "func_a", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "func_a", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_a_f1", "ordered_varnames": []}], "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]}, "heap": {"1": ["FUNCTION", "func_c()", null], "2": ["FUNCTION", "func_b()", null], "3": ["FUNCTION", "func_a()", null]}, "line": 9, "event": "call"}, {"ordered_globals": ["func_c", "func_b", "func_a"], "stdout": "", "func_name": "func_a", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "func_a", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_a_f1", "ordered_varnames": []}], "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]}, "heap": {"1": ["FUNCTION", "func_c()", null], "2": ["FUNCTION", "func_b()", null], "3": ["FUNCTION", "func_a()", null]}, "line": 10, "event": "step_line"}, {"ordered_globals": ["func_c", "func_b", "func_a"], "stdout": "A1\n", "func_name": "func_a", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "func_a", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_a_f1", "ordered_varnames": []}], "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]}, "heap": {"1": ["FUNCTION", "func_c()", null], "2": ["FUNCTION", "func_b()", null], "3": ["FUNCTION", "func_a()", null]}, "line": 11, "event": "step_line"}, {"ordered_globals": ["func_c", "func_b", "func_a"], "stdout": "A1\n", "func_name": "func_b", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": false, "is_parent": false, "func_name": "func_a", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_a_f1", "ordered_varnames": []}, {"frame_id": 2, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "func_b", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_b_f2", "ordered_varnames": []}], "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]}, "heap": {"1": ["FUNCTION", "func_c()", null], "2": ["FUNCTION", "func_b()", null], "3": ["FUNCTION", "func_a()", null]}, "line": 4, "event": "call"}, {"ordered_globals": ["func_c", "func_b", "func_a"], "stdout": "A1\n", "func_name": "func_b", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": false, "is_parent": false, "func_name": "func_a", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_a_f1", "ordered_varnames": []}, {"frame_id": 2, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "func_b", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_b_f2", "ordered_varnames": []}], "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]}, "heap": {"1": ["FUNCTION", "func_c()", null], "2": ["FUNCTION", "func_b()", null], "3": ["FUNCTION", "func_a()", null]}, "line": 5, "event": "step_line"}, {"ordered_globals": ["func_c", "func_b", "func_a"], "stdout": "A1\nB1\n", "func_name": "func_b", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": false, "is_parent": false, "func_name": "func_a", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_a_f1", "ordered_varnames": []}, {"frame_id": 2, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "func_b", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_b_f2", "ordered_varnames": []}], "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]}, "heap": {"1": ["FUNCTION", "func_c()", null], "2": ["FUNCTION", "func_b()", null], "3": ["FUNCTION", "func_a()", null]}, "line": 6, "event": "step_line"}, {"ordered_globals": ["func_c", "func_b", "func_a"], "stdout": "A1\nB1\n", "func_name": "func_c", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": false, "is_parent": false, "func_name": "func_a", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_a_f1", "ordered_varnames": []}, {"frame_id": 2, "encoded_locals": {}, "is_highlighted": false, "is_parent": false, "func_name": "func_b", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_b_f2", "ordered_varnames": []}, {"frame_id": 3, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "func_c", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_c_f3", "ordered_varnames": []}], "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]}, "heap": {"1": ["FUNCTION", "func_c()", null], "2": ["FUNCTION", "func_b()", null], "3": ["FUNCTION", "func_a()", null]}, "line": 1, "event": "call"}, {"ordered_globals": ["func_c", "func_b", "func_a"], "stdout": "A1\nB1\n", "func_name": "func_c", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": false, "is_parent": false, "func_name": "func_a", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_a_f1", "ordered_varnames": []}, {"frame_id": 2, "encoded_locals": {}, "is_highlighted": false, "is_parent": false, "func_name": "func_b", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_b_f2", "ordered_varnames": []}, {"frame_id": 3, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "func_c", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_c_f3", "ordered_varnames": []}], "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]}, "heap": {"1": ["FUNCTION", "func_c()", null], "2": ["FUNCTION", "func_b()", null], "3": ["FUNCTION", "func_a()", null]}, "line": 2, "event": "step_line"}, {"ordered_globals": ["func_c", "func_b", "func_a"], "stdout": "A1\nB1\nC\n", "func_name": "func_c", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": false, "is_parent": false, "func_name": "func_a", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_a_f1", "ordered_varnames": []}, {"frame_id": 2, "encoded_locals": {}, "is_highlighted": false, "is_parent": false, "func_name": "func_b", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_b_f2", "ordered_varnames": []}, {"frame_id": 3, "encoded_locals": {"__return__": null}, "is_highlighted": true, "is_parent": false, "func_name": "func_c", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_c_f3", "ordered_varnames": ["__return__"]}], "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]}, "heap": {"1": ["FUNCTION", "func_c()", null], "2": ["FUNCTION", "func_b()", null], "3": ["FUNCTION", "func_a()", null]}, "line": 2, "event": "return"}, {"ordered_globals": ["func_c", "func_b", "func_a"], "stdout": "A1\nB1\nC\n", "func_name": "func_b", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": false, "is_parent": false, "func_name": "func_a", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_a_f1", "ordered_varnames": []}, {"frame_id": 2, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "func_b", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_b_f2", "ordered_varnames": []}], "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]}, "heap": {"1": ["FUNCTION", "func_c()", null], "2": ["FUNCTION", "func_b()", null], "3": ["FUNCTION", "func_a()", null]}, "line": 7, "event": "step_line"}, {"ordered_globals": ["func_c", "func_b", "func_a"], "stdout": "A1\nB1\nC\nB2\n", "func_name": "func_b", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": false, "is_parent": false, "func_name": "func_a", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_a_f1", "ordered_varnames": []}, {"frame_id": 2, "encoded_locals": {"__return__": null}, "is_highlighted": true, "is_parent": false, "func_name": "func_b", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_b_f2", "ordered_varnames": ["__return__"]}], "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]}, "heap": {"1": ["FUNCTION", "func_c()", null], "2": ["FUNCTION", "func_b()", null], "3": ["FUNCTION", "func_a()", null]}, "line": 7, "event": "return"}, {"ordered_globals": ["func_c", "func_b", "func_a"], "stdout": "A1\nB1\nC\nB2\n", "func_name": "func_a", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "func_a", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_a_f1", "ordered_varnames": []}], "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]}, "heap": {"1": ["FUNCTION", "func_c()", null], "2": ["FUNCTION", "func_b()", null], "3": ["FUNCTION", "func_a()", null]}, "line": 12, "event": "step_line"}, {"ordered_globals": ["func_c", "func_b", "func_a"], "stdout": "A1\nB1\nC\nB2\nA2\n", "func_name": "func_a", "stack_to_render": [{"frame_id": 1, "encoded_locals": {"__return__": null}, "is_highlighted": true, "is_parent": false, "func_name": "func_a", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "func_a_f1", "ordered_varnames": ["__return__"]}], "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]}, "heap": {"1": ["FUNCTION", "func_c()", null], "2": ["FUNCTION", "func_b()", null], "3": ["FUNCTION", "func_a()", null]}, "line": 12, "event": "return"}, {"ordered_globals": ["func_c", "func_b", "func_a"], "stdout": "A1\nB1\nC\nB2\nA2\n", "func_name": "<module>", "stack_to_render": [], "globals": {"func_a": ["REF", 3], "func_c": ["REF", 1], "func_b": ["REF", 2]}, "heap": {"1": ["FUNCTION", "func_c()", null], "2": ["FUNCTION", "func_b()", null], "3": ["FUNCTION", "func_a()", null]}, "line": 14, "event": "return"}]};
-  addVisualizerToPage(trace, 'lec-07_w21_py',  {startingInstruction: 0, hideCode: false, lang: "py3", disableHeapNesting: true, verticalStack: mobile});
-</script>
-
-<h2>Worksheet Problem 22</h2>
-<div id="lec-07_w22_py"></div>
-<script type="text/javascript">
-  var mobile = window.matchMedia("(max-width: 700px)").matches
-  var trace = {"code": "def f():\n   print(\"A\")\n   return(\"B\")\n   print(\"C\")\nprint(\"D\")\nx = f()\nprint(\"E\")\nprint(x)\n", "trace": [{"ordered_globals": [], "stdout": "", "func_name": "<module>", "stack_to_render": [], "globals": {}, "heap": {}, "line": 1, "event": "step_line"}, {"ordered_globals": ["f"], "stdout": "", "func_name": "<module>", "stack_to_render": [], "globals": {"f": ["REF", 1]}, "heap": {"1": ["FUNCTION", "f()", null]}, "line": 5, "event": "step_line"}, {"ordered_globals": ["f"], "stdout": "D\n", "func_name": "<module>", "stack_to_render": [], "globals": {"f": ["REF", 1]}, "heap": {"1": ["FUNCTION", "f()", null]}, "line": 6, "event": "step_line"}, {"ordered_globals": ["f"], "stdout": "D\n", "func_name": "f", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "f", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "f_f1", "ordered_varnames": []}], "globals": {"f": ["REF", 1]}, "heap": {"1": ["FUNCTION", "f()", null]}, "line": 1, "event": "call"}, {"ordered_globals": ["f"], "stdout": "D\n", "func_name": "f", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "f", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "f_f1", "ordered_varnames": []}], "globals": {"f": ["REF", 1]}, "heap": {"1": ["FUNCTION", "f()", null]}, "line": 2, "event": "step_line"}, {"ordered_globals": ["f"], "stdout": "D\nA\n", "func_name": "f", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "f", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "f_f1", "ordered_varnames": []}], "globals": {"f": ["REF", 1]}, "heap": {"1": ["FUNCTION", "f()", null]}, "line": 3, "event": "step_line"}, {"ordered_globals": ["f"], "stdout": "D\nA\n", "func_name": "f", "stack_to_render": [{"frame_id": 1, "encoded_locals": {"__return__": "B"}, "is_highlighted": true, "is_parent": false, "func_name": "f", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "f_f1", "ordered_varnames": ["__return__"]}], "globals": {"f": ["REF", 1]}, "heap": {"1": ["FUNCTION", "f()", null]}, "line": 3, "event": "return"}, {"ordered_globals": ["f", "x"], "stdout": "D\nA\n", "func_name": "<module>", "stack_to_render": [], "globals": {"x": "B", "f": ["REF", 1]}, "heap": {"1": ["FUNCTION", "f()", null]}, "line": 7, "event": "step_line"}, {"ordered_globals": ["f", "x"], "stdout": "D\nA\nE\n", "func_name": "<module>", "stack_to_render": [], "globals": {"x": "B", "f": ["REF", 1]}, "heap": {"1": ["FUNCTION", "f()", null]}, "line": 8, "event": "step_line"}, {"ordered_globals": ["f", "x"], "stdout": "D\nA\nE\nB\n", "func_name": "<module>", "stack_to_render": [], "globals": {"x": "B", "f": ["REF", 1]}, "heap": {"1": ["FUNCTION", "f()", null]}, "line": 8, "event": "return"}]};
-  addVisualizerToPage(trace, 'lec-07_w22_py',  {startingInstruction: 0, hideCode: false, lang: "py3", disableHeapNesting: true, verticalStack: mobile});
-  manualAnswer="B";
-</script>
-
-<div class="manualQuestion">What is the value of x at the end of the program's execution?</div>
-
-
+<script type="text/javascript" src="../js/style.js"></script>
 </body>
 </html>
