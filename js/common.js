@@ -18,7 +18,7 @@ console.log("common.js loads")
 var common = {};
 
 (function() {
-  common.signinCallback = null
+  common.signinCallback = signInReload
   var lambdaUrl = "https://0tcahz5bli.execute-api.us-east-2.amazonaws.com/default/pytutor-test" //"https://1y4o8v9snh.execute-api.us-east-2.amazonaws.com/default/cs301"
   var lambdaTestUrl = "https://0tcahz5bli.execute-api.us-east-2.amazonaws.com/default/pytutor-test"//"https://5dthhwkgxl.execute-api.us-east-2.amazonaws.com/default/cs301"
   var lambdaPytutorUrl = "https://0tcahz5bli.execute-api.us-east-2.amazonaws.com/default/pytutor-test" //"https://rx46bs1jm4.execute-api.us-east-2.amazonaws.com/default/cs301"

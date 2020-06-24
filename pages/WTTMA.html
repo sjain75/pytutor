@@ -49,10 +49,12 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
         integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
         crossorigin="anonymous"></script>
-<script type="text/javascript" src="../js/pytutor.js" charset="utf-8"></script>
+<!-- Fancy Alerts -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 
 <!-- main js -->
-
+<script type="text/javascript" src="../js/pytutor.js" charset="utf-8"></script>
 <script src="../js/common.js"></script>
 <script src="../js/submission.js"></script>
 <script src="https://apis.google.com/js/platform.js?onload=gapiLoad" defer async></script>
@@ -123,8 +125,8 @@ python pytutor.py lec-08/practice1.py lec-08/practice2.py lec-08/practice3.py le
         <!--          </li>-->
 
         <!--          <li class="nav-item">-->
-        <!--            <button class="btn btn-outline-light my-2 my-sm-0" onclick="common.googleSignOut()" id="signout"-->
-        <!--              style="display:none;">Logout</button>-->
+                    <button class="btn btn-outline-light my-2 my-sm-0 nav navbar-right" onclick="common.googleSignOut()" id="signout"
+                      style="display:none;">Logout</button>
         <!--          </li>-->
         <!--        </ul>-->
         <!--      </div>-->

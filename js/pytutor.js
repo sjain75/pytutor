@@ -1,6 +1,77 @@
 var manualQuestionStack={};
-var manualAnswer = "B";
+
+function signInReload(){
+		if(common.googleToken!=null){
+			username = common.getEmail();
+			if(username.split("@").pop()!="wisc.edu"){
+
+				$.confirm({title: 'Not wisc.edu account',
+				content: 'You have not logged in with your wisc.edu account. Your submissions are not graded on accuracy but only on participation, so please login with your wisc.edu account. \nNot a CS220 or a wisc student, no worries, feel free to practice :)',
+				buttons: {
+					"Log out and sign in with wisc account": function () {
+						common.googleSignOut();
+						//$("span#not_signed_inhhqwiuutv1fs").click();
+					},
+					"Continue with non-wisc account": function () {
+					}
+					
+				}});
+
+			}
+			else{
+				let wsCode = $(window.location.pathname.split("/")).last()[0].replace(".html","");
+				common.callLambda({"fn":"reload", "netId":common.getEmail(), "worksheetCode":wsCode},
+						function (obj){
+							if(!("errorCode" in obj || "incorrectDomain" in obj)){
+								manualQuestionStackLoad(obj["isCorrect"]);	
+							}
+						});
+			}
+		}
+		else{
+			 $(".abcRioButton").click();
+			$.dialog({ 
+				title: "Waiting for login!",
+				content: "login to do the worksheet"
+			});
+			$(".jconfirm-closeIcon").remove();
+		}
+    };
+
+$("#signin").on("load", signInReload);//figure this out
+
+questionHtmlString=`<div content_resource_id="32241403" class="manualQuestionDiv">
+			<div>"""manualQuestion"""</div> 
+			<div style="margin-bottom: 5px;"><textarea style="width: 85%;" cols="20" rows="1" spellcheck="false" autocapitalize="false" class="manualAnswer"></textarea></div>"""answerCorrectness"""
+			<div><button class="submitManual button">Check</button></div>
+		</div>`;
+correctImage = `<div id=answerTruth style='font-size:40px'><img width='8%' style='padding-left:2%' src='../resources/correct-checkmark.svg'></img></div>`;
+incorrectImage = `<div id=answerTruth><img width='8%' style='padding-left:2%' src='../resources/incorrect-cross.svg'></img></div>`;
+//Take the simple div with class manual question and make it fancier. Runs at page load for each div with class "manualQuestion"
+function manualQuestionStackLoad(isCorrect){
+	$(".manualQuestion").each(function(){
+		manualQuestionString= $(this).text();
+		let privateQuestionHtml=questionHtmlString;
+		privateQuestionHtml = privateQuestionHtml.replace('"""manualQuestion"""',manualQuestionString);
+		let parentScriptText =$($(this).prevAll("script")[0]).text();
+		let parentScriptRefined  = parentScriptText.substring(parentScriptText.lastIndexOf("addVisualizerToPage")).split(", ");
+
+		let parentStoryKey = parentScriptRefined[1].substring(1, parentScriptRefined[1].length-1);
+		let parentStoryBeginsAt = Number(parentScriptRefined[2].substring(parentScriptRefined[2].lastIndexOf(":")+1));
+		let questionStep = Number($(this).attr("step"));
+		if(!(parentStoryKey in manualQuestionStack)){
+			manualQuestionStack[parentStoryKey] = {};
+		}
+		let image = (isCorrect[parentStoryKey+"_"+questionStep])?correctImage:((isCorrect[parentStoryKey+"_"+questionStep]==false)?incorrectImage:"");
+		manualQuestionStack[parentStoryKey][questionStep] = privateQuestionHtml.replace('"""answerCorrectness"""',image);
+		if(parentStoryBeginsAt+1==questionStep){
+			$(this).after(privateQuestionHtml);}
+		$(this).remove();
+	});
+}
+
 $( document ).ready(function() {
+
 	$("[id=vcrControls]").children().attr("disabled",true);
 	
 	$(".lineNo").each(function(){
@@ -8,36 +79,7 @@ $( document ).ready(function() {
 		$(this).text("🔘");
 	}); //replace all line numbers with something that looks more clickable
 	var obj;
-	var reload = function(){
-		username = $("span#useremail").text();
-
-		$(".manualQuestionDiv").each(function(){
-				parentDiv=$(this);
-				if(username!=""){
-				if(!($(parentDiv).attr("sent")=="updated")){
-					activity=($(parentDiv).prev().prev().attr("id"));
-					(common.callLambda({"fn":"isAnswered", questionCode:activity},
-						function (obj) {
-							
-						
-							  if( !('error' in obj) && obj["body"]!="false" ) {
-							     parentDiv = $("#"+obj["body"]).next().next();
-							      $(parentDiv).attr("sent","updated");
-							      $(parentDiv).find(".title-bar-chevron-container").html('<div aria-label="Activity completed" id="ember6016" class="zb-chevron title-bar-chevron orange large check filled ember-view"> </div>');
-							      $(parentDiv).find(".chevron-container").html('<div aria-label="Question completed" id="ember6023" class="zb-chevron question-chevron orange medium check filled ember-view"> </div>');
-							  }
-							  else {
-							      console.log(obj);
-							  }
-						}));   
-						
-				}
-			}
-		});
-
-	};
-
-	$(".reload").on("click",reload);
+	
 	var noClick = function() {
 		parentDiv =$(this).parents("div.parentDiv").last(); //find the parentDiv of the question based on the step clicked on 
 		console.log(parentDiv);
@@ -65,7 +107,7 @@ $( document ).ready(function() {
 			$(parentDiv).find("#vcrControls").children().attr("disabled",false);
 
 			$(parentDiv).find("#answerTruth").remove();
-			$(parentDiv).find("#dataViz").after("<div id=answerTruth style='font-size:40px'><img width='8%' style='padding-left:2%' src='../resources/correct-checkmark.svg'></img></div>");
+			$(parentDiv).find("#dataViz").after(correctImage);
 			var fwdButton = $(parentDiv).find("#jmpStepFwd");			
 						
 			var timeout = 0;			
@@ -92,7 +134,7 @@ $( document ).ready(function() {
 		}		
 		else{
 			$(parentDiv).find("#answerTruth").remove();
-			$(parentDiv).find("#dataViz").after("<div id=answerTruth><img width='8%' style='padding-left:2%' src='../resources/incorrect-cross.svg'></img></div>");		
+			$(parentDiv).find("#dataViz").after(incorrectImage);		
 
 		}
 
@@ -103,78 +145,45 @@ $( document ).ready(function() {
 	var notLoggedInAttempt = false;
 	var manualCheck = function(){
 		parentDiv = $(this).closest(".manualQuestionDiv");
-		username = "sjain75"
-		if(username==""){
-			if(!notLoggedInAttempt){
-				notLoggedInAttempt = true;
-				$(parentDiv).append("<span id='notLoggedIn'>You are not logged in so none of these questions will be graded! But feel free to continue for practice! :)</span>");
-			}
-		}
-		else{
-			 username = $.trim(username);
-			if(notLoggedInAttempt){
-				$(parentDiv).children("#notLoggedIn").remove();
-				notLoggedInAttempt = false;
-			}
-		}
-		script = $(parentDiv).prev().text();
-		script = script.substring(script.search("manualAnswer")); //get code that evaluateds trace array
-		//eval(script); //evaulate script
+		
 		userAnswer = $(parentDiv).find(".manualAnswer").val();
-		answerTruth = userAnswer==manualAnswer;
 		$(parentDiv).find(".manualAnswerTruth").remove();
 
-		if(answerTruth){
-			$(parentDiv).find(".manualAnswer").after("<img class=manualAnswerTruth width='13%' style='padding-left:2%' src='../resources/correct-checkmark.svg'></img>");
-			if(username!=""){
-				if(!($(parentDiv).attr("sent")=="updated")){
-					activity=($(parentDiv).prev().prev().attr("id"));
-					console.log(common.callLambda({"fn":"addNewAnswer", questionCode:activity},
-						function (obj) {
-							  if( !('error' in obj) ) {
-							      console.log(obj);
-							      $(parentDiv).attr("sent","updated");
-							  }
-							  else {
-							      console.log(obj);
-							  }
-						    }
-						));
-				}
-			}
-		
+		if(common.googleToken != null){
+				let activity=($(parentDiv).prev().prev().attr("id"));
+				let wsCode = $(window.location.pathname.split("/")).last()[0].replace(".html","");
+				common.callLambda({"fn":"addNewAnswer", "netId":common.getEmail(), "worksheetCode":wsCode, "questionCode":activity, "response":userAnswer},
+					function (obj) {
+						  if(!("errorCode" in obj)){
+							if(obj["fnExecuted"]=="addNewAnswer" && obj["isCorrect"][0]["questionCode"]==activity){
+								if(obj["isCorrect"][0]["isCorrect"]==true){
+									$(parentDiv).find(".manualAnswer").after(correctImage);
+
+								}
+								else{
+									 $(parentDiv).find(".manualAnswer").after(incorrectImage);
+
+								}
+							}
+							else{
+								$(parrentDiv).append("Something went wrong!");
+							}
+						  }
+						  else {
+							  console.log(obj);
+							  console.log(obj["errorCode"]);
+							  $(parentDiv).append("Something went wrong! Error Code: "+obj["errorCode"]); 
+						  }
+						}
+					);
 		}
+		
 		else{
-			 $(parentDiv).find(".manualAnswer").after("<img class=manualAnswerTruth width='13%' style='padding-left:2%' src='../resources/incorrect-cross.svg'></img>");
+			 $(parentDiv).append("<span id='notLoggedIn'>You are not logged in so none of these questions will be graded! But feel free to continue for practice! :)</span>");
 		}
 
 	};
 
-
-	questionHtmlString=`<div content_resource_id="32241403" class="manualQuestionDiv">
-				<div>"""manualQuestion"""</div> 
-				<div style="margin-bottom: 5px;"><textarea style="width: 85%;" cols="20" rows="1" spellcheck="false" autocapitalize="false" class="manualAnswer"></textarea></div>
-				<div><button class="submitManual button">Check</button></div>
-			</div>`
-	//Take the simple div with class manual question and make it fancier. Runs at page load for each div with class "manualQuestion"
-	$(".manualQuestion").each(function(){
-		manualQuestionString= $(this).text();
-		let privateQuestionHtml=questionHtmlString;
-		privateQuestionHtml = privateQuestionHtml.replace('"""manualQuestion"""',manualQuestionString);
-		let parentScriptText =$($(this).prevAll("script")[0]).text();
-		let parentScriptRefined  = parentScriptText.substring(parentScriptText.lastIndexOf("addVisualizerToPage")).split(", ");
-
-		let parentStoryKey = parentScriptRefined[1].substring(1, parentScriptRefined[1].length-1);
-		let parentStoryBeginsAt = Number(parentScriptRefined[2].substring(parentScriptRefined[2].lastIndexOf(":")+1));
-		let questionStep = Number($(this).attr("step"));
-		if(!(parentStoryKey in manualQuestionStack)){
-			manualQuestionStack[parentStoryKey] = {};
-		}
-		manualQuestionStack[parentStoryKey][questionStep] = privateQuestionHtml;
-		if(parentStoryBeginsAt+1==questionStep){
-			$(this).after(privateQuestionHtml);}
-		$(this).remove();
-	});
 
 	//Attach Handler to element with class "submitManual" so that it runs function manualCheck on click
 	$(".submitManual").on("click",manualCheck);
