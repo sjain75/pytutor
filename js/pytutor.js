@@ -13,12 +13,15 @@ function signInReload(){
 						//$("span#not_signed_inhhqwiuutv1fs").click();
 					},
 					"Continue with non-wisc account": function () {
+					
+						pageLoad();
 					}
 					
 				}});
 
 			}
 			else{
+				pageLoad();
 				let wsCode = $(window.location.pathname.split("/")).last()[0].replace(".html","");
 				common.callLambda({"fn":"reload", "netId":common.getEmail(), "worksheetCode":wsCode},
 						function (obj){
@@ -40,6 +43,7 @@ function signInReload(){
 
 $("#signin").on("load", signInReload);//figure this out
 
+		
 questionHtmlString=`<div content_resource_id="32241403" class="manualQuestionDiv">
 			<div>"""manualQuestion"""</div> 
 			<div style="margin-bottom: 5px;"><textarea style="width: 85%;" cols="20" rows="1" spellcheck="false" autocapitalize="false" class="manualAnswer"></textarea></div>"""answerCorrectness"""
@@ -70,7 +74,15 @@ function manualQuestionStackLoad(isCorrect){
 	});
 }
 
-$( document ).ready(function() {
+$(document).ready(function(){
+$.dialog({
+            title: "Waiting for login!",
+            content: "login to do the worksheet"
+        });
+})
+
+(function loadPage() {
+	$(".waiting").removeClass("waiting");
 
 	$("[id=vcrControls]").children().attr("disabled",true);
 	

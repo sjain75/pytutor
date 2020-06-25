@@ -3697,11 +3697,8 @@ var NavigationController = /** @class */ (function () {
                      <div id="executionSlider"/>\
                      <div id="executionSliderFooter"/>\
                      <div id="vcrControls">\
-                       <button id="jmpFirstInstr", type="button">&lt;&lt; First</button>\
-                       <button id="jmpStepBack", class="button" type="button">&lt; Back</button>\
                        <span id="curInstr">Step ? of ?</span>\
-                       <button id="jmpStepFwd", class="button", type="button">Forward &gt;</button>\
-                       <button id="jmpLastInstr", type="button">Last &gt;&gt;</button>\
+                       <button id="jmpStepFwd", class="button", type="button" hidden>Forward &gt;</button>\
                      </div>\
                      <div id="rawUserInputDiv">\
                        <span id="userInputPromptStr"/>\
@@ -3710,7 +3707,7 @@ var NavigationController = /** @class */ (function () {
                      </div>\
                      <div id="errorOutput"/>\
                    </div>';
-        this.domRoot.append(navHTML);
+	this.domRoot.append(navHTML);
         this.domRoot.find("#jmpFirstInstr").click(function () { _this.owner.renderStep(0); });
         this.domRoot.find("#jmpLastInstr").click(function () { _this.owner.renderStep(_this.nSteps - 1); });
         this.domRoot.find("#jmpStepBack").click(function () { _this.owner.stepBack(); });

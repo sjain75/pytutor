@@ -33,3 +33,7 @@ h2 {
     height: 100%;
     display: none;
 }
+
+.waiting{
+	filter: blur(20px);
+}
