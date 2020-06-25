@@ -167,7 +167,7 @@ def createWorksheetTitle(fileName, forTracesPage):
 def addToFile(codeList, listOfFileLines, headers):
     indexOfComment = 0
     for x in listOfFileLines:
-        if x == "<!--###-->":
+        if x == "<!---###-->":
             break
         else:
             indexOfComment += 1
@@ -211,7 +211,7 @@ def addToFile(codeList, listOfFileLines, headers):
     # Add end tags
     listOfFileLines[len(listOfFileLines) - 1] = "</html>"
     listOfFileLines[len(listOfFileLines) - 2] = "</body>"
-    listOfFileLines[len(listOfFileLines) - 3] = "<!--###-->"
+    listOfFileLines[len(listOfFileLines) - 3] = "<!---###-->"
 
     return listOfFileLines
 

@@ -16,11 +16,13 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
           integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
 
-    <link rel="stylesheet" href="../styles/theme.css">
-    <link rel="stylesheet" href="../styles/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<!--    <link rel="stylesheet" href="../styles/zybooks.css">-->
-    <script type="text/javascript" src="../js/pytutor-embed.bundle.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="http://pytutor.ddns.net/pytutor_master/master/pytutor/styles/theme.css">
+    <link rel="stylesheet" href="http://pytutor.ddns.net/pytutor_master/master/pytutor/styles/style.css">
+
+    <!--    <link rel="stylesheet" href="../styles/zybooks.css">-->
+    <script type="text/javascript" src="http://pytutor.ddns.net/pytutor_master/master/pytutor/js/pytutor-embed.bundle.js" charset="utf-8"></script>
     <script>
         // this is a hack so that signin works, regardless of whether google or common.js
         // loads first
@@ -49,12 +51,14 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
         integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
         crossorigin="anonymous"></script>
-<script type="text/javascript" src="../js/pytutor.js" charset="utf-8"></script>
+<!-- Fancy Alerts -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 
 <!-- main js -->
-
-<script src="../js/common.js"></script>
-<script src="../js/submission.js"></script>
+<script type="text/javascript" src="http://pytutor.ddns.net/pytutor_master/master/pytutor/js/pytutor.js" charset="utf-8"></script>
+<script src="http://pytutor.ddns.net/pytutor_master/master/pytutor/js/common.js"></script>
+<script src="http://pytutor.ddns.net/pytutor_master/master/pytutor/js/submission.js"></script>
 <script src="https://apis.google.com/js/platform.js?onload=gapiLoad" defer async></script>
 
 <!--
@@ -123,24 +127,22 @@ python pytutor.py lec-08/practice1.py lec-08/practice2.py lec-08/practice3.py le
         <!--          </li>-->
 
         <!--          <li class="nav-item">-->
-        <!--            <button class="btn btn-outline-light my-2 my-sm-0" onclick="common.googleSignOut()" id="signout"-->
-        <!--              style="display:none;">Logout</button>-->
+        <button class="btn btn-outline-light my-2 my-sm-0 nav navbar-right" onclick="common.googleSignOut()"
+                id="signout"
+                style="display:none;">Logout
+        </button>
         <!--          </li>-->
         <!--        </ul>-->
         <!--      </div>-->
     </nav>
 </header>
+<div class="waiting">
+
 <h1 class="problem">Template File, title would appear here!</h1>
 
-<h2 class="problem my-3">Worksheet Problem 404</h2>
+<!---###-->
 
-<div id="lec-07_w19_py"></div>
-<script type="text/javascript">
-  var trace = {"code": "print(\"A\")\n\ndef foo():\n   print(\"B\")\nprint(\"C\")\nfoo()\nprint(\"D\")\nfoo()\n", "trace": [{"ordered_globals": [], "stdout": "", "func_name": "<module>", "stack_to_render": [], "globals": {}, "heap": {}, "line": 1, "event": "step_line"}, {"ordered_globals": [], "stdout": "A\n", "func_name": "<module>", "stack_to_render": [], "globals": {}, "heap": {}, "line": 3, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\n", "func_name": "<module>", "stack_to_render": [], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 5, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\nC\n", "func_name": "<module>", "stack_to_render": [], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 6, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\nC\n", "func_name": "foo", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "foo", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "foo_f1", "ordered_varnames": []}], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 3, "event": "call"}, {"ordered_globals": ["foo"], "stdout": "A\nC\n", "func_name": "foo", "stack_to_render": [{"frame_id": 1, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "foo", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "foo_f1", "ordered_varnames": []}], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 4, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\nC\nB\n", "func_name": "foo", "stack_to_render": [{"frame_id": 1, "encoded_locals": {"__return__": null}, "is_highlighted": true, "is_parent": false, "func_name": "foo", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "foo_f1", "ordered_varnames": ["__return__"]}], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 4, "event": "return"}, {"ordered_globals": ["foo"], "stdout": "A\nC\nB\n", "func_name": "<module>", "stack_to_render": [], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 7, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\nC\nB\nD\n", "func_name": "<module>", "stack_to_render": [], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 8, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\nC\nB\nD\n", "func_name": "foo", "stack_to_render": [{"frame_id": 2, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "foo", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "foo_f2", "ordered_varnames": []}], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 3, "event": "call"}, {"ordered_globals": ["foo"], "stdout": "A\nC\nB\nD\n", "func_name": "foo", "stack_to_render": [{"frame_id": 2, "encoded_locals": {}, "is_highlighted": true, "is_parent": false, "func_name": "foo", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "foo_f2", "ordered_varnames": []}], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 4, "event": "step_line"}, {"ordered_globals": ["foo"], "stdout": "A\nC\nB\nD\nB\n", "func_name": "foo", "stack_to_render": [{"frame_id": 2, "encoded_locals": {"__return__": null}, "is_highlighted": true, "is_parent": false, "func_name": "foo", "is_zombie": false, "parent_frame_id_list": [], "unique_hash": "foo_f2", "ordered_varnames": ["__return__"]}], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 4, "event": "return"}, {"ordered_globals": ["foo"], "stdout": "A\nC\nB\nD\nB\n", "func_name": "<module>", "stack_to_render": [], "globals": {"foo": ["REF", 1]}, "heap": {"1": ["FUNCTION", "foo()", null]}, "line": 8, "event": "return"}]};
-  addVisualizerToPage(trace, 'lec-07_w19_py',  {startingInstruction: 0, hideCode: false, lang: "py3", disableHeapNesting: true});
-manualAnswer = "B"
-</script>
-
-<!--###-->
+</div>
+<script type="text/javascript" src="http://pytutor.ddns.net/pytutor_master/master/pytutor/js/style.js"></script>
 </body>
 </html>
