@@ -6,7 +6,7 @@ function signInReload(){
 			if(username.split("@").pop()!="wisc.edu"){
 
 				$.confirm({title: 'Not wisc.edu account',
-				content: 'You have not logged in with your wisc.edu account. Your submissions are not graded on accuracy but only on participation, so please login with your wisc.edu account. \nNot a CS220 or a wisc student, no worries, feel free to practice :)',
+				content: 'You have not logged in with your wisc.edu account. Your submissions are not graded on accuracy but only on participation, so please login with your wisc.edu account. </br>If you are not a CS220 or a wisc student, no worries, feel free to practice :)',
 				buttons: {
 					"Log out and sign in with wisc account": function () {
 						common.googleSignOut();
@@ -62,10 +62,10 @@ function manualQuestionStackLoad(isCorrect){
 		let privateQuestionHtml=questionHtmlString;
 		privateQuestionHtml = privateQuestionHtml.replace('"""manualQuestion"""',manualQuestionString);
 		let parentScriptText =$($(this).prevAll("script")[0]).text();
-		let parentScriptRefined  = parentScriptText.substring(parentScriptText.lastIndexOf("addVisualizerToPage")).split(", ");
+		let parentScriptRefined  = parentScriptText.substring(parentScriptText.lastIndexOf("addVisualizerToPage")).split(",");
 
-		let parentStoryKey = parentScriptRefined[1].substring(1, parentScriptRefined[1].length-1);
-		let parentStoryBeginsAt = Number(parentScriptRefined[2].substring(parentScriptRefined[2].lastIndexOf(":")+1));
+		let parentStoryKey = parentScriptRefined[1].replace(/\'/g,"").replace(/ /g,"");
+		let parentStoryBeginsAt = Number(parentScriptRefined[2].substring(parentScriptRefined[2].lastIndexOf(":")+1).replace(/ /g,""));
 		let questionStep = Number($(this).attr("step"));
 		if(!(parentStoryKey in manualQuestionStack)){
 			manualQuestionStack[parentStoryKey] = {};
@@ -74,7 +74,10 @@ function manualQuestionStackLoad(isCorrect){
 		privateQuestionHtml = privateQuestionHtml.replace('"""answerCorrectness"""',image);
 		manualQuestionStack[parentStoryKey][questionStep] = privateQuestionHtml;
 		if(parentStoryBeginsAt+1==questionStep){
-			$(this).after(privateQuestionHtml);}
+			$(this).after(privateQuestionHtml);  
+			$($(this).prevAll("div.parentDiv")[0]).attr("disabled", true);
+			$($(this).prevAll("div.parentDiv")[0]).addClass("waitingStory");	
+		}
 		$(this).remove();
 	});
 }
@@ -87,8 +90,60 @@ $(document).ready(function(){
         });
 });
 
+
+
+function manualCheck(){
+        parentDiv = $(this).closest(".manualQuestionDiv");
+
+        userAnswer = $(parentDiv).find(".manualAnswer").val();
+        $(parentDiv).find(".manualAnswerTruth").remove();
+
+        if(common.googleToken != null){
+				let parentStory = $($(parentDiv).prevAll("div.parentDiv")[0]);
+                let questionCode=parentStory.attr("id")+($("#curInstr", parentStory).text().split(" ")[1]);
+                let wsCode = $(window.location.pathname.split("/")).last()[0].replace(".html","");
+                common.callLambda({"fn":"addNewAnswer", "worksheetCode":wsCode, "questionCode":questionCode, "response":userAnswer},
+                    function (obj) {
+                          if(!("errorCode" in obj)){
+                            if(obj["fnExecuted"]=="addNewAnswer" && questionCode in obj["isCorrect"]){
+                                if(obj["isCorrect"][questionCode]==true){
+                                    $(parentDiv).find(".manualAnswer").after(correctImage);
+                                }
+                                else{
+                                     $(parentDiv).find(".manualAnswer").after(incorrectImage);
+                                }
+                            }
+                            else{
+                                $(parentDiv).append("Something went wrong! No error code...");
+								$(parentDiv).attr("disabled", true);
+								$(parentDiv).addClass("waitingStory");
+                            }
+                          }
+                          else {
+                              console.log(obj);
+                              console.log(obj["errorCode"]);
+                              $(parentDiv).append("Something went wrong! Error Code: "+obj["errorCode"]);
+							  $(parentDiv).attr("disabled", true);
+							  $(parentDiv).addClass("waitingStory");
+                          }
+						  if("incorrectDomain" in obj){
+						      $(parentDiv).append("</br>Incorrect Domain: Attempt not recorded");
+							}
+							$(parentStory).attr("disabled", false);
+							$(parentStory).removeClass("waitingStory");
+                        }
+                    );
+        }
+
+        else{
+             $(parentDiv).append("<span id='notLoggedIn'>You are not logged in so none of these questions will be graded! But feel free to continue for practice! :)</span>");
+        }
+
+    };
+
 function loadPage() {
 	waitDialog.close();
+	$("[id=executionSlider]").each(function(){ $(this).remove();});
 	$(".waiting").removeClass("waiting");
 
 	$("[id=vcrControls]").children().attr("disabled",true);
@@ -148,6 +203,8 @@ function loadPage() {
 			if(parentDiv.attr("id") in manualQuestionStack){
 				if(currInstr in manualQuestionStack[parentDiv.attr("id")]){
 					$(parentDiv).next().after(manualQuestionStack[parentDiv.attr("id")][currInstr]);
+					$(parentDiv).attr("disabled", true);
+					$(parentDiv).addClass("waitingStory");
 				}
 			}
 		}		
@@ -161,51 +218,10 @@ function loadPage() {
 	}	
 
 	$(".lineNo").on("click", noClick);
-	var notLoggedInAttempt = false;
-	var manualCheck = function(){
-		parentDiv = $(this).closest(".manualQuestionDiv");
-		
-		userAnswer = $(parentDiv).find(".manualAnswer").val();
-		$(parentDiv).find(".manualAnswerTruth").remove();
-
-		if(common.googleToken != null){
-				let activity=($(parentDiv).prev().prev().attr("id"));
-				let wsCode = $(window.location.pathname.split("/")).last()[0].replace(".html","");
-				common.callLambda({"fn":"addNewAnswer", "netId":common.getEmail(), "worksheetCode":wsCode, "questionCode":activity, "response":userAnswer},
-					function (obj) {
-						  if(!("errorCode" in obj)){
-							if(obj["fnExecuted"]=="addNewAnswer" && obj["isCorrect"][0]["questionCode"]==activity){
-								if(obj["isCorrect"][0]["isCorrect"]==true){
-									$(parentDiv).find(".manualAnswer").after(correctImage);
-
-								}
-								else{
-									 $(parentDiv).find(".manualAnswer").after(incorrectImage);
-
-								}
-							}
-							else{
-								$(parrentDiv).append("Something went wrong!");
-							}
-						  }
-						  else {
-							  console.log(obj);
-							  console.log(obj["errorCode"]);
-							  $(parentDiv).append("Something went wrong! Error Code: "+obj["errorCode"]); 
-						  }
-						}
-					);
-		}
-		
-		else{
-			 $(parentDiv).append("<span id='notLoggedIn'>You are not logged in so none of these questions will be graded! But feel free to continue for practice! :)</span>");
-		}
-
-	};
-
 
 	//Attach Handler to element with class "submitManual" so that it runs function manualCheck on click
-	$(".submitManual").on("click",manualCheck);
+    //attaching handler to dynamic children through static parent 
+	$("body").on("click", ".submitManual", manualCheck);
 	
 	//Define function handler for  
 	$("#question").on('input',function(e){
