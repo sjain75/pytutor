@@ -14,19 +14,23 @@ function signInReload(){
 					},
 					"Continue with non-wisc account": function () {
 					
-						pageLoad();
+						loadPage();
+						manualQuestionStackLoad({});
 					}
 					
 				}});
 
 			}
 			else{
-				pageLoad();
+				loadPage();
 				let wsCode = $(window.location.pathname.split("/")).last()[0].replace(".html","");
 				common.callLambda({"fn":"reload", "netId":common.getEmail(), "worksheetCode":wsCode},
 						function (obj){
 							if(!("errorCode" in obj || "incorrectDomain" in obj)){
 								manualQuestionStackLoad(obj["isCorrect"]);	
+							}
+							else{
+									manualQuestionStackLoad({});
 							}
 						});
 			}
@@ -67,21 +71,24 @@ function manualQuestionStackLoad(isCorrect){
 			manualQuestionStack[parentStoryKey] = {};
 		}
 		let image = (isCorrect[parentStoryKey+"_"+questionStep])?correctImage:((isCorrect[parentStoryKey+"_"+questionStep]==false)?incorrectImage:"");
-		manualQuestionStack[parentStoryKey][questionStep] = privateQuestionHtml.replace('"""answerCorrectness"""',image);
+		privateQuestionHtml = privateQuestionHtml.replace('"""answerCorrectness"""',image);
+		manualQuestionStack[parentStoryKey][questionStep] = privateQuestionHtml;
 		if(parentStoryBeginsAt+1==questionStep){
 			$(this).after(privateQuestionHtml);}
 		$(this).remove();
 	});
 }
 
+var waitDialog = null;
 $(document).ready(function(){
-$.dialog({
+	waitDialog = $.dialog({
             title: "Waiting for login!",
             content: "login to do the worksheet"
         });
-})
+});
 
-(function loadPage() {
+function loadPage() {
+	waitDialog.close();
 	$(".waiting").removeClass("waiting");
 
 	$("[id=vcrControls]").children().attr("disabled",true);
@@ -213,4 +220,4 @@ $.dialog({
 		eval(script);
 		}
 	});
-})
+}

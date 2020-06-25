@@ -171,7 +171,7 @@ var common = {};
       dataType: "json"
     })
       .done(function(data) {
-        if (data.statusCode == 200) {
+        if (true || data.statusCode == 200) {
           console.log("post succeeded, got back %o", data)
           successFn(data)
         } else {
