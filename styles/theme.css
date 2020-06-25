@@ -36,6 +36,7 @@ h2 {
 
 .waiting{
 	filter: blur(20px);
+	pointer-events:none;
 }
 
 .waitingStory{
