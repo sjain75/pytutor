@@ -1,19 +1,34 @@
-- To run app, navigate to ionic directory, and type "ionic serve" in command prompt
+Building mobile app using Ionic Angular:
 
-- Most of the work should be done within the src folder (ionic/src)
+- All ionic commands must be executed within Pytutor directory.
 
-- The menu tabs at the bottom of app page is controlled by App.tsx file (ionic/src/App.tsx)
+Ionic commands:
 
-- Icons for the menu can be found from website: https://ionicons.com/ or folder (ionic/node_modules/ionicons)
+- To run application in internet browser: "ionic serve"
 
-- The specific tabs are controlled by the files within the pages directory (ionic/src/pages)
+Ionic Cordova: (to build apk and ipa files within command line)
 
-- Tab 1 represents Menu
+- To build android app: "ionic cordova build android" (requires android SDK)
 
-- Tab 2 represents Pytutor
+- To build ios app: "ionic cordova build ios" (requires ios SDK)
 
-- Tab 3 represents Settings
+Ionic Capacitor:
 
-- The icon that will display on home screen of mobile devices can be found within resources folder (ionic/resources)
+- To build android app: "npx cap add android"
 
-- For a page to be displayed within ionic application, I think that it must be iframe compatible
+- To open android app in Android Studio: "npx cap open android"
+
+- To build ios app: "npx cap add ios"
+
+- To open ios app in XCode: "npx cap open ios"
+
+To Edit Ionic App:
+
+- Edit App Icon: resources directory
+
+- Edit everything else: src directory
+
+- Edit Tabs: src/app/tabs directory
+
+- In src/app, menu directory controls menu tab, pytutor directory controls
+pytutor tab, and settings directory controls settings tab.
