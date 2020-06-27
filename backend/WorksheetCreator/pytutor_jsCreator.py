@@ -9,7 +9,7 @@ EMBEDDING = """
 <div id="DIV" class=\"problem parentDiv\"></div>
 <script type="text/javascript">
   var trace = TRACE;
-  addVisualizerToPage(trace, 'DIV',  {START, hideCode: false, lang: "py3", disableHeapNesting: true});
+  addVisualizerToPage(trace, 'DIV',  {START, hideCode: false, lang: "py3", disableHeapNesting: true, verticalStack: window.matchMedia("(max-width: 768px)").matches});
 </script>
 """
 
