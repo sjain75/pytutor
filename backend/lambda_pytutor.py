@@ -1,101 +1,143 @@
-# Copyright 2018 Tyler Caraza-Harter
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+import boto3, traceback
+import uuid
+from urllib.parse import unquote_plus
+import datetime
+import json, urllib, boto3, botocore, base64, time, traceback, random, string, copy
+from collections import defaultdict as ddict
+import json, random, time
 
+from lambda_framework import *
+
+#from PIL import Image
+#import PIL.Image
 import json
-import random
-import time
-def s3():
-    return 0
-BUCKET="bucket"
 
-'''
-structure of student record
-{
-    "studentID":id,
-    "numberOfWorksheetAttempted":2,
-    "WorksheetCode1":{
-        questionsAttempted: ,
-        questionCorrectlyAttempted: ,
-        q1:{
-            numAttempts:    [numAttemptsTIllCorrect, totalNumAttempts]
-            isCorrect:  False/True #once they have correctly attempted becomes True,
-                                                else False
-            attempts:[
-                        [timeStamp, attemptedAnswer],
-                        [timeStamp, attemptedAnswer],
-                        [timeStamp, attemptedAnswer]                                
-                    ]
-            },
-        q2:{
-                 ...
-            },
-                   
-            ....
-        }
-    "WorksheetCode2":{
-            .....
-        }
-    } 
-'''
-'''
-TODO: add report function
-'''
-# @route
-# @user
-def addNewAnswer(user, event,s3=s3()):
+
+def lambda_handler(event, context):
+    try:
+        event = eval(event["body"])
+        # TODO: we'll need to specify this in all calls from the front end...
+        course = event.get('course', 'a')
+        if not course in ('a', 'b', 'c'):
+            return error('invalid course ID: "%s"' % course)
+        init_s3("pytutor")
+    
+        ts0 = datetime.datetime.utcnow().timestamp()
+    
+        # identify user
+        try:
+            user = get_user(event)
+        except Exception as e:
+            user = None
+        #if user != None:
+            #save_user_info(user)
+    
+        # try to invoke the function
+        fn = ROUTES.get(event['fn'], None)
+        if fn != None:
+            try:
+                # if a check fails, it will raise an exception
+                for checker in EXTRA_AUTH[event["fn"]]:
+                    checker(user)
+    
+                #code, data = fn(user, event)
+                return {
+                        'statusCode': 200,
+                        'headers': {
+                                'Access-Control-Allow-Headers': 'Content-Type',
+                                'Access-Control-Allow-Origin': 'http://pytutor.ddns.net',
+                                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                            },
+                        'body': json.dumps(fn(user, event))
+                    }
+                result = {
+                    "isBase64Encoded": False,
+                    "statusCode": code,
+                    "headers": {},
+                    "body": data
+                }
+            except Exception as e:
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Origin': 'http://pytutor.ddns.net',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    },
+                    'body': json.dumps(['Test1 from Lambda!',str(e), str(event), str(traceback.format_exc())])
+                }
+                result = error('Exception: '+str(e) + ' '+traceback.format_exc())
+        else:
+            result = error('no route for '+event['fn'])
+    
+        # try to log the event
+        ts1 = datetime.datetime.utcnow().timestamp()
+        #try:
+            #record = log_record(event, result, user, ts0, ts1)
+     #       firehose().put_record(DeliveryStreamName=FIREHOSE,
+                                 # Record = {'Data': json.dumps(record) + "\n"})
+        #except Exception as e:
+         #   result = error('Firehose Error: '+str(e) + ' '+traceback.format_exc())
+    
+        return {
+                'statusCode': 200,
+                'headers': {
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Origin': 'http://pytutor.ddns.net',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
+                'body': json.dumps(['Test1 from Lambda!',str(e), str(event), str(e)])
+            }
+    except Exception as e:
+        return {
+                'statusCode': 200,
+                'headers': {
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Origin': 'http://pytutor.ddns.net',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
+                'body': json.dumps(['Test1 from Lambda!',str(e), str(event), str(traceback.format_exc())])
+            }
+
+@route
+@user
+def addNewAnswer(user, event):
     result={
-            "statusCode": 200,
-            "success": True,
-            "errorCode": "NoError",
             "fnExecuted":"addNewAnswer",
-            "isCorrect": []   
+            "isCorrect": {}
         }
-    student=Student(event,s3,BUCKET)
-    student.getFile()
+    student=Student(event,s3(),BUCKET,user)
+    if student.isWisconsin==True:
+        student.getFile()
+    else:
+        result["incorrectDomain"]=True
     errorCode,isCorrect=student.upload()
     if errorCode!=None:
-        result["success"]=False
         result["errorCode"]=errorCode
         return result
-    result["isCorrect"].append({
-                    "questionCode":student.questionCode,
-                    "isCorrect":isCorrect
-                    })
-    report=Report(event,s3,BUCKET)
-    report.getFile()
-    report.updateReport(student.student,student.questionCode)
+    result["isCorrect"][student.questionCode]=isCorrect
+    if student.isWisconsin==True:
+        report=Report(event,s3(),BUCKET)
+        report.getFile()
+        report.updateReport(student.student,student.questionCode)
     return result
 
 
 '''
 This function is to reload the record of one worksheet of the user
 '''
-# @route
-# @user
-def reload(user, event,s3=s3()):
+@route
+@user
+def reload(user,event):
     result={
-            "statusCode": 200,
-            "success": True,
-            "errorCode": "NoError",
             "fnExecuted":"reload",
-            "isCorrect": []   
+            "isCorrect": {}
     }
-    student=Student(event,s3,BUCKET)
+    student=Student(event,s3(),BUCKET,user)
+    if student.isWisconsin==False:
+        result["incorrectDomain"]=True
     errorCode,answerList= student.reload()
-    print(errorCode)
     if errorCode!=None:
-        result["success"]=False
         result["errorCode"]=errorCode
         return result
     result["isCorrect"]=answerList
@@ -104,20 +146,16 @@ def reload(user, event,s3=s3()):
 '''
 This function is to reload the report
 '''
-# @route
-# @user
-def getReport(user,event,s3=s3()):
+@route
+@user
+def getReport(user,event):
     result={
-            "statusCode": 200,
-            "success": True,
-            "errorCode": "NoError",
             "fnExecuted":"getReport",
             "report":{}
         }
-    report=Report(event,s3,BUCKET)
+    report=Report(event,s3(),BUCKET)
     errorCode=report.getFile()
     if errorCode!=None:
-        result["success"]=False
         result["errorCode"]=errorCode
         return result
 
@@ -125,29 +163,25 @@ def getReport(user,event,s3=s3()):
     return result
     
 class Student(object):
-    def __init__(self, event,s3,bucket):
-        self.username = event["netId"]
+    def __init__(self, event,s3,bucket,user):
+        self.username = user["email"]
+        if "hd" in user:
+            self.isWisconsin=True
+        else:
+            self.isWisconsin=False
         self.worksheetCode = event['worksheetCode']
-        self.questionCode=event["questionCode"]
-        self.response = event["response"]
+        self.questionCode=None if event["fn"]!="addNewAnswer" else event["questionCode"]
+        self.response = None if event["fn"]!="addNewAnswer" else event["response"]
         self.path = 'student/' + self.username + '.json'
         self.localTime=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.student={}
         self.s3=s3
         self.bucket=bucket
 
-    def read_json_default(self,path,default):
-        try :
-            response=self.s3.get_object(Bucket=self.bucket, Key=path)
-            return json.loads(response['Body'].read().decode('utf-8'))
-        except botocore.exceptions.ClientError as e:
-            if e.response['Error']['Code'] == "NoSuchKey":
-                return default
-            raise e
 
     def getFile(self):
         try:
-            self.student=self.read_json_default(self.path, default={})  
+            self.student=self.s3.read_json_default(self.path, default={})  
         except:
             self.student = {"studentID":self.username,
                     "numberOfWorksheetAttempted":0
@@ -156,8 +190,9 @@ class Student(object):
 
     def upload(self):
         errorCode,isCorrect=self.checkAnswer()
-        if errorCode!=None:
+        if errorCode!=None or self.isWisconsin==False:
             return (errorCode,isCorrect)
+
         if self.worksheetCode not in self.student.keys():
             self.student["numberOfWorksheetAttempted"]+=1
             self.student[self.worksheetCode]={"questionsAttempted": 0,
@@ -195,9 +230,9 @@ class Student(object):
     def checkAnswer(self):
         path="worksheets/answers/"+ self.worksheetCode+".json"
         try:
-            self.worksheet=self.read_json_default(path, default={})
+            self.worksheet=self.s3.read_json_default(path, default={})
         except:
-            return ("Wrong WorksheetCode",None)
+            return ("Wrong WorksheetCode"+str(path),None)
 
         if self.questionCode not in self.worksheet.keys():
             return ("Wrong QuestionCode",None)
@@ -208,9 +243,9 @@ class Student(object):
             return (None,False)
 
     def reload(self):
-        answerList=[]        
+        answerList={}        
         try:
-            self.student=self.read_json_default(self.path, default={})
+            self.student=self.s3.read_json_default(self.path, default={})
         except:
             return (None,answerList)
         if self.worksheetCode not in self.student.keys():
@@ -218,8 +253,7 @@ class Student(object):
 
         for key in self.student[self.worksheetCode].keys():
             if key != "questionsAttempted" and key !="questionCorrectlyAttempted":
-                answerList.append({"questionCode":key,
-                                        "isCorrect":self.student[self.worksheetCode][key]["isCorrect"]})
+                answerList[key]=self.student[self.worksheetCode][key]["isCorrect"]
 
         return (None,answerList)
 
@@ -252,18 +286,10 @@ class Report:
         self.s3=s3
         self.bucket=bucket
 
-    def read_json_default(self,path,default):
-        try :
-            response=self.s3.get_object(Bucket=self.bucket, Key=path)
-            return json.loads(response['Body'].read().decode('utf-8'))
-        except botocore.exceptions.ClientError as e:
-            if e.response['Error']['Code'] == "NoSuchKey":
-                return default
-            raise e
 
     def getFile(self):
         try:
-            self.report=self.read_json_default(self.path, default={})  
+            self.report=self.s3.read_json_default(self.path, default={})  
         except:
             self.report = {
                 "WorksheetCode":self.worksheetCode,
@@ -273,7 +299,7 @@ class Report:
             }
             try:
                 worksheetPath="worksheets/answers/"+self.worksheetCode+".json"
-                worksheet=self.read_json_default(worksheetPath, default={})  
+                worksheet=self.s3.read_json_default(worksheetPath, default={})  
             except:
                 return "Wrong WorksheetCode"
             for key in worksheet.keys():
