@@ -141,6 +141,43 @@ function manualCheck(){
 
     };
 
+
+
+
+
+
+    
+    
+function displayPrevious() {
+	if (current == 1) {
+        previousButton.addClass("hidden");
+    }
+    if (current == end) {
+		nextButton.removeClass("hidden");
+    }
+    $($(".parentDiv")[current]).addClass("hidden");
+    current--;
+    $($(".parentDiv")[current]).removeClass("hidden");
+}
+
+function displayNext() {
+	if (current == end - 1) {
+		nextButton.addClass("hidden");
+	}
+	if (current == 0) {
+		previousButton.removeClass("hidden");
+	}
+	$($(".parentDiv")[current]).addClass("hidden");
+	current++;
+	$($(".parentDiv")[current]).removeClass("hidden");
+}
+
+
+var previousButton = null;
+var nextButton = null;
+var end =null;
+var current =null;
+
 function loadPage() {
 	waitDialog.close();
 	$("[id=executionSlider]").each(function(){ $(this).remove();});
@@ -148,6 +185,23 @@ function loadPage() {
 
 	$("[id=vcrControls]").children().attr("disabled",true);
 	
+	
+
+	const start = 1;
+    current = 0;
+    end = $(".parentDiv").length-1; //Find the number of problems on page
+	previousButton = $("#previousButton");
+	nextButton = $("#nextButton");
+
+	if (window.matchMedia("(max-width: 768px)").matches) {
+		$(".parentDiv").each(function(){
+				$(this).parent().addClass("hidden");
+			})
+		$($(".parentDiv")[0]).parent().removeClass("hidden");
+        previousButton.addClass("hidden");
+    }
+
+
 	$(".lineNo").each(function(){
 		$(this).attr("style","cursor: pointer;")
 		$(this).text("🔘");
