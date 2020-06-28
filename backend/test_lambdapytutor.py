@@ -6,14 +6,9 @@ import json
 
 BUCKET="bucket"
 
-def read_json_default(s3,path):
-        try :
-            response=s3.get_object(Bucket=BUCKET, Key=path)
-            return json.loads(response['Body'].read().decode('utf-8'))
-        except botocore.exceptions.ClientError as e:
-            if e.response['Error']['Code'] == "NoSuchKey":
-                return default
-            raise e
+def read_json_default(s3_client,path):
+    response=s3.get_object(Bucket=BUCKET, Key=path)
+    return json.loads(response['Body'].read().decode('utf-8'))
 
 def set_up():
     mock = mock_s3()
@@ -43,26 +38,28 @@ def set_up():
 
 def test_addNewAnswer_1():
     s3=set_up()
+    def s3():
+        return s3
     event={
         "fn": "addNewAnswer",
-        "netId": "xcai67",
         "worksheetCode": "testWorkSheet",
         "questionCode":"q1",
         "response":"A"
     }
-    result=addNewAnswer("",event,s3)
+    user={
+        "email":"xcai67@wisc.edu",
+        "hd":"wisc.edu"
+    }
+    result=addNewAnswer(user,event)
 
     assert result=={
-            "statusCode": 200,
-            "success": True,
-            "errorCode": "NoError",
             "fnExecuted":"addNewAnswer",
             "isCorrect": [
                     {"questionCode":"q1",
                     "isCorrect":True}]}
-    student=read_json_default(s3,"student/xcai67.json")
+    student=read_json_default(s3,"student/xcai67@wisc.edu.json")
     print(student)
-    assert student["studentID"]=="xcai67"
+    assert student["studentID"]=="xcai67@wisc.edu"
     assert student["numberOfWorksheetAttempted"]==1
     assert student["testWorkSheet"]["questionsAttempted"]==1
     assert student["testWorkSheet"]["questionCorrectlyAttempted"]==1
@@ -73,27 +70,29 @@ def test_addNewAnswer_1():
 
 def test_addNewAnswer_2():
     s3=set_up()
+    def s3():
+        return s3
     event={
         "fn": "addNewAnswer",
-        "netId": "xcai67",
         "worksheetCode": "testWorkSheet",
         "questionCode":"q2",
         "response":"A"
     }
-    result=addNewAnswer("",event,s3)
+    user={
+        "email":"xcai67@wisc.edu",
+        "hd":"wisc.edu"
+    }
+    result=addNewAnswer(user,event)
 
     assert result=={
-            "statusCode": 200,
-            "success": True,
-            "errorCode": "NoError",
             "fnExecuted":"addNewAnswer",
             "isCorrect": [
                     {"questionCode":"q2",
-                    "isCorrect":False}]   
+                    "isCorrect":False}]  
         }
-    student=read_json_default(s3,"student/xcai67.json")    
+    student=read_json_default(s3,"student/xcai67@wisc.edu.json")    
     print(student["testWorkSheet"])
-    assert student["studentID"]=="xcai67"
+    assert student["studentID"]=="xcai67@wisc.edu"
     assert student["numberOfWorksheetAttempted"]==1
     assert student["testWorkSheet"]["questionsAttempted"]==1
     assert student["testWorkSheet"]["questionCorrectlyAttempted"]==0
@@ -103,137 +102,155 @@ def test_addNewAnswer_2():
 
 def test_addNewAnswer_3():
     s3=set_up()
+    def s3():
+        return s3
     event={
         "fn": "addNewAnswer",
-        "netId": "xcai67",
         "worksheetCode": "testWorkSheet",
         "questionCode":"q1",
         "response":"B"
     }
-    addNewAnswer("",event,s3)
+    user={
+        "email":"xcai67@wisc.edu",
+        "hd":"wisc.edu"
+    }
+    addNewAnswer(user,event)
     event["response"]="A"
-    addNewAnswer("",event,s3)
-    student=read_json_default(s3,"student/xcai67.json")    
+    addNewAnswer(user,event)
+    student=read_json_default(s3,"student/xcai67@wisc.edu.json")    
     assert student["testWorkSheet"]["q1"]["numAttempts"] == [2,2]
     assert student["testWorkSheet"]["q1"]["isCorrect"]==True
     assert len(student["testWorkSheet"]["q1"]["attempts"])==2
-    addNewAnswer("",event,s3)
-    student=read_json_default(s3,"student/xcai67.json")    
+    addNewAnswer(user,event)
+    student=read_json_default(s3,"student/xcai67@wisc.edu.json")    
     assert student["testWorkSheet"]["q1"]["numAttempts"]==[2,3]
     assert len(student["testWorkSheet"]["q1"]["attempts"])==3
 
     event["questionCode"]="q2"
     event["response"]="B"
-    addNewAnswer("",event,s3)
-    student=read_json_default(s3,"student/xcai67.json")    
+    addNewAnswer(user,event)
+    student=read_json_default(s3,"student/xcai67@wisc.edu.json")    
     assert student["testWorkSheet"]["questionsAttempted"]==2
     assert student["testWorkSheet"]["questionCorrectlyAttempted"]==2
 
 def test_addNewAnswer_4():
     s3=set_up()
+    def s3():
+        return s3
     event={
         "fn": "addNewAnswer",
-        "netId": "xcai67",
         "worksheetCode": "testWrongWorkSheet",
         "questionCode":"q1",
         "response":"B"
     }
-    result=addNewAnswer("",event,s3)
+    user={
+        "email":"xcai67@wisc.edu",
+        "hd":"wisc.edu"
+    }
+    result=addNewAnswer(user,event)
     assert result=={
-            "statusCode": 200,
-            "success": False,
             "errorCode": "Wrong WorksheetCode",
             "fnExecuted":"addNewAnswer",
             "isCorrect": []   
     }
     event["worksheetCode"]="testWorkSheet"
     event["questionCode"]="wrongQuestionCode"
-    result=addNewAnswer("",event,s3)
+    result=addNewAnswer(user,event)
     assert result=={
-            "statusCode": 200,
-            "success": False,
             "errorCode": "Wrong QuestionCode",
             "fnExecuted":"addNewAnswer",
-            "isCorrect": []   
+            "isCorrect": []
     }
 
 def test_reload_1():
     s3=set_up()
+    def s3():
+        return s3
     event={
         "fn": "reload",
-        "netId": "xcai67",
         "worksheetCode": "testWorkSheet",
         "questionCode":"q1",
         "response":"B"
     }
-    result=reload("",event,s3)
+    user={
+        "email":"xcai67@wisc.edu",
+        "hd":"wisc.edu"
+    }
+    result=reload(user,event)
     assert result=={
-            "statusCode": 200,
-            "success": True,
-            "errorCode": "NoError",
             "fnExecuted":"reload",
-            "isCorrect": []   
+            "isCorrect": []
     }
     
 def test_reload_2():
     s3=set_up()
+    def s3():
+        return s3
     event={
         "fn": "addNewAnswer",
-        "netId": "xcai67",
         "worksheetCode": "testWorkSheet",
         "questionCode":"q1",
         "response":"B"
     }
-    addNewAnswer("",event,s3)
+    user={
+        "email":"xcai67@wisc.edu",
+        "hd":"wisc.edu"
+    }
+    addNewAnswer(user,event)
     event["fn"]="reload"
     event["worksheetCode"]="wrong WorksheetCode"
-    result=reload("",event,s3)
+    result=reload(user,event)
     assert result=={
-            "statusCode": 200,
-            "success": False,
             "errorCode": "Wrong WorksheetCode",
             "fnExecuted":"reload",
-            "isCorrect": []   
+            "isCorrect": [] 
     }
 
 def test_reload_3():
     s3=set_up()
+    def s3():
+        return s3
     event={
         "fn": "addNewAnswer",
-        "netId": "xcai67",
         "worksheetCode": "testWorkSheet",
         "questionCode":"q1",
         "response":"A"
     }
-    addNewAnswer("",event,s3)
+    user={
+        "email":"xcai67@wisc.edu",
+        "hd":"wisc.edu"
+    }
+    addNewAnswer(user,event)
     event["questionCode"]="q2"
-    addNewAnswer("",event,s3)
+    addNewAnswer(user,event)
     event["fn"]="reload"
-    result=reload("",event,s3)
+    result=reload(user,event)
     assert result=={
-            "statusCode": 200,
-            "success": True,
-            "errorCode": "NoError",
             "fnExecuted":"reload",
             "isCorrect": [{"questionCode":"q1",
                             "isCorrect":True},
                             {"questionCode":"q2",
-                            "isCorrect":False}]   
+                            "isCorrect":False}],
             }
 
 def test_report_1():
     s3=set_up()
+    def s3():
+        return s3
     event={
         "fn": "addNewAnswer",
-        "netId": "xcai67",
         "worksheetCode": "testWorkSheet",
         "questionCode":"q1",
         "response":"A"
     }
-    addNewAnswer("",event,s3)
+    user={
+        "email":"xcai67@wisc.edu",
+        "hd":"wisc.edu"
+    }
+    addNewAnswer(user,event)
     report=read_json_default(s3,"pytutor/worksheets/report/testWorkSheet.json")
     assert report["WorksheetCode"]=="testWorkSheet"
-    assert report["attemptedBy"]==["xcai67"]
+    assert report["attemptedBy"]==["xcai67@wisc.edu"]
     assert report["completedBy"]==[]
     assert report["questions"]["q1"]=={
                 "numberOfStudentAttempted":1,
@@ -242,18 +259,23 @@ def test_report_1():
 
 def test_report_2():
     s3=set_up()
+    def s3():
+        return s3
     event={
         "fn": "addNewAnswer",
-        "netId": "xcai67",
         "worksheetCode": "testWorkSheet",
         "questionCode":"q1",
         "response":"A"
     }
-    addNewAnswer("",event,s3)
-    event["netId"]="xliu89"
-    addNewAnswer("",event,s3)
+    user={
+        "email":"xcai67@wisc.edu",
+        "hd":"wisc.edu"
+    }
+    addNewAnswer(user,event)
+    user["email"]="xliu89@wisc.edu"
+    addNewAnswer(user,event)
     report=read_json_default(s3,"pytutor/worksheets/report/testWorkSheet.json")
-    assert report["attemptedBy"]==["xcai67","xliu89"]
+    assert report["attemptedBy"]==["xcai67@wisc.edu","xliu89@wisc.edu"]
     assert report["questions"]["q1"]=={
                 "numberOfStudentAttempted":2,
                 "numberOfStudentsCorrectlyAttmpted":2,
@@ -261,40 +283,46 @@ def test_report_2():
 
 def test_report_3():
     s3=set_up()
+    def s3():
+        return s3
     event={
         "fn": "addNewAnswer",
-        "netId": "xcai67",
         "worksheetCode": "testWorkSheet",
         "questionCode":"q1",
         "response":"A"
     }
-    addNewAnswer("",event,s3)
+    user={
+        "email":"xcai67@wisc.edu",
+        "hd":"wisc.edu"
+    }
+    addNewAnswer(user,event)
     event["questionCode"]="q2"
     event["response"]="B"
-    addNewAnswer("",event,s3)
+    addNewAnswer(user,event)
     event["questionCode"]="q3"
     event["response"]="C"
-    addNewAnswer("",event,s3)
+    addNewAnswer(user,event)
     event["questionCode"]="q4"
     event["response"]=5
-    addNewAnswer("",event,s3)
+    addNewAnswer(user,event)
     report=read_json_default(s3,"pytutor/worksheets/report/testWorkSheet.json")
-    assert report["completedBy"]==["xcai67"]
+    assert report["completedBy"]==["xcai67@wisc.edu"]
 
 def test_getReport_1():
     s3=set_up()
+    def s3():
+        return s3
     event={
         "fn": "addNewAnswer",
-        "netId": "xcai67",
         "worksheetCode": "testWorkSheet",
         "questionCode":"q1",
         "response":"A"
     }
-    addNewAnswer("",event,s3)
+    user={
+        "email":"xcai67@wisc.edu",
+        "hd":"wisc.edu"
+    }
+    addNewAnswer(user,event)
     event["fn"]="getReport"
-    report=getReport("",event,s3)
-    print (report)
+    report=getReport(user,event)
     assert len(report["report"]["questions"])==4
-
-if __name__ == '__main__':
-    test_getReport_1()
