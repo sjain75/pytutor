@@ -166,8 +166,11 @@ def createWorksheetTitle(fileName, forTracesPage):
 
 def addToFile(codeList, listOfFileLines, headers):
     indexOfComment = 0
+    endTags = []
     for x in listOfFileLines:
         if x == "<!---###-->":
+            for x in range(indexOfComment, len(listOfFileLines)):
+                endTags.append(listOfFileLines[x])
             break
         else:
             indexOfComment += 1
@@ -184,7 +187,7 @@ def addToFile(codeList, listOfFileLines, headers):
                 except ValueError:
                     print("Error! Not a valid worksheet problem.")
                 break
-            codeList[scriptIndex] = "<h2 class = \"problem\">Worksheet Problem " + str(wsProb) + "</h2>" + "\n" + codeList[scriptIndex]
+            codeList[scriptIndex] = "<div>\n" + "<h2 class = \"problem\">Worksheet Problem " + str(wsProb) + "</h2>" + "\n" + codeList[scriptIndex]
 
             for scriptTagIndex in range(scriptIndex, len(codeList)):
                 if "</script>" not in codeList[scriptTagIndex]:
@@ -207,11 +210,12 @@ def addToFile(codeList, listOfFileLines, headers):
     for x in codeList:
         listOfFileLines[indexOfComment] = x
         indexOfComment += 1
-
-    # Add end tags
-    listOfFileLines[len(listOfFileLines) - 1] = "</html>"
-    listOfFileLines[len(listOfFileLines) - 2] = "</body>"
-    listOfFileLines[len(listOfFileLines) - 3] = "<!---###-->"
+    
+    # Copies everything over from the end Tags/static content to the end. less hardcoding now.
+    endTagsIndex = 0
+    for listIndex in range(indexOfComment, len(listOfFileLines)):
+        listOfFileLines[listIndex] = endTags[endTagsIndex]
+        endTagsIndex += 1
 
     return listOfFileLines
 
@@ -225,6 +229,7 @@ def generateManualQuestion():
             stepNumber = int(input("What step will this question apply to?"))
         except ValueError:
             print("Error! Step number must be an integer value!")
+            continue
 
         if py[:-3] + "_" + str(stepNumber) in answers:
             print("Question already exists!")
@@ -251,6 +256,9 @@ def generateQuestionString():
     for q in range(0, numQuestions):
         print("Generating question " + str(q + 1) + "...")
         stringQuestions += generateManualQuestion() + "\n"
+    
+    # Adding closing div for each problem. Will always be after all the manual questions.
+    stringQuestions += "</div> \n"
     
     return stringQuestions
 
