@@ -1,12 +1,54 @@
+//Global Variables
+
+//stack for each question includes question code and the step on which they appear
 var manualQuestionStack={};
 
+//Strings with placeholders
+//a template for manual questions
+questionHtmlString=`<div class="manualQuestionDiv">
+            <div>"""manualQuestion"""</div> 
+            <div style="margin-bottom: 5px;"><textarea style="width: 85%;" cols="20" rows="1" spellcheck="false" autocapitalize="false" class="manualAnswer"></textarea></div>"""answerCorrectness"""
+            <div><button class="submitManual button">Check</button></div>
+        </div>`;
+
+//template for image showing correct and incorrect symbol
+correctImage = `<div id=answerTruth style='font-size:40px'>
+					<img width='8%' style='padding-left:2%' src='../resources/correct-checkmark.svg'></img>
+				</div>`;
+incorrectImage = `<div id=answerTruth>
+					<img width='8%' style='padding-left:2%' src='../resources/incorrect-cross.svg'></img>
+				</div>`;
+
+var waitDialog = null;
+
+var previousButton = null;
+var nextButton = null;
+var end =null;
+var current =null;
+
+$(document).ready(function(){
+    waitDialog = $.dialog({
+            title: "Waiting for login!",
+            content: "login to do the worksheet"
+        });
+});
+
+
+/*
+	Function is a call back for successful sign in through GAPI. It's called from common.js
+	It's also called initially during which it checks it disables page and shows waiting for signin dialog box.
+	Verifies successful signin and causes reload data to load for wisc accounts and loads manual question stack
+	and loads (beautifies) the rest of the page
+*/
 function signInReload(){
 		if(common.googleToken!=null){
 			username = common.getEmail();
 			if(username.split("@").pop()!="wisc.edu"){
 
 				$.confirm({title: 'Not wisc.edu account',
-				content: 'You have not logged in with your wisc.edu account. Your submissions are not graded on accuracy but only on participation, so please login with your wisc.edu account. </br>If you are not a CS220 or a wisc student, no worries, feel free to practice :)',
+				content: `You have not logged in with your wisc.edu account. 
+						Your submissions are not graded on accuracy but only on participation, so please login with your wisc.edu account. 
+						</br>If you are not a CS220 or a wisc student, no worries, feel free to practice :)`,
 				buttons: {
 					"Log out and sign in with wisc account": function () {
 						common.googleSignOut();
@@ -41,21 +83,16 @@ function signInReload(){
 				title: "Waiting for login!",
 				content: "login to do the worksheet"
 			});
-			$(".jconfirm-closeIcon").remove();
 		}
     };
 
-$("#signin").on("load", signInReload);//figure this out
+//To show a waiting for login dialog box. Probably not needed because of waitDialog displayed on load
+//$("#signin").on("load", signInReload);//figure this out
 
-		
-questionHtmlString=`<div content_resource_id="32241403" class="manualQuestionDiv">
-			<div>"""manualQuestion"""</div> 
-			<div style="margin-bottom: 5px;"><textarea style="width: 85%;" cols="20" rows="1" spellcheck="false" autocapitalize="false" class="manualAnswer"></textarea></div>"""answerCorrectness"""
-			<div><button class="submitManual button">Check</button></div>
-		</div>`;
-correctImage = `<div id=answerTruth style='font-size:40px'><img width='8%' style='padding-left:2%' src='../resources/correct-checkmark.svg'></img></div>`;
-incorrectImage = `<div id=answerTruth><img width='8%' style='padding-left:2%' src='../resources/incorrect-cross.svg'></img></div>`;
-//Take the simple div with class manual question and make it fancier. Runs at page load for each div with class "manualQuestion"
+/*
+	Take the simple div with class manual question and make it fancier. Runs at page load for each div with class "manualQuestion"
+	Parameter isCorrect holds a dictionary specifying the correctness for questions that have previously been attempted. 
+*/
 function manualQuestionStackLoad(isCorrect){
 	$(".manualQuestion").each(function(){
 		manualQuestionString= $(this).text();
@@ -80,18 +117,15 @@ function manualQuestionStackLoad(isCorrect){
 		}
 		$(this).remove();
 	});
+	//something is cause visualizer arrows to appear in weird places
+    //Probable explanation: Adding new question changes positions but arrow don't update
+    redrawAllVisualizerArrows(); //method exported from embed-bundle
+
 }
 
-var waitDialog = null;
-$(document).ready(function(){
-	waitDialog = $.dialog({
-            title: "Waiting for login!",
-            content: "login to do the worksheet"
-        });
-});
-
-
-
+/*
+	Checks manualQuestion through ajax call to the lambda
+*/
 function manualCheck(){
         parentDiv = $(this).closest(".manualQuestionDiv");
 
@@ -142,12 +176,9 @@ function manualCheck(){
     };
 
 
-
-
-
-
+//Functions for mobile view, and screen size
     
-    
+//Displays previous story question
 function displayPrevious() {
 	if (current == 1) {
         previousButton.addClass("hidden");
@@ -155,11 +186,15 @@ function displayPrevious() {
     if (current == end) {
 		nextButton.removeClass("hidden");
     }
-    $($(".parentDiv")[current]).addClass("hidden");
+    $($(".parentDiv")[current]).parent().addClass("hidden");
     current--;
-    $($(".parentDiv")[current]).removeClass("hidden");
+    $($(".parentDiv")[current]).parent().removeClass("hidden");
+    //need to update visualizer arrows
+    redrawAllVisualizerArrows(); //method exported from embed-bundle
+
 }
 
+//Displays next story question
 function displayNext() {
 	if (current == end - 1) {
 		nextButton.addClass("hidden");
@@ -167,16 +202,15 @@ function displayNext() {
 	if (current == 0) {
 		previousButton.removeClass("hidden");
 	}
-	$($(".parentDiv")[current]).addClass("hidden");
+	$($(".parentDiv")[current]).parent().addClass("hidden");
 	current++;
-	$($(".parentDiv")[current]).removeClass("hidden");
+	$($(".parentDiv")[current]).parent().removeClass("hidden");
+	//need to update visualizer arrows
+    redrawAllVisualizerArrows(); //method exported from embed-bundle
+
 }
 
 
-var previousButton = null;
-var nextButton = null;
-var end =null;
-var current =null;
 
 function loadPage() {
 	waitDialog.close();
@@ -185,8 +219,7 @@ function loadPage() {
 
 	$("[id=vcrControls]").children().attr("disabled",true);
 	
-	
-
+    //For Mobile UI compatibility
 	const start = 1;
     current = 0;
     end = $(".parentDiv").length-1; //Find the number of problems on page
@@ -201,13 +234,21 @@ function loadPage() {
         previousButton.addClass("hidden");
     }
 
+	//something is cause visualizer arrows to appear in weird places
+    //this is a hack to fix it. Potential Cause: Custom media queries
+    redrawAllVisualizerArrows(); //method exported from embed-bundle
 
+	
+	//make numbers clickable
 	$(".lineNo").each(function(){
 		$(this).attr("style","cursor: pointer;")
-		$(this).text("🔘");
-	}); //replace all line numbers with something that looks more clickable
-	var obj;
-	
+		//$(this).text("🔘"); //replace all line numbers with something that looks more clickable
+	});	
+
+	/*
+		Check if number clicked is next in story execution and proceed accordingly
+		Displays manual questions related to particular step and removes the obsolete ones	
+	*/
 	var noClick = function() {
 		parentDiv =$(this).parents("div.parentDiv").last(); //find the parentDiv of the question based on the step clicked on 
 		console.log(parentDiv);
@@ -270,15 +311,16 @@ function loadPage() {
 
 
 	}	
-
+	
+	//Attach handler so that clickable numbers redirect and steps next in the story
 	$(".lineNo").on("click", noClick);
 
 	//Attach Handler to element with class "submitManual" so that it runs function manualCheck on click
     //attaching handler to dynamic children through static parent 
 	$("body").on("click", ".submitManual", manualCheck);
 	
-	//Define function handler for  
-	$("#question").on('input',function(e){
+	//Is this obsolete? Can't see a use for it. Commenting for now till something breaks 
+	/*$("#question").on('input',function(e){
 		var question = $(this).val();
 		console.log(question);
 		if(question.indexOf("line")!=-1){
@@ -289,5 +331,5 @@ function loadPage() {
 		console.log(script);
 		eval(script);
 		}
-	});
+	});*/
 }
