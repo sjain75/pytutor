@@ -932,7 +932,7 @@ var ExecutionVisualizer = /** @class */ (function () {
                     _this.params.updateOutputCallback(_this);
             }
         });
-        this.outputBox = new ProgramOutputBox(this, this.domRoot.find('#vizLayoutTdSecond'), this.params.embeddedMode ? '45px' : null);
+        this.outputBox = new ProgramOutputBox(this, this.domRoot.find('#vizLayoutTdSecond'), this.params.embeddedMode ? '75px' : null);
         this.dataViz = new DataVisualizer(this, this.domRoot.find('#vizLayoutTdSecond'), this.domRootD3.select('#vizLayoutTdSecond'));
         myViz.navControls.showError(this.instrLimitReachedWarningMsg);
         myViz.navControls.setupSlider(this.curTrace.length - 1);

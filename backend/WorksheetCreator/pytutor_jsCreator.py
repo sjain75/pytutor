@@ -1,4 +1,3 @@
-
 import os, sys, json, subprocess
 from shutil import copyfile
 from subprocess import check_output
@@ -17,6 +16,9 @@ answers = {}
 
 py = ""
 
+# Converts python code to JavaScript. 
+# If the python file does not exist in specified file destination, will throw an error.
+# py - the file path.
 def run_pytutor(py):
     try:
         js = check_output(["python", PYTUTOR, py])
@@ -90,9 +92,13 @@ def main():
         with open("../../worksheets/answers/" + fileName.replace(".html", ".json"), "w") as json_file:
             json.dump(answers, json_file)
 
+    # If given no additional python files, will print this error. See README for more information.
     else:
         print("Error! How to run program: python pytutor_jsCreator.py [file_1.py] [file_2.py]...")
 
+# Checks if given input string is empty. Will keep on prompting user to input a non-empty string
+# until user enters one.
+# inputString - input string that user provides.
 def checkEmptyInput(inputString):
     temp = input(inputString)
     while temp == "":
@@ -100,12 +106,19 @@ def checkEmptyInput(inputString):
         temp = input(inputString)
     return temp
 
+# Will generate and essentially add the scripts to the HTML file.
+# forTracesPage - boolean signaling if we are generating trace.html.
+# lines - the HTML file in the form of a list (TODO, maybe remove if not necessary).
+# Returns the updated file in a list.
 def generateScripts(forTracesPage, lines):
     global py
     for py in sys.argv[1:]:
         lines = addToFile([generateTrace(py, forTracesPage)], lines, not(forTracesPage))
     return lines
 
+# Creates the initial traces page itself. 
+# Will throw an error and exit if defaultPageLayout.html does not exist within the
+# pages directory.
 def createTracesPage():
     print("Generating ONLY story/trace questions in HTML/trace.html...")
     try:
@@ -118,10 +131,16 @@ def createTracesPage():
 
     listOfFileLines = generateScripts(forTracesPage=True, lines=listOfFileLines)
 
+    # Writes to the trace.html file.
     with open("../../pages/trace.html", "w") as file:
         for item in listOfFileLines:
             file.write("%s\n" % item)
 
+# Creates the actual "trace"/div container for the HTML file. Uses the EMBEDDING and replaces
+# specific keywords. Prompts user to input a valid initial step number.
+# py - the file path to the python file
+# forTracesPage - boolean signaling whether or not we are generating the trace.html page.
+# return Code - returns the trace/div container.
 def generateTrace(py, forTracesPage):
     js = run_pytutor(py)
     div = py.replace(".", "_").replace("/", "_")
@@ -145,6 +164,11 @@ def generateTrace(py, forTracesPage):
 
     return code
     
+# Generates the worksheets <h1> by storing the defaultPageLayout.html into a list. Modifies
+# specific index to create the header.
+# fileName - the name of the file.
+# forTracesPage - boolean signaling whether or not we are generating the trace.html page.
+# return lines - returns the updated file in the form of a list.
 def createWorksheetTitle(fileName, forTracesPage):
     with open (("../../pages/" if forTracesPage else "../../worksheets/HTML/") + fileName) as file:
         lines = file.read().splitlines()
@@ -164,6 +188,12 @@ def createWorksheetTitle(fileName, forTracesPage):
     
     return lines
 
+# Adds to the file by locating a specific comment ("<!---###-->"). Upon identifying the location
+# of the comment, appends the traces that we produced earlier to that location. Prompts for
+# manual questions as well.
+# codeList - the scripts themselves, stored in a list.
+# listOfFileLines - the file that we are adding to in the form of a list.
+# headers - boolean, telling the program if we want to add additional headers/manual questions.
 def addToFile(codeList, listOfFileLines, headers):
     indexOfComment = 0
     endTags = []
@@ -189,6 +219,7 @@ def addToFile(codeList, listOfFileLines, headers):
                 break
             listOfFileLines.append("<h2 class = \"problem\">Worksheet Problem " + str(wsProb) + "</h2>" + "\n")
             listOfFileLines.append(codeList[scriptIndex])
+            # This prompts the user for manual questions (if any).
             listOfFileLines.append("\n" + generateQuestionString())
 
 	# Copies everything over from the end Tags/static content to the end. less hardcoding now.
@@ -197,6 +228,8 @@ def addToFile(codeList, listOfFileLines, headers):
     listOfFileLines.extend(endTags)
     return listOfFileLines
 
+# Prompts user for a question/answer to the trace. The answers are stored in a json file.
+# returns question - returns the question and answer.
 def generateManualQuestion():
     global answers
     question = checkEmptyInput("What is the manual question?")
@@ -221,7 +254,11 @@ def generateManualQuestion():
 
     question = "<div step = " + str(stepNumber) + " class = \"manualQuestion\">" + question + "</div>"
     return question
-    
+
+# Prompting the user to give an integer representing how many manual questions they want for
+# the trace page. Will take 0 as an input.
+# return stringQuestions - returns the total number of questions (encompassed in their div)
+#  as a string. 
 def generateQuestionString():
     while(True):
         try:
