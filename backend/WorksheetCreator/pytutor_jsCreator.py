@@ -169,54 +169,32 @@ def addToFile(codeList, listOfFileLines, headers):
     endTags = []
     for x in listOfFileLines:
         if x == "<!---###-->":
-            for x in range(indexOfComment, len(listOfFileLines)):
-                endTags.append(listOfFileLines[x])
+            endTags = listOfFileLines[indexOfComment:]
+            listOfFileLines = listOfFileLines[:indexOfComment]
             break
         else:
             indexOfComment += 1
 
+    for index, script_code in enumerate(codeList):
+            listOfFileLines.append("<div>\n")
+            listOfFileLines.append(codeList[index])
+
     if headers:
-        fileNumber = 1
         for scriptIndex in range(0, len(codeList)):
-            # Sort of a bad way of doing this... Find a better way to only put <h2 class>Worksheet Title</h2> etc.
-            if "<div id=" not in codeList[scriptIndex]:
-                continue
             while(True):
                 try:
                     wsProb = float(input("What worksheet problem is this (an int or float)?"))
                 except ValueError:
                     print("Error! Not a valid worksheet problem.")
                 break
-            codeList[scriptIndex] = "<div>\n" + "<h2 class = \"problem\">Worksheet Problem " + str(wsProb) + "</h2>" + "\n" + codeList[scriptIndex]
+            listOfFileLines.append("<h2 class = \"problem\">Worksheet Problem " + str(wsProb) + "</h2>" + "\n")
+            listOfFileLines.append(codeList[scriptIndex])
+            listOfFileLines.append("\n" + generateQuestionString())
 
-            for scriptTagIndex in range(scriptIndex, len(codeList)):
-                if "</script>" not in codeList[scriptTagIndex]:
-                    continue
-                codeList[scriptTagIndex] += "\n" + generateQuestionString()
-                break
-
-            fileNumber += 1
-
-    newList = [""] * (len(codeList) + len(listOfFileLines))
-
-    j = 0
-    # Copy over lines into newList.
-    for x in listOfFileLines:
-        newList[j] = x
-        j += 1
-    
-    listOfFileLines = newList
-
-    for x in codeList:
-        listOfFileLines[indexOfComment] = x
-        indexOfComment += 1
-    
-    # Copies everything over from the end Tags/static content to the end. less hardcoding now.
-    endTagsIndex = 0
-    for listIndex in range(indexOfComment, len(listOfFileLines)):
-        listOfFileLines[listIndex] = endTags[endTagsIndex]
-        endTagsIndex += 1
-
+	# Copies everything over from the end Tags/static content to the end. less hardcoding now.
+	# Adding closing div for each story problem. Will always be after all the manual questions.
+    listOfFileLines.append("</div>\n")
+    listOfFileLines.extend(endTags)
     return listOfFileLines
 
 def generateManualQuestion():
@@ -256,9 +234,6 @@ def generateQuestionString():
     for q in range(0, numQuestions):
         print("Generating question " + str(q + 1) + "...")
         stringQuestions += generateManualQuestion() + "\n"
-    
-    # Adding closing div for each problem. Will always be after all the manual questions.
-    stringQuestions += "</div> \n"
     
     return stringQuestions
 
