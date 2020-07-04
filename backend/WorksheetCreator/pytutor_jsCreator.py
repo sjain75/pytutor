@@ -141,7 +141,7 @@ def generateTrace(py, forTracesPage):
         start = "startingInstruction:" + str(numSteps)
         code = EMBEDDING.replace("DIV", div).replace("TRACE", js).replace("START", start)
     else:
-        code = EMBEDDING.replace("DIV", div).replace("TRACE", js).replace("START", "startingInstruction: 1")
+        code = EMBEDDING.replace("DIV", div).replace("TRACE", js).replace("START", "startingInstruction: 0")
 
     return code
     
