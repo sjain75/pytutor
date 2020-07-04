@@ -117,6 +117,10 @@ function manualQuestionStackLoad(isCorrect){
 		}
 		$(this).remove();
 	});
+	//something is cause visualizer arrows to appear in weird places
+    //Probable explanation: Adding new question changes positions but arrow don't update
+    redrawAllVisualizerArrows(); //method exported from embed-bundle
+
 }
 
 /*
@@ -185,6 +189,9 @@ function displayPrevious() {
     $($(".parentDiv")[current]).parent().addClass("hidden");
     current--;
     $($(".parentDiv")[current]).parent().removeClass("hidden");
+    //need to update visualizer arrows
+    redrawAllVisualizerArrows(); //method exported from embed-bundle
+
 }
 
 //Displays next story question
@@ -198,6 +205,9 @@ function displayNext() {
 	$($(".parentDiv")[current]).parent().addClass("hidden");
 	current++;
 	$($(".parentDiv")[current]).parent().removeClass("hidden");
+	//need to update visualizer arrows
+    redrawAllVisualizerArrows(); //method exported from embed-bundle
+
 }
 
 
@@ -208,8 +218,8 @@ function loadPage() {
 	$(".waiting").removeClass("waiting");
 
 	$("[id=vcrControls]").children().attr("disabled",true);
-
-   //For Mobile UI compatibility
+	
+    //For Mobile UI compatibility
 	const start = 1;
     current = 0;
     end = $(".parentDiv").length-1; //Find the number of problems on page
@@ -224,6 +234,11 @@ function loadPage() {
         previousButton.addClass("hidden");
     }
 
+	//something is cause visualizer arrows to appear in weird places
+    //this is a hack to fix it. Potential Cause: Custom media queries
+    redrawAllVisualizerArrows(); //method exported from embed-bundle
+
+	
 	//make numbers clickable
 	$(".lineNo").each(function(){
 		$(this).attr("style","cursor: pointer;")
