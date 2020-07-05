@@ -32,34 +32,34 @@ Pytutor is a ...
 <b> Bucket Structure </b>
 
 pytutor.ddns.net 
-        ->userDirectory //tyler, meena, ... //everything inside only accessible by user 
-                ->worksheets  
-                        ->report  
-                        ->html //public  
-                        ->answers  
-                        ->masterReport.json  
-                ->student  
-                        ->username.json  
-                ->pages  
-                        ->Sample Pages //allows users to create a home page //home.html //public  
-                        ->Page to access student report from  //Template, makes users login from front-end using GAPI and then loads data through ajax request to lamdba  
-        ->js   
-        ->styles   
-        ->user-permission for requests directed in through lambda //for example request for report from front end to lambda //super-private  
+        * userDirectory //tyler, meena, ... //everything inside only accessible by user 
+                * worksheets  
+                        * report  
+                        * html //public  
+                        * answers  
+                        * masterReport.json  
+                * student  
+                        * username.json  
+                * pages  
+                        * Sample Pages //allows users to create a home page //home.html //public  
+                        * Page to access student report from  //Template, makes users login from front-end using GAPI and then loads data through ajax request to lamdba  
+        * js   
+        * styles   
+        * user-permission for requests directed in through lambda //for example request for report from front end to lambda //super-private  
 
 Github repo Sturcutre on User computers  
-        ->WorksheetCreator  
-                ->creator.py file  
-                ->test Py files  
-        ->pages  
-                ->home.html //can be pushed up to s3 bucket  
-        ->worksheets //can be pushed up to s3 bucket  
-                -> html  
-                ->answers  
-        ->js  
-        ->styles  
-        ->ionic  
-        ->resources  
+        * WorksheetCreator  
+                * creator.py file  
+                * test Py files  
+        * pages  
+                * home.html //can be pushed up to s3 bucket  
+        * worksheets //can be pushed up to s3 bucket  
+                * html  
+                * answers  
+        * js  
+        * styles  
+        * ionic  
+        * resources  
         
 ## Glossary
 
