@@ -31,7 +31,7 @@ Pytutor is a ...
 
 <b> Bucket Structure </b>
 
-pytutor.ddns.net 
+* pytutor.ddns.net 
         * userDirectory //tyler, meena, ... //everything inside only accessible by user 
                 * worksheets  
                         * report  
@@ -47,7 +47,7 @@ pytutor.ddns.net
         * styles   
         * user-permission for requests directed in through lambda //for example request for report from front end to lambda //super-private  
 
-Github repo Sturcutre on User computers  
+* Github repo Sturcutre on User computers  
         * WorksheetCreator  
                 * creator.py file  
                 * test Py files  
@@ -69,5 +69,4 @@ Github repo Sturcutre on User computers
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## License
-
 
