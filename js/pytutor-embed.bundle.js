@@ -22342,7 +22342,7 @@ function createAllVisualizersFromHtmlAttrs() {
 window.addVisualizerToPage = addVisualizerToPage;
 window.createVisualizerFromJSON = createVisualizerFromJSON;
 window.createAllVisualizersFromHtmlAttrs = createAllVisualizersFromHtmlAttrs;
-
+window.redrawAllVisualizerArrows = redrawAllVisualizerArrows;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ })
