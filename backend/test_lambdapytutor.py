@@ -54,9 +54,7 @@ def test_addNewAnswer_1():
 
     assert result=={
             "fnExecuted":"addNewAnswer",
-            "isCorrect": [
-                    {"questionCode":"q1",
-                    "isCorrect":True}]}
+            "isCorrect": {"q1":True}}
     student=read_json_default(s3,"student/xcai67@wisc.edu.json")
     print(student)
     assert student["studentID"]=="xcai67@wisc.edu"
@@ -86,9 +84,7 @@ def test_addNewAnswer_2():
 
     assert result=={
             "fnExecuted":"addNewAnswer",
-            "isCorrect": [
-                    {"questionCode":"q2",
-                    "isCorrect":False}]  
+            "isCorrect": {"q2":False} 
         }
     student=read_json_default(s3,"student/xcai67@wisc.edu.json")    
     print(student["testWorkSheet"])
@@ -151,7 +147,7 @@ def test_addNewAnswer_4():
     assert result=={
             "errorCode": "Wrong WorksheetCode",
             "fnExecuted":"addNewAnswer",
-            "isCorrect": []   
+            "isCorrect": {}   
     }
     event["worksheetCode"]="testWorkSheet"
     event["questionCode"]="wrongQuestionCode"
@@ -159,7 +155,7 @@ def test_addNewAnswer_4():
     assert result=={
             "errorCode": "Wrong QuestionCode",
             "fnExecuted":"addNewAnswer",
-            "isCorrect": []
+            "isCorrect": {}
     }
 
 def test_reload_1():
@@ -179,7 +175,7 @@ def test_reload_1():
     result=reload(user,event)
     assert result=={
             "fnExecuted":"reload",
-            "isCorrect": []
+            "isCorrect": {}
     }
     
 def test_reload_2():
@@ -203,7 +199,7 @@ def test_reload_2():
     assert result=={
             "errorCode": "Wrong WorksheetCode",
             "fnExecuted":"reload",
-            "isCorrect": [] 
+            "isCorrect": {} 
     }
 
 def test_reload_3():
@@ -227,10 +223,10 @@ def test_reload_3():
     result=reload(user,event)
     assert result=={
             "fnExecuted":"reload",
-            "isCorrect": [{"questionCode":"q1",
-                            "isCorrect":True},
-                            {"questionCode":"q2",
-                            "isCorrect":False}],
+            "isCorrect": {
+                "q1":True,
+                "q2":False
+            }
             }
 
 def test_report_1():

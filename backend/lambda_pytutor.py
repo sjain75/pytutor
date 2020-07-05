@@ -12,93 +12,30 @@ from lambda_framework import *
 #import PIL.Image
 import json
 
+'''
+This function is to check the answer and update the record of student and report
 
-def lambda_handler(event, context):
-    try:
-        event = eval(event["body"])
-        # TODO: we'll need to specify this in all calls from the front end...
-        course = event.get('course', 'a')
-        if not course in ('a', 'b', 'c'):
-            return error('invalid course ID: "%s"' % course)
-        init_s3("pytutor")
+parameter  
     
-        ts0 = datetime.datetime.utcnow().timestamp()
-    
-        # identify user
-        try:
-            user = get_user(event)
-        except Exception as e:
-            user = None
-        #if user != None:
-            #save_user_info(user)
-    
-        # try to invoke the function
-        fn = ROUTES.get(event['fn'], None)
-        if fn != None:
-            try:
-                # if a check fails, it will raise an exception
-                for checker in EXTRA_AUTH[event["fn"]]:
-                    checker(user)
-    
-                #code, data = fn(user, event)
-                return {
-                        'statusCode': 200,
-                        'headers': {
-                                'Access-Control-Allow-Headers': 'Content-Type',
-                                'Access-Control-Allow-Origin': 'http://pytutor.ddns.net',
-                                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                            },
-                        'body': json.dumps(fn(user, event))
-                    }
-                result = {
-                    "isBase64Encoded": False,
-                    "statusCode": code,
-                    "headers": {},
-                    "body": data
-                }
-            except Exception as e:
-                return {
-                    'statusCode': 200,
-                    'headers': {
-                        'Access-Control-Allow-Headers': 'Content-Type',
-                        'Access-Control-Allow-Origin': 'http://pytutor.ddns.net',
-                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                    },
-                    'body': json.dumps(['Test1 from Lambda!',str(e), str(event), str(traceback.format_exc())])
-                }
-                result = error('Exception: '+str(e) + ' '+traceback.format_exc())
-        else:
-            result = error('no route for '+event['fn'])
-    
-        # try to log the event
-        ts1 = datetime.datetime.utcnow().timestamp()
-        #try:
-            #record = log_record(event, result, user, ts0, ts1)
-     #       firehose().put_record(DeliveryStreamName=FIREHOSE,
-                                 # Record = {'Data': json.dumps(record) + "\n"})
-        #except Exception as e:
-         #   result = error('Firehose Error: '+str(e) + ' '+traceback.format_exc())
-    
-        return {
-                'statusCode': 200,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': 'http://pytutor.ddns.net',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                },
-                'body': json.dumps(['Test1 from Lambda!',str(e), str(event), str(e)])
-            }
-    except Exception as e:
-        return {
-                'statusCode': 200,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': 'http://pytutor.ddns.net',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                },
-                'body': json.dumps(['Test1 from Lambda!',str(e), str(event), str(traceback.format_exc())])
-            }
+    event={
+        "fn": "addNewAnswer",
+        "worksheetCode": worksheetCode,
+        "questionCode":questionCode,
+        "response":"student answer
+    }
+    user={
+        "email":email,
+        "hd":"wisc.edu"(optional, only appears when the email end with wisc.edu)
+    }
 
+return 
+        
+    {
+        "errorCode": errCode(optional,only when error appears),
+        "fnExecuted":"addNewAnswer",
+        "isCorrect": {questionCode:True/False}(if error appears, this would be empty) 
+    }  
+'''
 @route
 @user
 def addNewAnswer(user, event):
@@ -125,6 +62,28 @@ def addNewAnswer(user, event):
 
 '''
 This function is to reload the record of one worksheet of the user
+
+parameter  
+    
+    event={
+        "fn": "reload",
+        "worksheetCode": worksheetCode,
+    }
+    user={
+        "email":email,
+        "hd":"wisc.edu"(optional, only appears when the email end with wisc.edu)
+    }
+
+return 
+
+    {
+        "errorCode": errCode(optional,only when error appears),
+        "fnExecuted":"reload",
+        "isCorrect": {questionCode1:True/False,
+                      questionCode2:True/False,
+                      ...
+                    }(if error appears, this would be empty) 
+    }
 '''
 @route
 @user
@@ -144,7 +103,26 @@ def reload(user,event):
     return result
 
 '''
-This function is to reload the report
+This function is to reload the report of one worksheet 
+
+parameter  
+
+    event={
+        "fn": "getReport",
+        "worksheetCode": worksheetCode,
+    }
+    user={
+        "email":email,
+        "hd":"wisc.edu"(optional, only appears when the email end with wisc.edu)
+    }
+
+return 
+    
+    {
+        "errorCode": errCode(optional,only when error appears),
+        "fnExecuted":"getReport",
+        "report": {report}(if error appears, this would be empty) 
+    }
 '''
 @route
 @user
@@ -161,7 +139,35 @@ def getReport(user,event):
 
     result["report"]=report.getReport()
     return result
-    
+
+'''
+pytutor/student/username.json
+
+    {
+    "studentID":id,
+    "numberOfWorksheetAttempted":2,
+    "WorksheetCode1":{
+        questionsAttempted: ,
+        questionCorrectlyAttempted: ,
+        q1:{
+            numAttempts:    [numAttemptsTIllCorrect, totalNumAttempts]
+            isCorrect:  False/True #once they have correctly attempted becomes true,
+                                                else False
+            attemts:[
+                    [timeStamp, attemptedAnswer],
+                    [timeStamp, attemptedAnswer],
+                    [timeStamp, attemptedAnswer]                                
+                    ]
+            },
+                    
+            ....
+        },
+    "WorksheetCode2":{
+            .....
+        },
+        .....
+    }
+'''
 class Student(object):
     def __init__(self, event,s3,bucket,user):
         self.username = user["email"]
@@ -178,7 +184,9 @@ class Student(object):
         self.s3=s3
         self.bucket=bucket
 
-
+    '''
+    get the student record or if new, initial one
+    '''
     def getFile(self):
         try:
             self.student=self.s3.read_json_default(self.path, default={})  
@@ -187,7 +195,9 @@ class Student(object):
                     "numberOfWorksheetAttempted":0
                     }
 
-
+    '''
+    check the answer and update the record
+    '''
     def upload(self):
         errorCode,isCorrect=self.checkAnswer()
         if errorCode!=None or self.isWisconsin==False:
@@ -242,6 +252,9 @@ class Student(object):
         else:
             return (None,False)
 
+    '''
+    get the record and reload it
+    '''
     def reload(self):
         answerList={}        
         try:
@@ -260,7 +273,7 @@ class Student(object):
         
         
 '''
-//NewReportForEveryWorksheet
+
 pytutor/worksheets/report/worksheetcode.json
 {
     WorksheetCode:"a",
@@ -287,6 +300,9 @@ class Report:
         self.bucket=bucket
 
 
+'''
+get the report file or if new, initial one
+'''
     def getFile(self):
         try:
             self.report=self.s3.read_json_default(self.path, default={})  
@@ -309,6 +325,9 @@ class Report:
                                     "averageNumOfAttemptsToCorrectlyAttempt":0}
         return None
 
+'''
+update the report file
+'''
     def updateReport(self,student,questionCode):
         if student["studentID"] not in self.report["attemptedBy"]:
             self.report["attemptedBy"].append(student["studentID"])
@@ -335,7 +354,9 @@ class Report:
 
         return 0
 
-
+'''
+reload the report file
+'''
     def getReport(self):
         del self.report["WorksheetCode"]
         return self.report
