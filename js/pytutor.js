@@ -226,7 +226,7 @@ function loadPage() {
 	previousButton = $("#previousButton");
 	nextButton = $("#nextButton");
 
-	if (window.matchMedia("(max-width: 768px)").matches) {
+	if (window.matchMedia("(max-device-width: 768px)").matches) {
 		$(".parentDiv").each(function(){
 				$(this).parent().addClass("hidden");
 			})
