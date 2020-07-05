@@ -43,3 +43,7 @@ h2 {
 	filter: blur(1px);
 	pointer-events:none;
 }
+
+.hidden{
+	display:none;
+}

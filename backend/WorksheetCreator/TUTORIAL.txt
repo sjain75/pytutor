@@ -1,0 +1,21 @@
+Tutorial for using pytutor_jsCreator.py
+
+- run in command line: "python pytutor_jsCreator.py [file1.py] [file2.py]..."
+- file1.py, file2.py can be path locations to the python file.
+- can input as many python file as necessary.
+	Example: python pytutor_jsCreator.py ../testPyFile.py ../testPyFile2.py
+
+- Immediately after running the python command, you can see a page that has only the traces in:
+	/pytutor/pages/trace.html
+- We can use this only trace page to help us create story questions and where to begin the trace itself.
+
+- Upon following guided prompts in command line, you can check your worksheet in:
+	/pytutor/worksheets/HTML/[worksheetName].html
+- To check answers, you can find them in:
+	/pytutor/worksheets/answers/[worksheetName].json
+
+Example: 
+- if we input our file name to be "ws1", our worksheet will be:
+	/pytutor/worksheets/HTML/ws1.html
+- Our answers will be in:
+	/pytutor/worksheets/answers/ws1.json

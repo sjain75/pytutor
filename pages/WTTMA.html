@@ -85,9 +85,9 @@
             <li class="sidebar-item"><a href="#problem21">Problem 21</a></li>
             <li class="sidebar-item"><a href="#problem22">Problem 22</a></li> -->
         </ul>
-    </div>
+    </div><!--stuff before and including this is static-->
     <h1 class="problem">Worksheet To Test manual Appearance</h1>
-
+<div>
     <h2 class="my-3 problem">Worksheet Problem 99.0</h2>
 
     <div id="testPyFile2_py" class="problem parentDiv"></div>
@@ -201,7 +201,9 @@
     <div step=1 class="manualQuestion">Is this Q99.1? At step 1?</div>
     <div step=3 class="manualQuestion">Is this Q99.2? At step 3?</div>
     <div step=5 class="manualQuestion">Is this Q99.3? At step 5?</div>
-    <h2 class="problem">Worksheet Problem 98.0</h2>
+</div>
+<div>    
+	<h2 class="problem">Worksheet Problem 98.0</h2>
     <div id="testPyFile_py" class="problem parentDiv"></div>
     <script type="text/javascript">
         var trace = {
@@ -492,7 +494,9 @@
 
     <div step=1 class="manualQuestion">This should not appear!</div>
     <div step=2 class="manualQuestion">This shouldn't appear either!</div>
-    <h2 class="problem">Worksheet Problem 97.0</h2>
+</div>
+    <div>
+	<h2 class="problem">Worksheet Problem 97.0</h2>
     <div id="testPyFile3_py" class="problem parentDiv"></div>
     <script type="text/javascript">
         var trace = {
@@ -601,8 +605,14 @@
     </script>
 
     <div step=5 class="manualQuestion">This should appear immediately! At step 5!</div>
-    <!---###-->
+	</div>
+    <!---###--><!--stuff after this is static-->
+<div id="submenu">
+    <button class="button menubutton" id="previousButton" onclick="displayPrevious()">Previous</button>
+    <button class="button menubutton" id="nextButton" onclick="displayNext()">Next</button>
 </div>
+
+</div> <!--Div class waiting ends here-->
 <script type="text/javascript" src="../js/style.js"></script>
 </body>
 </html>
