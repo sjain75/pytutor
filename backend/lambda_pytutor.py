@@ -8,9 +8,84 @@ import json, random, time
 
 from lambda_framework import *
 
-#from PIL import Image
-#import PIL.Image
 import json
+
+def lambda_handler(event, context):
+    try:
+        event = eval(event["body"])
+        # TODO: well need to specify this in all calls from the front end...
+        course = event.get('course', 'a')
+        if not course in ('a', 'b', 'c'):
+            return error('invalid course ID: "%s"' % course)
+        init_s3("pytutor")
+    
+        ts0 = datetime.datetime.utcnow().timestamp()
+    
+        # identify user
+        try:
+            user = get_user(event)
+        except Exception as e:
+            user = None
+    
+        # try to invoke the function
+        fn = ROUTES.get(event['fn'], None)
+        if fn != None:
+            try:
+                # if a check fails, it will raise an exception
+                for checker in EXTRA_AUTH[event["fn"]]:
+                    checker(user)
+    
+                return {
+                        'statusCode': 200,
+                        'headers': {
+                                'Access-Control-Allow-Headers': 'Content-Type',
+                                'Access-Control-Allow-Origin': 'http://pytutor.ddns.net',
+                                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                            },
+                        'body': json.dumps(fn(user, event))
+                    }
+                result = {
+                    "isBase64Encoded": False,
+                    "statusCode": code,
+                    "headers": {},
+                    "body": data
+                }
+            except Exception as e:
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Origin': 'http://pytutor.ddns.net',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    },
+                    'body': json.dumps(['Test1 from Lambda!',str(e), str(event), str(traceback.format_exc())])
+                }
+                result = error('Exception: '+str(e) + ' '+traceback.format_exc())
+        else:
+            result = error('no route for '+event['fn'])
+    
+        # try to log the event
+        ts1 = datetime.datetime.utcnow().timestamp()
+    
+        return {
+                'statusCode': 200,
+                'headers': {
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Origin': 'http://pytutor.ddns.net',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
+                'body': json.dumps(['Test1 from Lambda!',str(e), str(event), str(e)])
+            }
+    except Exception as e:
+        return {
+                'statusCode': 200,
+                'headers': {
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Origin': 'http://pytutor.ddns.net',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
+                'body': json.dumps(['Test1 from Lambda!',str(e), str(event), str(traceback.format_exc())])
+            }
 
 '''
 This function is to check the answer and update the record of student and report
