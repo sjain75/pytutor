@@ -29,10 +29,10 @@ Pytutor is a ...
 
 ## Appendix
 
-<b> Bucket Structure </b>
+<b>* Bucket Structure </b>
 
-* pytutor.ddns.net 
-        * userDirectory //tyler, meena, ... //everything inside only accessible by user 
+pytutor.ddns.net 
+        * userDirectory //tyler, meena, ... //everything inside only accessible by user  
                 * worksheets  
                         * report  
                         * html //public  
@@ -47,7 +47,7 @@ Pytutor is a ...
         * styles   
         * user-permission for requests directed in through lambda //for example request for report from front end to lambda //super-private  
 
-* Github repo Sturcutre on User computers  
+<b>* Github repo Sturcutre on User computers</b>  
         * WorksheetCreator  
                 * creator.py file  
                 * test Py files  
