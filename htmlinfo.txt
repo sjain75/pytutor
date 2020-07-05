@@ -1,0 +1,6 @@
+Structure of each question:
+Outer div, no class or id is needed
+    h2 tag with the problem number/title, class=my-3 problem
+    div, id="testPyFile2_py" class="problem parentDiv" (Nothing is in this div)
+    script tag with the generated js code, last bit includes the addVisualizerToPage
+    div tags, class="manualQuestion" step="(step number the question is supposed to appear at)"

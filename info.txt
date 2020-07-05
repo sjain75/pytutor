@@ -1,0 +1,8 @@
+Two types of questions: Story questions and manual questions
+
+Story questions: The user is required to navigate through a segement of Python code by clicking on the line that is
+to be executed next in the control flow. These test the users understandings of if/else statements, function calls,
+and loops
+
+Manual questions: The user is required to enter a value or answer to a question that is asking about the code
+segement at a particular point in time
