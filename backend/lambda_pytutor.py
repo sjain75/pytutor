@@ -129,7 +129,8 @@ def addNewAnswer(user, event):
         return result
     result["isCorrect"][student.questionCode]=isCorrect
     if student.isWisconsin==True:
-        report=Report(event,s3(),BUCKET)
+        event["type"]="worksheet";
+        report=Report(event,s3(),BUCKET,user)
         report.getFile()
         report.updateReport(student.student,student.questionCode)
     return result
@@ -204,19 +205,23 @@ return
 def getReport(user,event):
     result={
             "fnExecuted":"getReport",
-            "report":{}
+            "trace":{}
         }
-    report=Report(event,s3(),BUCKET)
+    report=Report(event,s3(),BUCKET,user)
+    errorCode=report.checkPermission()
+    if errorCode!=None:
+        result["errorCode"]=errorCode
+        return result
     errorCode=report.getFile()
     if errorCode!=None:
         result["errorCode"]=errorCode
         return result
 
-    result["report"]=report.getReport()
+    result["report"]=report.getWorksheetReport()
     return result
 
 '''
-pytutor/student/username.json
+pytutor.ddns.net/userDirectory/student/username.json
 
     {
     "studentID":id,
@@ -245,6 +250,7 @@ pytutor/student/username.json
 '''
 class Student(object):
     def __init__(self, event,s3,bucket,user):
+        self.rootfolder=event["rootFolder"]
         self.username = user["email"]
         if "hd" in user:
             self.isWisconsin=True
@@ -253,7 +259,7 @@ class Student(object):
         self.worksheetCode = event['worksheetCode']
         self.questionCode=None if event["fn"]!="addNewAnswer" else event["questionCode"]
         self.response = None if event["fn"]!="addNewAnswer" else event["response"]
-        self.path = 'student/' + self.username + '.json'
+        self.path = self.rootfolder+'/student/' + self.username + '.json'
         self.localTime=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.student={}
         self.s3=s3
@@ -313,7 +319,7 @@ class Student(object):
     If there is some error, it would return errorcode
     '''
     def checkAnswer(self):
-        path="worksheets/answers/"+ self.worksheetCode+".json"
+        path=self.rootfolder+"/worksheets/answers/"+ self.worksheetCode+".json"
         try:
             self.worksheet=self.s3.read_json_default(path, default={})
         except:
@@ -349,7 +355,7 @@ class Student(object):
         
 '''
 
-pytutor/worksheets/report/worksheetcode.json
+pytutor.ddns.net/userDirectory/worksheets/worksheets/report/worksheetcode.json 
 {
     WorksheetCode:"a",
     "attemptedBy":[student1, student2, ...] , //attempted at least 1 question
@@ -367,9 +373,19 @@ pytutor/worksheets/report/worksheetcode.json
 }
 '''    
 class Report:
-    def __init__(self,event,s3,bucket):
-        self.worksheetCode = event['worksheetCode']
-        self.path="pytutor/worksheets/report/"+self.worksheetCode+".json"  
+    def __init__(self,event,s3,bucket,user):
+        self.username = user["email"]
+        self.rootfolder=event["rootFolder"]
+        self.type=event["reportType"]
+        self.worksheetCode = event['worksheetCode'] if self.type=="worksheet" else None
+        self.student=None if self.type!="student" else event["studentCode"]
+        if self.type=="worksheet":  
+            self.path=self.rootfolder+"/worksheets/report/"+self.worksheetCode+".json" 
+        else if self.type=="student":
+            self.path=self.rootfolder+'/student/' + self.student + '@wisc.edu.json'
+        else:
+            self.path=self.rootfolder+"/masterReport.json"
+
         self.report={}
         self.s3=s3
         self.bucket=bucket
@@ -379,26 +395,34 @@ class Report:
 get the report file or if new, initial one
 '''
     def getFile(self):
-        try:
-            self.report=self.s3.read_json_default(self.path, default={})  
-        except:
-            self.report = {
-                "WorksheetCode":self.worksheetCode,
-                "attemptedBy":[] ,
-                "completedBy": [],
-                "questions":{}
-            }
+        if self.type="worksheet":
             try:
-                worksheetPath="worksheets/answers/"+self.worksheetCode+".json"
-                worksheet=self.s3.read_json_default(worksheetPath, default={})  
+                self.report=self.s3.read_json_default(self.path, default={})  
             except:
-                return "Wrong WorksheetCode"
-            for key in worksheet.keys():
-                if key!= "worksheetCode" and key !="totalNumOfQuestions":
-                    self.report["questions"][key]={"numberOfStudentAttempted":0,
-                                        "numberOfStudentsCorrectlyAttmpted":0,
-                                    "averageNumOfAttemptsToCorrectlyAttempt":0}
-        return None
+                self.report = {
+                    "WorksheetCode":self.worksheetCode,
+                    "attemptedBy":[] ,
+                    "completedBy": [],
+                    "questions":{}
+                }
+                try:
+                    worksheetPath=self.rootfolder+"/worksheets/answers/"+self.worksheetCode+".json"
+                    worksheet=self.s3.read_json_default(worksheetPath, default={})  
+                except:
+                    return "Wrong WorksheetCode"
+                for key in worksheet.keys():
+                    if key!= "worksheetCode" and key !="totalNumOfQuestions":
+                        self.report["questions"][key]={"numberOfStudentAttempted":0,
+                                            "numberOfStudentsCorrectlyAttmpted":0,
+                                        "averageNumOfAttemptsToCorrectlyAttempt":0}
+            return None
+        else if self.type=="student":
+            try:
+                self.report=self.s3.read_json_default(self.path, default={})
+            except:
+                self.report={"studentID":self.username,
+                    "numberOfWorksheetAttempted":0
+                    }
 
 '''
 update the report file
@@ -432,6 +456,16 @@ update the report file
 '''
 reload the report file
 '''
-    def getReport(self):
-        del self.report["WorksheetCode"]
-        return self.report
+    def getWorksheetReport(self):
+        trace=convert_to_trace(self.report,self.type)
+        return None,trace
+
+'''
+check the permission
+'''
+    def checkPermission(self):
+        permission=self.s3.read_json_default("user-permission.json", default={})
+        if permission[self.username]!= self.rootfolder:
+            return "Access Denied"
+        else:
+            return None

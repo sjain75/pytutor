@@ -79,7 +79,7 @@ return
 
 ## worksheet answer 
 
-pytutorworksheets/answers/worksheetCode.json
+pytutor.ddns.net/userDirectory/worksheets/answers/Worksheetcode.json
 	
 	{
     "worksheetCode": worksheetCode,
@@ -91,7 +91,7 @@ pytutorworksheets/answers/worksheetCode.json
 
 ## student record
 
-pytutor/student/username.json
+pytutor.ddns.net/userDirectory/student/username.json
 
 	{
     "studentID":id,
@@ -120,7 +120,7 @@ pytutor/student/username.json
 
 ## report
 
-pytutor/worksheets/report/worksheetcode.json 
+pytutor.ddns.net/userDirectory/worksheets/worksheets/report/worksheetcode.json 
 
 	{
     WorksheetCode:"a",
