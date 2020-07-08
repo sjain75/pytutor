@@ -10,7 +10,8 @@ parameter
         "fn": "addNewAnswer",
         "worksheetCode": worksheetCode,
         "questionCode":questionCode,
-        "response":"student answer
+        "response":"student answer,
+        "rootFolder":rootFolder
     }
     user={
         "email":email,
@@ -34,6 +35,7 @@ parameter
 	event={
         "fn": "reload",
         "worksheetCode": worksheetCode,
+        "rootFolder":rootFolder
     }
     user={
         "email":email,
@@ -61,6 +63,8 @@ parameter
 	event={
         "fn": "getReport",
         "worksheetCode": worksheetCode,
+        "rootFolder":rootFolder
+        "type":student/master/worksheet
     }
     user={
         "email":email,
@@ -72,7 +76,7 @@ return
 	{
         "errorCode": errCode(optional,only when error appears),
         "fnExecuted":"getReport",
-        "report": {report}(if error appears, this would be empty) 
+        "trace": {trace}(if error appears, this would be empty) 
     }
 
 # files store in s3 
