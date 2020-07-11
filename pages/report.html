@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pytutor</title>
+   
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id"
+          content="1090832142704-uhrl2ggtu452cu3co24u8sc8kv11i3id.apps.googleusercontent.com">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+          integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+ 
+    <link rel="stylesheet" href="http://pytutor.ddns.net/styles/style.css">
+    <link rel="stylesheet" href="http://pytutor.ddns.net/styles/theme.css">
+    <link rel="stylesheet" href="http://pytutor.ddns.net/styles/reports.css">
+    
+	<script type="text/javascript" src="http://pytutor.ddns.net/js/pytutor-embed.bundle.js" charset="utf-8"></script>
+    <script>
+        // this is a hack so that signin works, regardless of whether google or common.js
+        // loads first
+        var gapiLoaded = false
+        var gapiLoadedCallback = null
+
+        function gapiLoad() {
+            console.log("in gapiLoad")
+            gapiLoaded = true
+            if (gapiLoadedCallback != null) {
+                console.log("call gapi callback")
+                gapiLoadedCallback()
+            }
+        }
+    </script>
+
+
+</head>
+<body>
+	<!-- dependencies -->
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+			integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+			integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+			crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
+			integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
+			crossorigin="anonymous"></script>
+	<!-- Fancy Alerts -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+
+	<!-- main js -->
+	<script type="text/javascript" src="http://pytutor.ddns.netjs/report.js" charset="utf-8"></script>
+	<script src="http://pytutor.ddns.netjs/common.js"></script>
+	<script src="https://apis.google.com/js/platform.js?onload=gapiLoad" defer async></script>
+
+    <header>
+        <!-- Fixed navbar -->
+        <nav class="navbar">
+            <h1 class="navbar-brand" style="color: white;">Reports Page</h1>
+
+            <div class="nav navbar-right">
+                <div id="signin"></div>
+            </div>
+
+            <button class="btn btn-outline-light my-2 my-sm-0 nav navbar-right" onclick="common.googleSignOut()"
+                id="signout"
+                style="display:none;">Logout
+            </button>
+        </nav>
+    </header>
+<div class="waiting">
+    <div class="reportForm">
+        <button class="button" id="masterButton" onclick="masterReport()">Master Report</button>
+        <button class="button" id="studentButton" onclick="studentReportPrompt()">Student Report</button>
+        <button class="button" id="worksheetButton" onclick="worksheetReportPrompt()">Worksheet Report</button>
+    </div>
+	<div class="reportForm hidden" id="studentReportForm">
+        <h2>Student Username:</h2>
+        <input type="text" id="studentUsername">
+        <button class="button submitButton" id="studentSubmit" onclick="studentReport()">Submit</button>
+    </div>
+    <div class="reportForm hidden" id="worksheetReportForm">
+        <h2>Worksheet ID:</h2>
+        <input type="text" id="worksheetID">
+        <button class="button submitButton" id="worksheetSubmit" onclick="worksheetReport()">Submit</button>
+    </div>
+
+	<div>
+		<div id="reportHolder" class="problem parentDiv"></div>
+	</div>
+</div>
+</body>
