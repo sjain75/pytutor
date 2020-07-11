@@ -65,8 +65,10 @@ function signInReload(){
 			}
 			else{
 				loadPage();
-				let wsCode = $(window.location.pathname.split("/")).last()[0].replace(".html","");
-				common.callLambda({"fn":"reload", "netId":common.getEmail(), "worksheetCode":wsCode},
+				let url = (window.location.pathname.split("/");
+				let wsCode = $(url).last()[0].replace(".html","");
+				let rootFolder = url[url.length-4];
+				common.callLambda({"fn":"reload", "netId":common.getEmail(), "rootFolder":rootFolder, "worksheetCode":wsCode},
 						function (obj){
 							if(!("errorCode" in obj || "incorrectDomain" in obj)){
 								manualQuestionStackLoad(obj["isCorrect"]);	
@@ -136,7 +138,7 @@ function manualCheck(){
 				let parentStory = $($(parentDiv).prevAll("div.parentDiv")[0]);
                 let questionCode=parentStory.attr("id")+($("#curInstr", parentStory).text().split(" ")[1]);
                 let wsCode = $(window.location.pathname.split("/")).last()[0].replace(".html","");
-                common.callLambda({"fn":"addNewAnswer", "worksheetCode":wsCode, "questionCode":questionCode, "response":userAnswer},
+                common.callLambda({"fn":"addNewAnswer", "rootFolder":rootFolder, "worksheetCode":wsCode, "questionCode":questionCode, "response":userAnswer},
                     function (obj) {
                           if(!("errorCode" in obj)){
                             if(obj["fnExecuted"]=="addNewAnswer" && questionCode in obj["isCorrect"]){
