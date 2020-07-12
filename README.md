@@ -17,8 +17,8 @@ Pytutor is a ...
 3. Create a worksheet using the Worksheet Creator.
 
 4. Upload .json file for answers and html file for the worksheet to the s3
-    -> Manually upload files to s3 using AWS management console<b>OR</b>      
-    -> Use `aws s3 cp [filepath] s3://pytutor.ddns.net/[username]/[path]/` with the appropriate paths. 
+  * Manually upload files to s3 using AWS management console<b>OR</b>      
+  * Use `aws s3 cp [filepath] s3://pytutor.ddns.net/[username]/[path]/` with the appropriate paths. 
 
 5. Test out the worksheet here: pytutor.ddns.net/[username]/worksheets/html/[worksheetFileName].html
 
@@ -62,7 +62,7 @@ Example:
 
 1. Download the appropriopriate report.json file from the student/ or worksheets/report/ folder.
 
-<B>OR</B>
+      <B>OR</B>
 
 <B>View the json visually using pythonTutor [Experimental]</B>
 
