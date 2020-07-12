@@ -1,4 +1,4 @@
-import boto3, traceback
+import boto3, traceback, subprocess
 import uuid
 from urllib.parse import unquote_plus
 import datetime
@@ -10,13 +10,16 @@ from lambda_framework import *
 from subprocess import check_output
 
 def lambda_handler(event, context):
+    #init_s3("")
+    #testPermissions("user-permission.json")
+    #return {}
     try:
         event = eval(event["body"])
         # TODO: well need to specify this in all calls from the front end...
         course = event.get('course', 'a')
         if not course in ('a', 'b', 'c'):
             return error('invalid course ID: "%s"' % course)
-        init_s3("pytutor")
+        init_s3("")
     
         ts0 = datetime.datetime.utcnow().timestamp()
     
@@ -57,7 +60,7 @@ def lambda_handler(event, context):
                         'Access-Control-Allow-Origin': 'http://pytutor.ddns.net',
                         'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
                     },
-                    'body': json.dumps(['Test1 from Lambda!',str(e), str(event), str(traceback.format_exc())])
+                    'body': json.dumps(['Test1 from Lambda!', str(traceback.format_exc())])
                 }
                 result = error('Exception: '+str(e) + ' '+traceback.format_exc())
         else:
@@ -73,7 +76,7 @@ def lambda_handler(event, context):
                     'Access-Control-Allow-Origin': 'http://pytutor.ddns.net',
                     'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
                 },
-                'body': json.dumps(['Test1 from Lambda!',str(e), str(event), str(e)])
+                'body': json.dumps(['Test1 from Lambda!',  str(traceback.format_exc())])
             }
     except Exception as e:
         return {
@@ -83,7 +86,7 @@ def lambda_handler(event, context):
                     'Access-Control-Allow-Origin': 'http://pytutor.ddns.net',
                     'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
                 },
-                'body': json.dumps(['Test1 from Lambda!',str(e), str(event), str(traceback.format_exc())])
+                'body': json.dumps(['Test1 from Lambda!', str(traceback.format_exc())])
             }
 
 '''
@@ -129,7 +132,7 @@ def addNewAnswer(user, event):
         return result
     result["isCorrect"][student.questionCode]=isCorrect
     if student.isWisconsin==True:
-        event["type"]="worksheet";
+        event["reportType"]="worksheet";
         report=Report(event,s3(),BUCKET,user)
         report.getFile()
         report.updateReport(student.student,student.questionCode)
@@ -251,18 +254,22 @@ pytutor.ddns.net/userDirectory/student/username.json
         .....
     }
 '''
-class Student(object):
+class Student:
     def __init__(self, event,s3,bucket,user):
         self.rootfolder=event["rootFolder"]
         self.username = user["email"]
         if "hd" in user:
             self.isWisconsin=True
+            self.username=self.username[:self.username.find("@")]
         else:
             self.isWisconsin=False
         self.worksheetCode = event['worksheetCode']
         self.questionCode=None if event["fn"]!="addNewAnswer" else event["questionCode"]
         self.response = None if event["fn"]!="addNewAnswer" else event["response"]
-        self.path = self.rootfolder+'/student/' + self.username + '.json'
+        if self.isWisconsin==True:
+            self.path = self.rootfolder+'/student/' + self.username + '.json'
+        else:
+            self.path=None
         self.localTime=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.student={}
         self.s3=s3
@@ -384,29 +391,29 @@ class Report:
         self.student=None if self.type!="student" else event["studentCode"]
         if self.type=="worksheet":  
             self.path=self.rootfolder+"/worksheets/report/"+self.worksheetCode+".json" 
-        else if self.type=="student":
-            self.path=self.rootfolder+'/student/' + self.student + '@wisc.edu.json'
+        elif self.type=="student":
+            self.path=self.rootfolder+'/student/' + self.student + '.json'
         else:
             self.path=self.rootfolder+"/masterReport.json"
-        self.tracepath="../resources/OnlinePythonTutor/v5-unity/generate_json_trace.py"
+        self.tracepath="generate_json_trace.py"
 
         self.report={}
         self.s3=s3
         self.bucket=bucket
 
     def getTrace(self):
-        tracereport=json.dumps(self.report)
+        tracereport=str(self.report)
         try:
-            js = check_output(["python3", self.tracepath, "--code = 'trace="+tracereport+"'"])
+            js = check_output(["python3", self.tracepath, "--code", "trace="+tracereport])
         except subprocess.CalledProcessError as e:
             js = e.output
-        return json.dumps(json.loads(js))
+        return json.loads(js)
 
-'''
-get the report file or if new, initial one
-'''
+    '''
+    get the report file or if new, initial one
+    '''
     def getFile(self):
-        if self.type="worksheet":
+        if self.type=="worksheet":
             try:
                 self.report=self.s3.read_json_default(self.path, default={})  
             except:
@@ -427,7 +434,7 @@ get the report file or if new, initial one
                                             "numberOfStudentsCorrectlyAttmpted":0,
                                         "averageNumOfAttemptsToCorrectlyAttempt":0}
             return None
-        else if self.type=="student":
+        elif self.type=="student":
             try:
                 self.report=self.s3.read_json_default(self.path, default={})
             except:
@@ -435,9 +442,9 @@ get the report file or if new, initial one
                     "numberOfWorksheetAttempted":0
                     }
 
-'''
-update the report file
-'''
+    '''
+    update the report file
+    '''
     def updateReport(self,student,questionCode):
         if student["studentID"] not in self.report["attemptedBy"]:
             self.report["attemptedBy"].append(student["studentID"])
@@ -464,11 +471,13 @@ update the report file
 
         return 0
 
-'''
-check the permission
-'''
+    '''
+    check the permission
+    '''
     def checkPermission(self):
         permission=self.s3.read_json_default("user-permission.json", default={})
+        if self.username not in permission.keys():
+            return "Access Denied"
         if permission[self.username]!= self.rootfolder:
             return "Access Denied"
         else:

@@ -27,7 +27,7 @@ def to_s3_key_str(s):
             s3key.append('*at*')
         else:
             s3key.append('*%d*' % ord(c))
-    return "pytutor".join(s3key)
+    return "".join(s3key)
 
 def file_lines(path):
     users = []
@@ -40,7 +40,7 @@ def file_lines(path):
 
 ROUTES = {}
 EXTRA_AUTH = ddict(list)
-BUCKET = 'pytutor-test'
+BUCKET = 'pytutor.ddns.net'
 
 # run something like this to configure ACLs:
 #
@@ -85,19 +85,19 @@ class S3:
         return results
 
     def head_object(self, **kwargs):
-        kwargs["Key"] = self.key_prefix + "/" + kwargs["Key"]
+        kwargs["Key"] = kwargs["Key"] if not self.key_prefix else self.key_prefix + "/" + kwargs["Key"]
         return self.s3_client.head_object(**kwargs)
     
     def get_object(self, **kwargs):
-        kwargs["Key"] = self.key_prefix + "/" + kwargs["Key"]
+        kwargs["Key"] = kwargs["Key"] if not self.key_prefix else self.key_prefix + "/" + kwargs["Key"]
         return self.s3_client.get_object(**kwargs)
 
     def put_object(self, **kwargs):
-        kwargs["Key"] = self.key_prefix + "/" + kwargs["Key"]
+        kwargs["Key"] = kwargs["Key"] if not self.key_prefix else self.key_prefix + "/" + kwargs["Key"]
         return self.s3_client.put_object(**kwargs)
 
     def delete_object(self, **kwargs):
-        kwargs["Key"] = self.key_prefix + "/" + kwargs["Key"]
+        kwargs["Key"] = kwargs["Key"] if not self.key_prefix else self.key_prefix + "/" + kwargs["Key"]
         return self.s3_client.delete_object(**kwargs)
 
     # convenience functions beyond what the boto client provides
@@ -141,7 +141,7 @@ class S3:
             keys.extend(contents)
             if not 'NextContinuationToken' in ls:
                 break
-            ls = s3().list_objects_v2(Bucket='pytutor-test', Prefix="pytutor",
+            ls = s3().list_objects_v2(Bucket='pytutor.ddns.net', Prefix="",
                                       ContinuationToken=ls['NextContinuationToken'],
                                       MaxKeys=10000)
         return keys
@@ -167,7 +167,7 @@ def init_s3(prefix):
     if boto_s3_client == None:
         boto_s3_client = boto3.client('s3')
  
-    s3_client = S3(boto_s3_client, "pytutor")
+    s3_client = S3(boto_s3_client, "")
 
 def s3():
     return s3_client
