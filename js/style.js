@@ -8,10 +8,6 @@ $(".submitManual").addClass("button");
 
 $('[id="heapHeader"]').css("color", "white");
 
-console.log("hello")
-console.log($('h2'))
-
-
 var sidebar = $('.sidebar ul')
 $('h2').each(function (index) {
     var number = $(this).text().split(" ");

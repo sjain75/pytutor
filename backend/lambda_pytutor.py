@@ -7,8 +7,7 @@ from collections import defaultdict as ddict
 import json, random, time
 
 from lambda_framework import *
-
-import json
+from subprocess import check_output
 
 def lambda_handler(event, context):
     try:
@@ -96,7 +95,8 @@ parameter
         "fn": "addNewAnswer",
         "worksheetCode": worksheetCode,
         "questionCode":questionCode,
-        "response":"student answer
+        "response":"student answer,
+        "rootFolder":rootFolder
     }
     user={
         "email":email,
@@ -144,6 +144,7 @@ parameter
     event={
         "fn": "reload",
         "worksheetCode": worksheetCode,
+        "rootFolder":rootFolder
     }
     user={
         "email":email,
@@ -179,13 +180,15 @@ def reload(user,event):
     return result
 
 '''
-This function is to reload the report of one worksheet 
+This function is to reload the report
 
 parameter  
 
     event={
         "fn": "getReport",
         "worksheetCode": worksheetCode,
+        "rootFolder":rootFolder
+        "type":student/worksheet/master
     }
     user={
         "email":email,
@@ -197,7 +200,7 @@ return
     {
         "errorCode": errCode(optional,only when error appears),
         "fnExecuted":"getReport",
-        "report": {report}(if error appears, this would be empty) 
+        "trace": {trace}(if error appears, this would be empty) 
     }
 '''
 @route
@@ -217,7 +220,7 @@ def getReport(user,event):
         result["errorCode"]=errorCode
         return result
 
-    result["report"]=report.getWorksheetReport()
+    result["trace"]=report.getTrace()
     return result
 
 '''
@@ -385,11 +388,19 @@ class Report:
             self.path=self.rootfolder+'/student/' + self.student + '@wisc.edu.json'
         else:
             self.path=self.rootfolder+"/masterReport.json"
+        self.tracepath="../resources/OnlinePythonTutor/v5-unity/generate_json_trace.py"
 
         self.report={}
         self.s3=s3
         self.bucket=bucket
 
+    def getTrace(self):
+        tracereport=json.dumps(self.report)
+        try:
+            js = check_output(["python3", self.tracepath, "--code = 'trace="+tracereport+"'"])
+        except subprocess.CalledProcessError as e:
+            js = e.output
+        return json.dumps(json.loads(js))
 
 '''
 get the report file or if new, initial one
@@ -452,13 +463,6 @@ update the report file
                 ContentType='text/json')
 
         return 0
-
-'''
-reload the report file
-'''
-    def getWorksheetReport(self):
-        trace=convert_to_trace(self.report,self.type)
-        return None,trace
 
 '''
 check the permission
