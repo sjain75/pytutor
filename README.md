@@ -84,8 +84,8 @@ Example:
     * student  
         * username.json  
     * pages  
-        * Sample Pages //allows users to create a home page //home.html //public  
-        * Page to access student report from  //Template, makes users login from front-end using GAPI and then loads data through ajax request to lamdba  
+        * home.html //allows users to create a home page //other sample page //public   
+        * report.html  //Template, makes users login from front-end using GAPI and then loads data through ajax request to lamdba  
   * js   
   * styles   
   * user-permission for requests directed in through lambda //for example request for report from front end to lambda //super-private  
@@ -97,11 +97,10 @@ Example:
     * test Py files  
   * pages  
     * home.html //can be pushed up to s3 bucket  
+    * defaultPageLayout.html //used by worksheetCreator
   * worksheets //can be pushed up to s3 bucket  
     * html  
-    * answers  
-  * js  
-  * styles
+    * answers    
   * resources  
 
 ## Glossary
