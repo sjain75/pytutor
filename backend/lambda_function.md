@@ -5,7 +5,7 @@
 This function is to check the answer and update the record of student and report
 
 parameter  
-	
+
 	event={
         "fn": "addNewAnswer",
         "worksheetCode": worksheetCode,
@@ -18,12 +18,12 @@ parameter
         "hd":"wisc.edu"(optional, only appears when the email end with wisc.edu)
     }
 
-return 
-		
+return
+
 	{
         "errorCode": errCode(optional,only when error appears),
         "fnExecuted":"addNewAnswer",
-        "isCorrect": {questionCode:True/False}(if error appears, this would be empty) 
+        "isCorrect": {questionCode:True/False}(if error appears, this would be empty)
     }  
 
 ## reload
@@ -31,7 +31,7 @@ return
 This function is to reload the record of one worksheet of the user
 
 parameter  
-	
+
 	event={
         "fn": "reload",
         "worksheetCode": worksheetCode,
@@ -42,7 +42,7 @@ parameter
         "hd":"wisc.edu"(optional, only appears when the email end with wisc.edu)
     }
 
-return 
+return
 
 	{
         "errorCode": errCode(optional,only when error appears),
@@ -50,13 +50,13 @@ return
         "isCorrect": {questionCode1:True/False,
             	      questionCode2:True/False,
             	      ...
-     				}(if error appears, this would be empty) 
+     				}(if error appears, this would be empty)
     }  
 
 ## getReport
 
 
-This function is to reload the report of one worksheet 
+This function is to reload the report of one worksheet
 
 parameter  
 
@@ -71,20 +71,20 @@ parameter
         "hd":"wisc.edu"(optional, only appears when the email end with wisc.edu)
     }
 
-return 
-	
+return
+
 	{
         "errorCode": errCode(optional,only when error appears),
         "fnExecuted":"getReport",
-        "trace": {trace}(if error appears, this would be empty) 
+        "trace": {trace}(if error appears, this would be empty)
     }
 
-# files store in s3 
+# files store in s3
 
-## worksheet answer 
+## worksheet answer
 
 pytutor.ddns.net/userDirectory/worksheets/answers/Worksheetcode.json
-	
+
 	{
     "worksheetCode": worksheetCode,
     "totalNumOfQuestions":  number of questions,  
@@ -113,7 +113,7 @@ pytutor.ddns.net/userDirectory/student/username.json
 					[timeStamp, attemptedAnswer]								
 					]
 			},
-            		
+
 			....
     	},
     "WorksheetCode2":{
@@ -124,11 +124,11 @@ pytutor.ddns.net/userDirectory/student/username.json
 
 ## report
 
-pytutor.ddns.net/userDirectory/worksheets/worksheets/report/worksheetcode.json 
+pytutor.ddns.net/userDirectory/worksheets/worksheets/report/worksheetcode.json
 
 	{
     WorksheetCode:"a",
-    "attemptedBy":[student1, student2,I ...] , //attempted at least 1 question
+    "attemptedBy":[student1, student2, ...] , //attempted at least 1 question
     "completedBy": [], //studentWho attempted all questions
     questions:{
                 questionCode1:{
@@ -145,4 +145,3 @@ pytutor.ddns.net/userDirectory/worksheets/worksheets/report/worksheetcode.json
 # TODO
 
 while two students get report and wants to update them at the same time, the report would only update one result
-
