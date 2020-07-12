@@ -242,8 +242,7 @@ def generateManualQuestion():
             print("Error! Step number must be an integer value!")
             continue
         
-        # Change this depending on what Sarwagya wants.
-        if py[:-3] + "_" + str(stepNumber) + py[-3:] in answers:
+        if py.replace(".", "_") + "_" + str(stepNumber) in answers:
             print("Question already exists!")
             continue
 
@@ -251,9 +250,9 @@ def generateManualQuestion():
         
         answers["totalNumOfQuestions"] += 1
         # Change this depending on what Sarwagya wants.
-        answers[py[:-3] + "_" + str(stepNumber) + py[-3:]] = answer
+        answers[py.replace(".", "_") + "_" + str(stepNumber)] = answer
         break
-
+    
     question = "<div step = " + str(stepNumber) + " class = \"manualQuestion\">" + question + "</div>"
     return question
 
