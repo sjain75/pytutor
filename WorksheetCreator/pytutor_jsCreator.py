@@ -2,7 +2,7 @@ import os, sys, json, subprocess
 from shutil import copyfile
 from subprocess import check_output
 
-PYTUTOR = "../../resources/OnlinePythonTutor/v5-unity/generate_json_trace.py"
+PYTUTOR = "../resources/OnlinePythonTutor/v5-unity/generate_json_trace.py"
 
 EMBEDDING = """
 <div id="DIV" class=\"problem parentDiv\"></div>
@@ -43,7 +43,7 @@ def main():
             if " " in fileName:
                 print("Error! No spaces allowed in file name.")
             else:
-                if os.path.exists("../../worksheets/HTML/" + fileName):
+                if os.path.exists("../worksheets/html/" + fileName):
                     userChoice = input("This file already exists. Would you like to append it to the already existing file? (Y/N)")
                     if userChoice.lower().strip() == "y":
                         append = True
@@ -51,7 +51,7 @@ def main():
                     elif userChoice.lower().strip() == "n":
                         userChoice = input("Are you sure? By selecting yes, you will overwrite the pre-existing file. (Y/N)")
                         if userChoice.lower().strip() == "y":
-                            os.remove("../../worksheets/HTML/" + fileName)
+                            os.remove("../worksheets/html/" + fileName)
                             break
                         else:
                             print("Unknown command!")
@@ -65,18 +65,18 @@ def main():
         # Actual part of worksheet creation
         global answers
         if append:
-            with open ("../../worksheets/HTML/" + fileName) as file:
+            with open ("../worksheets/html/" + fileName) as file:
                 listOfFileLines = file.read().splitlines()
             
-            with open("../../worksheets/answers/" + fileName.replace(".html", ".json"), "r") as read_file:
+            with open("../worksheets/answers/" + fileName.replace(".html", ".json"), "r") as read_file:
                 answers = json.load(read_file)
 
             listOfFileLines = generateScripts(forTracesPage=False, lines=listOfFileLines)
         else:
-            open("../../worksheets/HTML/" + fileName, 'x')
+            open("../worksheets/html/" + fileName, 'x')
             answers = {"worksheetCode": fileName.replace(".html", ""), "totalNumOfQuestions": 0}
             try:
-                copyfile("../../pages/defaultPageLayout.html", "../../worksheets/HTML/" + fileName)
+                copyfile("../pages/defaultPageLayout.html", "../worksheets/html/" + fileName)
             except IOError:
                 print("Error! Check to make sure \"defaultPageLayout.html\" exists within the pages directory")
                 sys.exit(1)
@@ -85,11 +85,11 @@ def main():
             listOfFileLines = generateScripts(forTracesPage=False, lines=listOfFileLines)
         
         # This will write to the original file.
-        with open("../../worksheets/HTML/" + fileName, "w") as file:
+        with open("../worksheets/html/" + fileName, "w") as file:
             for item in listOfFileLines:
                 file.write("%s\n" % item)
 
-        with open("../../worksheets/answers/" + fileName.replace(".html", ".json"), "w") as json_file:
+        with open("../worksheets/answers/" + fileName.replace(".html", ".json"), "w") as json_file:
             json.dump(answers, json_file)
 
     # If given no additional python files, will print this error. See README for more information.
@@ -106,9 +106,9 @@ def checkEmptyInput(inputString):
         temp = input(inputString)
     return temp
 
-# Will generate and essentially add the scripts to the HTML file.
+# Will generate and essentially add the scripts to the html file.
 # forTracesPage - boolean signaling if we are generating trace.html.
-# lines - the HTML file in the form of a list (TODO, maybe remove if not necessary).
+# lines - the html file in the form of a list (TODO, maybe remove if not necessary).
 # Returns the updated file in a list.
 def generateScripts(forTracesPage, lines):
     global py
@@ -120,9 +120,9 @@ def generateScripts(forTracesPage, lines):
 # Will throw an error and exit if defaultPageLayout.html does not exist within the
 # pages directory.
 def createTracesPage():
-    print("Generating ONLY story/trace questions in HTML/trace.html...")
+    print("Generating ONLY story/trace questions in html/trace.html...")
     try:
-        copyfile("../../pages/defaultPageLayout.html", "../../pages/trace.html")
+        copyfile("../pages/defaultPageLayout.html", "../pages/trace.html")
     except IOError:
         print("Error! Check to make sure \"defaultPageLayout.html\" exists within the pages directory")
         sys.exit(1)
@@ -132,11 +132,11 @@ def createTracesPage():
     listOfFileLines = generateScripts(forTracesPage=True, lines=listOfFileLines)
 
     # Writes to the trace.html file.
-    with open("../../pages/trace.html", "w") as file:
+    with open("../pages/trace.html", "w") as file:
         for item in listOfFileLines:
             file.write("%s\n" % item)
 
-# Creates the actual "trace"/div container for the HTML file. Uses the EMBEDDING and replaces
+# Creates the actual "trace"/div container for the html file. Uses the EMBEDDING and replaces
 # specific keywords. Prompts user to input a valid initial step number.
 # py - the file path to the python file
 # forTracesPage - boolean signaling whether or not we are generating the trace.html page.
@@ -170,7 +170,7 @@ def generateTrace(py, forTracesPage):
 # forTracesPage - boolean signaling whether or not we are generating the trace.html page.
 # return lines - returns the updated file in the form of a list.
 def createWorksheetTitle(fileName, forTracesPage):
-    with open (("../../pages/" if forTracesPage else "../../worksheets/HTML/") + fileName) as file:
+    with open (("../pages/" if forTracesPage else "../worksheets/html/") + fileName) as file:
         lines = file.read().splitlines()
     
     i = 0
@@ -184,7 +184,7 @@ def createWorksheetTitle(fileName, forTracesPage):
         header = "<h1 class = \"problem\">" + header + "</h1>"
         lines[i] = header
     else:
-        lines[i] = "<h1 class = \"problem\">Trace HTML File</h1>"
+        lines[i] = "<h1 class = \"problem\">Trace html File</h1>"
     
     return lines
 
