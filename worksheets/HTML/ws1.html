@@ -16,11 +16,12 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
           integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
 
-    <link rel="stylesheet" href="../../../styles/theme.css">
-    <link rel="stylesheet" href="../../../styles/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<!--    <link rel="stylesheet" href="../styles/zybooks.css">-->
-    <script type="text/javascript" src="../../../js/pytutor-embed.bundle.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="http://pytutor.ddns.net/pytutor_master/master/pytutor/styles/theme.css">
+    <link rel="stylesheet" href="http://pytutor.ddns.net/pytutor_master/master/pytutor/styles/style.css">
+
+    <script type="text/javascript" src="http://pytutor.ddns.net/pytutor_master/master/pytutor/js/pytutor-embed.bundle.js" charset="utf-8"></script>
     <script>
         // this is a hack so that signin works, regardless of whether google or common.js
         // loads first
@@ -49,19 +50,16 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
         integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
         crossorigin="anonymous"></script>
-<script type="text/javascript" src="../../../js/pytutor.js" charset="utf-8"></script>
+<!-- Fancy Alerts -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 
 <!-- main js -->
-
-<script src="../../../js/common.js"></script>
-<script src="../../../js/submission.js"></script>
+<script type="text/javascript" src="http://pytutor.ddns.net/pytutor_master/master/pytutor/js/pytutor.js" charset="utf-8"></script>
+<script src="http://pytutor.ddns.net/pytutor_master/master/pytutor/js/common.js"></script>
+<script src="http://pytutor.ddns.net/pytutor_master/master/pytutor/js/submission.js"></script>
 <script src="https://apis.google.com/js/platform.js?onload=gapiLoad" defer async></script>
 
-<!--
-To auto-generate examples:
-
-python pytutor.py lec-08/practice1.py lec-08/practice2.py lec-08/practice3.py lec-08/lesson1.py lec-08/lesson2.py lec-08/lesson3.py lec-08/lesson4.py lec-08/lesson5.py lec-08/lesson6.py lec-08/lesson7.py lec-08/lesson8.py lec-08/lesson9.py lec-08/lesson10.py
--->
 <header>
     <!-- Fixed navbar -->
     <nav class="navbar">
@@ -71,99 +69,47 @@ python pytutor.py lec-08/practice1.py lec-08/practice2.py lec-08/practice3.py le
             <div id="signin"></div>
         </div>
 
-        <!--      <a class="navbar-brand" href="schedule.html">Data Programming I</a>-->
-        <!--      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"-->
-        <!--        aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">-->
-        <!--        <span class="navbar-toggler-icon"></span>-->
-        <!--      </button>-->
-        <!--      <div class="collapse navbar-collapse" id="navbarCollapse">-->
-        <!--        <ul class="navbar-nav mr-auto">-->
-        <!--          <li class="nav-item">-->
-        <!--            <a class="nav-link" href="schedule.html">Schedule</a>-->
-        <!--          </li>-->
-        <!--          <li class="nav-item">-->
-        <!--            <a class="nav-link" href="syllabus.html">Syllabus</a>-->
-        <!--          </li>-->
-        <!--          <li class="nav-item">-->
-        <!--            <a class="nav-link" href="submission.html">Projects</a>-->
-        <!--          </li>-->
-        <!--          <li class="nav-item dropdown">-->
-        <!--            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"-->
-        <!--              aria-haspopup="true" aria-expanded="false">-->
-        <!--              Resources-->
-        <!--            </a>-->
-        <!--            <div class="dropdown-menu" aria-labelledby="navbarDropdown">-->
-        <!--              <a class="dropdown-item" href="status.html">Who is my TA?</a>-->
-        <!--              <a class="dropdown-item" href="status.html">When/where is my exam?</a>-->
-        <!--              <a class="dropdown-item" href="https://piazza.com/class/jzkcu4am8lmc3?cid=6">Office Hours</a>-->
-        <!--              <a class="dropdown-item" href="videos.html">Videos</a>-->
-        <!--              <a class="dropdown-item"-->
-        <!--                href="https://github.com/tylerharter/caraza-harter-com/tree/master/tyler/cs301/fall19/materials/old-exams"-->
-        <!--                target="_blank">Old Exams</a>-->
-        <!--              <a class="dropdown-item" href="datasets.html">Datasets</a>-->
-        <!--              <a class="dropdown-item" href="beyond-301.html">After CS 301</a>-->
-        <!--            </div>-->
-        <!--          </li>-->
-
-        <!--          <li class="nav-item dropdown">-->
-        <!--            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"-->
-        <!--              aria-haspopup="true" aria-expanded="false">-->
-        <!--              Tools-->
-        <!--            </a>-->
-        <!--            <div class="dropdown-menu" aria-labelledby="navbarDropdown">-->
-        <!--              <a class="dropdown-item" href="https://piazza.com/class/jzkcu4am8lmc3" target="_blank">Piazza-->
-        <!--                (Discussion)</a>-->
-        <!--              <a class="dropdown-item" href="https://canvas.wisc.edu/courses/169767/grades" target="_blank">Canvas-->
-        <!--                (Grades)</a>-->
-        <!--              <a class="dropdown-item" href="surveys.html">Class Surveys</a>-->
-        <!--              <a class="dropdown-item" href="http://pythontutor.com/visualize.html#mode=edit" target="_blank">Python-->
-        <!--                Tutor</a>-->
-        <!--              <a class="dropdown-item" href="reviewer.html">TA Only</a>-->
-        <!--            </div>-->
-        <!--          </li>-->
-
-        <!--          <li class="nav-item">-->
-        <!--            <button class="btn btn-outline-light my-2 my-sm-0" onclick="common.googleSignOut()" id="signout"-->
-        <!--              style="display:none;">Logout</button>-->
-        <!--          </li>-->
-        <!--        </ul>-->
-        <!--      </div>-->
+        <button class="btn btn-outline-light my-2 my-sm-0 nav navbar-right" onclick="common.googleSignOut()"
+                id="signout"
+                style="display:none;">Logout
+        </button>
     </nav>
 </header>
+<div class="waiting">
+    <div class="sidebar">
+        <ul>
+            <!-- <li class="sidebar-item"><a href="#problem19">Problem 19</a></li>
+            <li class="sidebar-item"><a href="#problem20">Problem 20</a></li>
+            <li class="sidebar-item"><a href="#problem21">Problem 21</a></li>
+            <li class="sidebar-item"><a href="#problem22">Problem 22</a></li> -->
+        </ul>
+    </div>
 <h1 class = "problem">Worksheet 1</h1>
+
+<div>
 
 <h2 class = "problem">Worksheet Problem 1.1</h2>
 
-<div id="___testPyFile_py" class="problem parentDiv"></div>
+
+<div id="test1_py" class="problem parentDiv"></div>
 <script type="text/javascript">
-  var trace = {"code": "def a():\n    print(\"A\")\n\nprint(\"B\")", "trace": [{"line": 1, "event": "step_line", "func_name": "<module>", "globals": {}, "ordered_globals": [], "stack_to_render": [], "heap": {}, "stdout": ""}, {"line": 4, "event": "step_line", "func_name": "<module>", "globals": {"a": ["REF", 1]}, "ordered_globals": ["a"], "stack_to_render": [], "heap": {"1": ["FUNCTION", "a()", null]}, "stdout": ""}, {"line": 4, "event": "return", "func_name": "<module>", "globals": {"a": ["REF", 1]}, "ordered_globals": ["a"], "stack_to_render": [], "heap": {"1": ["FUNCTION", "a()", null]}, "stdout": "B\n"}]};
-  addVisualizerToPage(trace, '___testPyFile_py',  {startingInstruction:0, hideCode: false, lang: "py3", disableHeapNesting: true});
-</script>
-
-<div step = 1 class = "manualQuestion">A</div>
-<div step = 2 class = "manualQuestion">B</div>
-
-
-<h2 class = "problem">Worksheet Problem 0.0</h2>
-
-<div id="___testPyFile_py" class="problem parentDiv"></div>
-<script type="text/javascript">
-  var trace = {"code": "def a():\n    print(\"A\")\n\nprint(\"B\")", "trace": [{"line": 1, "event": "step_line", "func_name": "<module>", "globals": {}, "ordered_globals": [], "stack_to_render": [], "heap": {}, "stdout": ""}, {"line": 4, "event": "step_line", "func_name": "<module>", "globals": {"a": ["REF", 1]}, "ordered_globals": ["a"], "stack_to_render": [], "heap": {"1": ["FUNCTION", "a()", null]}, "stdout": ""}, {"line": 4, "event": "return", "func_name": "<module>", "globals": {"a": ["REF", 1]}, "ordered_globals": ["a"], "stack_to_render": [], "heap": {"1": ["FUNCTION", "a()", null]}, "stdout": "B\n"}]};
-  addVisualizerToPage(trace, '___testPyFile_py',  {startingInstruction:0, hideCode: false, lang: "py3", disableHeapNesting: true});
+  var trace = {"code": "import json\n\nprint(\"a\")\n\n\ndef a():\n\tprint(\"Interesting b\")\n\na()\n\nprint(\"c\")\n", "trace": [{"line": 1, "event": "step_line", "func_name": "<module>", "globals": {}, "ordered_globals": [], "stack_to_render": [], "heap": {}, "stdout": ""}, {"line": 3, "event": "step_line", "func_name": "<module>", "globals": {"json": ["REF", 1]}, "ordered_globals": ["json"], "stack_to_render": [], "heap": {"1": ["INSTANCE", "module"]}, "stdout": ""}, {"line": 6, "event": "step_line", "func_name": "<module>", "globals": {"json": ["REF", 1]}, "ordered_globals": ["json"], "stack_to_render": [], "heap": {"1": ["INSTANCE", "module"]}, "stdout": "a\n"}, {"line": 9, "event": "step_line", "func_name": "<module>", "globals": {"json": ["REF", 1], "a": ["REF", 2]}, "ordered_globals": ["json", "a"], "stack_to_render": [], "heap": {"1": ["INSTANCE", "module"], "2": ["FUNCTION", "a()", null]}, "stdout": "a\n"}, {"line": 6, "event": "call", "func_name": "a", "globals": {"json": ["REF", 1], "a": ["REF", 2]}, "ordered_globals": ["json", "a"], "stack_to_render": [{"func_name": "a", "is_parent": false, "frame_id": 1, "parent_frame_id_list": [], "encoded_locals": {}, "ordered_varnames": [], "is_zombie": false, "is_highlighted": true, "unique_hash": "a_f1"}], "heap": {"1": ["INSTANCE", "module"], "2": ["FUNCTION", "a()", null]}, "stdout": "a\n"}, {"line": 7, "event": "step_line", "func_name": "a", "globals": {"json": ["REF", 1], "a": ["REF", 2]}, "ordered_globals": ["json", "a"], "stack_to_render": [{"func_name": "a", "is_parent": false, "frame_id": 1, "parent_frame_id_list": [], "encoded_locals": {}, "ordered_varnames": [], "is_zombie": false, "is_highlighted": true, "unique_hash": "a_f1"}], "heap": {"1": ["INSTANCE", "module"], "2": ["FUNCTION", "a()", null]}, "stdout": "a\n"}, {"line": 7, "event": "return", "func_name": "a", "globals": {"json": ["REF", 1], "a": ["REF", 2]}, "ordered_globals": ["json", "a"], "stack_to_render": [{"func_name": "a", "is_parent": false, "frame_id": 1, "parent_frame_id_list": [], "encoded_locals": {"__return__": null}, "ordered_varnames": ["__return__"], "is_zombie": false, "is_highlighted": true, "unique_hash": "a_f1"}], "heap": {"1": ["INSTANCE", "module"], "2": ["FUNCTION", "a()", null]}, "stdout": "a\nInteresting b\n"}, {"line": 11, "event": "step_line", "func_name": "<module>", "globals": {"json": ["REF", 1], "a": ["REF", 2]}, "ordered_globals": ["json", "a"], "stack_to_render": [], "heap": {"1": ["INSTANCE", "module"], "2": ["FUNCTION", "a()", null]}, "stdout": "a\nInteresting b\n"}, {"line": 11, "event": "return", "func_name": "<module>", "globals": {"json": ["REF", 1], "a": ["REF", 2]}, "ordered_globals": ["json", "a"], "stack_to_render": [], "heap": {"1": ["INSTANCE", "module"], "2": ["FUNCTION", "a()", null]}, "stdout": "a\nInteresting b\nc\n"}]};
+  addVisualizerToPage(trace, 'test1_py',  {startingInstruction:0, hideCode: false, lang: "py3", disableHeapNesting: true, verticalStack: window.matchMedia("(max-width: 768px)").matches});
 </script>
 
 
-<h2 class = "problem">Worksheet Problem 1.2</h2>
+<div step = 1 class = "manualQuestion">What is love?</div>
+<div step = 3 class = "manualQuestion">Baby don't hurt me...</div>
 
-<div id="___testPyFile2_py" class="problem parentDiv"></div>
-<script type="text/javascript">
-  var trace = {"code": "def b():\n    print(\"B\")\n\nprint(\"A\")", "trace": [{"line": 1, "event": "step_line", "func_name": "<module>", "globals": {}, "ordered_globals": [], "stack_to_render": [], "heap": {}, "stdout": ""}, {"line": 4, "event": "step_line", "func_name": "<module>", "globals": {"b": ["REF", 1]}, "ordered_globals": ["b"], "stack_to_render": [], "heap": {"1": ["FUNCTION", "b()", null]}, "stdout": ""}, {"line": 4, "event": "return", "func_name": "<module>", "globals": {"b": ["REF", 1]}, "ordered_globals": ["b"], "stack_to_render": [], "heap": {"1": ["FUNCTION", "b()", null]}, "stdout": "A\n"}]};
-  addVisualizerToPage(trace, '___testPyFile2_py',  {startingInstruction:0, hideCode: false, lang: "py3", disableHeapNesting: true});
-</script>
+</div>
 
-<div step = 3 class = "manualQuestion">C</div>
-<div step = 4 class = "manualQuestion">D</div>
+<!---###-->
+<div id="submenu">
+    <button class="button menubutton" id="previousButton" onclick="displayPrevious()">Previous</button>
+    <button class="button menubutton" id="nextButton" onclick="displayNext()">Next</button>
+</div>
 
-<!--###-->
+</div>
+<script type="text/javascript" src="http://pytutor.ddns.net/pytutor_master/master/pytutor/js/style.js"></script>
 </body>
 </html>

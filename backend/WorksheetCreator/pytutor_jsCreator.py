@@ -207,7 +207,6 @@ def addToFile(codeList, listOfFileLines, headers):
 
     for index, script_code in enumerate(codeList):
             listOfFileLines.append("<div>\n")
-            listOfFileLines.append(codeList[index])
 
     if headers:
         for scriptIndex in range(0, len(codeList)):
@@ -216,6 +215,7 @@ def addToFile(codeList, listOfFileLines, headers):
                     wsProb = float(input("What worksheet problem is this (an int or float)?"))
                 except ValueError:
                     print("Error! Not a valid worksheet problem.")
+                    continue
                 break
             listOfFileLines.append("<h2 class = \"problem\">Worksheet Problem " + str(wsProb) + "</h2>" + "\n")
             listOfFileLines.append(codeList[scriptIndex])
@@ -241,15 +241,17 @@ def generateManualQuestion():
         except ValueError:
             print("Error! Step number must be an integer value!")
             continue
-
-        if py[:-3] + "_" + str(stepNumber) in answers:
+        
+        # Change this depending on what Sarwagya wants.
+        if py[:-3] + "_" + str(stepNumber) + py[-3:] in answers:
             print("Question already exists!")
             continue
 
         answer = checkEmptyInput("What is the answer to this question?")
         
         answers["totalNumOfQuestions"] += 1
-        answers[py[:-3] + "_" + str(stepNumber)] = answer
+        # Change this depending on what Sarwagya wants.
+        answers[py[:-3] + "_" + str(stepNumber) + py[-3:]] = answer
         break
 
     question = "<div step = " + str(stepNumber) + " class = \"manualQuestion\">" + question + "</div>"

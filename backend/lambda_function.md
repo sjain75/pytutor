@@ -124,7 +124,7 @@ pytutor.ddns.net/userDirectory/worksheets/worksheets/report/worksheetcode.json
 
 	{
     WorksheetCode:"a",
-    "attemptedBy":[student1, student2, ...] , //attempted at least 1 question
+    "attemptedBy":[student1, student2,I ...] , //attempted at least 1 question
     "completedBy": [], //studentWho attempted all questions
     questions:{
                 questionCode1:{
