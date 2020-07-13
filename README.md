@@ -1,6 +1,6 @@
 # Pytutor
 
-Pytutor is a ...
+Pytutor is a tool to allow python coders to do interactive exercises and collaborate. It aims to help teachers create interactive particpation activities and collect information about the students' level of understanding. 
 
 ## Setup and testing
 
