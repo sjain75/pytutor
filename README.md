@@ -112,7 +112,7 @@ to be executed next in the control flow. These test the users understandings of 
 and loops
 
 Manual questions: The user is required to enter a value or answer to a question that is asking about the code
-segement at a particular point in time
+segment at a particular point in time
 
 Structure of each question: <i>The WorksheetCreator abstracts this really well.</i>
 Outer div, no class or id is needed
