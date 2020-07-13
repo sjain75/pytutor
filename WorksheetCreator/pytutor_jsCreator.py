@@ -221,6 +221,9 @@ def addToFile(codeList, listOfFileLines, headers):
             listOfFileLines.append(codeList[scriptIndex])
             # This prompts the user for manual questions (if any).
             listOfFileLines.append("\n" + generateQuestionString())
+    else:
+        for scriptIndex in range(0, len(codeList)):
+            listOfFileLines.append(codeList[scriptIndex])
 
 	# Copies everything over from the end Tags/static content to the end. less hardcoding now.
 	# Adding closing div for each story problem. Will always be after all the manual questions.

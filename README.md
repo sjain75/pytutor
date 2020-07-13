@@ -8,25 +8,26 @@ Pytutor is a tool to allow python coders to do interactive exercises and collabo
 
 1. Get in touch with us to be assigned an IAM user and for us to create appropriate directories for hosting you
 
-        (*) Test if pytutor.ddns.net/[username]/pages/pytutor-demo.html
+        (*) Test if http://pytutor.ddns.net/[username]/worksheet/html/pytutor-demo.html
         (*) Install awscli (https://aws.amazon.com/cli/) if you would like to be able to upload files from cli
                 Alternatively new worksheets and other files can always be uploaded vai AWS management console.
 
 2. Use the `aws configure` command to add your aws credentials to access the bucket from your CLI.
 
-3. Create a worksheet using the Worksheet Creator.
+3. Create a worksheet using the Worksheet Creator (refer Worksheet Creator Usage section below).
 
 4. Upload .json file for answers and html file for the worksheet to the s3
-  * Manually upload files to s3 using AWS management console<b>OR</b>      
+  * Manually upload files to s3 using AWS management console using </br>
+	https://s3.console.aws.amazon.com/s3/buckets/pytutor.ddns.net/[username]/?region=us-east-2 <b>OR</b>
   * Use `aws s3 cp [filepath] s3://pytutor.ddns.net/[username]/[path]/` with the appropriate paths. 
 
-5. Test out the worksheet here: pytutor.ddns.net/[username]/worksheets/html/[worksheetFileName].html
+5. Test out the worksheet here: http://pytutor.ddns.net/[username]/worksheets/html/[worksheetFileName].html
 
 ## Worksheet Creator Usage
 
 Tutorial for using WorksheetCreator/pytutor_jsCreator.py
 
-- run in command line: "python pytutor_jsCreator.py [file1.py] [file2.py]..."
+- run in command line: "python3 pytutor_jsCreator.py [file1.py] [file2.py]..."
 - file1.py, file2.py can be path locations to the python file.
 - can input as many python file as necessary.
     Example: python pytutor_jsCreator.py ../testPyFile.py ../testPyFile2.py
