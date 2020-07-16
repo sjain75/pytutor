@@ -59,18 +59,16 @@ Example:
 
 ## Checking reports
 
-<B>Viewing .json files </B>
-
-1. Download the appropriopriate report.json file from the student/ or worksheets/report/ folder.
-
-      <B>OR</B>
-
-<B>View the json visually using pythonTutor [Experimental]</B>
-
 1. Go to http://pytutor.ddns.net/[username]/pages/report.html
 2. Login with email id with privileges to view the report.
-3. Try getting a report with student's user id, worksheet code or get the master report. (it might take a second to load)
-4. Move the slider on the story to go to the next step.
+3. Try getting a report with student's user id, worksheet code or get the master report. (it might take a second to load) (This updates the reports on S#)
+4. <B>View the json visually using pythonTutor [Experimental]</B> </br>
+   *Move the slider on the story to go to the next step. </br>
+  
+      <B>OR</B></br>
+  
+   <B>Downloading .json files </B></br>
+   *Download the appropriate report.json file from the student/ or worksheets/report/ folder in the S3.
 
 ## Appendix
 
