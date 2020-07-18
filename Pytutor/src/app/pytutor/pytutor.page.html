@@ -1,0 +1,31 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Pytutor
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Pytutor</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <div id="inputForm">
+    <h1>Professor Username:</h1>
+    <input type="text" id="profUsername" value="a">
+    <button id="submit" onclick="loadPage()">Submit</button>
+  </div>
+  <iframe id="homepage" class="hidden" src="https://www.wisc.edu/" height="99%" width="100%"></iframe>
+  <script>
+    function loadPage() {
+      var homepage = document.getElementById("homepage");
+      var profUsername = document.getElementById("profUsername");
+      var inputForm = document.getElementById("inputForm");
+      homepage.src = `http://pytutor.ddns.net/${profUsername.value}/pages/home.html`;
+      homepage.classList.remove("hidden");
+      inputForm.classList.add("hidden");
+    }
+  </script>
+</ion-content>
