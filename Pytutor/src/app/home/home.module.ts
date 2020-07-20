@@ -3,10 +3,10 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PytutorPage } from './pytutor.page';
+import { HomePage } from './home.page';
 import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
 
-import { PytutorPageRoutingModule } from './pytutor-routing.module';
+import { HomePageRoutingModule } from './home-routing.module';
 
 @NgModule({
   imports: [
@@ -14,8 +14,8 @@ import { PytutorPageRoutingModule } from './pytutor-routing.module';
     CommonModule,
     FormsModule,
     ExploreContainerComponentModule,
-    PytutorPageRoutingModule
+    HomePageRoutingModule
   ],
-  declarations: [PytutorPage]
+  declarations: [HomePage]
 })
-export class PytutorPageModule {}
+export class HomePageModule {}

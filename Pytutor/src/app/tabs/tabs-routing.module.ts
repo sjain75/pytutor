@@ -8,12 +8,12 @@ const routes: Routes = [
     component: TabsPage,
     children: [
       {
-        path: 'menu',
-        loadChildren: () => import('../menu/menu.module').then(m => m.MenuPageModule)
+        path: 'report',
+        loadChildren: () => import('../report/report.module').then(m => m.ReportPageModule)
       },
       {
-        path: 'pytutor',
-        loadChildren: () => import('../pytutor/pytutor.module').then(m => m.PytutorPageModule)
+        path: 'home',
+        loadChildren: () => import('../home/home.module').then(m => m.HomePageModule)
       },
       {
         path: 'settings',
@@ -21,14 +21,14 @@ const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: '/tabs/pytutor',
+        redirectTo: '/tabs/home',
         pathMatch: 'full'
       }
     ]
   },
   {
     path: '',
-    redirectTo: '/tabs/pytutor',
+    redirectTo: '/tabs/home',
     pathMatch: 'full'
   }
 ];

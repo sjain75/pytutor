@@ -1,0 +1,22 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Report
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Report</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div id="reportInputForm">
+    <h1>Professor Username:</h1>
+    <input type="text" id="profUsername" value="">
+    <button id="submit" onclick="loadReportPage()">Submit</button>
+  </div>
+  <iframe id="reportpage" class="hidden" src="https://www.wisc.edu/" height="99%" width="100%"></iframe>
+</ion-content>

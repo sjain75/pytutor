@@ -2,10 +2,10 @@ import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MenuPage } from './menu.page';
+import { ReportPage } from './report.page';
 import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
 
-import { MenuPageRoutingModule } from './menu-routing.module';
+import { ReportPageRoutingModule } from './report-routing.module';
 
 @NgModule({
   imports: [
@@ -13,8 +13,8 @@ import { MenuPageRoutingModule } from './menu-routing.module';
     CommonModule,
     FormsModule,
     ExploreContainerComponentModule,
-    MenuPageRoutingModule
+    ReportPageRoutingModule
   ],
-  declarations: [MenuPage]
+  declarations: [ReportPage]
 })
-export class MenuPageModule {}
+export class ReportPageModule {}
