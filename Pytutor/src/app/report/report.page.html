@@ -9,14 +9,24 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Report</ion-title>
+      <ion-title size="large">Home</ion-title>
     </ion-toolbar>
   </ion-header>
-
-  <div id="reportInputForm">
-    <h1>Professor Username:</h1>
-    <input type="text" id="profUsername" value="">
-    <button id="submit" onclick="loadReportPage()">Submit</button>
-  </div>
-  <iframe id="reportpage" class="hidden" src="https://www.wisc.edu/" height="99%" width="100%"></iframe>
+  <ion-grid padding>
+    <!-- Check if there is a better way to center information... Set to medium?-->
+    <ion-row class="ion-justify-content-center">
+      <ion-col size='two'>
+        <ion-card>
+          <ion-card-content>
+            <ion-item id="reportInputForm">
+              <ion-label position='floating'>Enter Professor Username</ion-label>
+              <ion-input type="text" id="profUsername" value=""></ion-input>
+              <ion-button color='tertiary' id="submit" (click)=loadReportPage()>Submit</ion-button>
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <!-- <iframe id="reportpage" class="hidden" src="https://www.wisc.edu/" height="99%" width="100%"></iframe> -->
 </ion-content>

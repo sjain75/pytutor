@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ReportService } from '../services/report.service'
 
 @Component({
   selector: 'app-report',
@@ -6,7 +7,9 @@ import { Component } from '@angular/core';
   styleUrls: ['report.page.scss']
 })
 export class ReportPage {
+  constructor(public ReportService: ReportService) {}
 
-  constructor() {}
-
+  loadReportPage() {
+    this.ReportService.loadReport();
+  }
 }
