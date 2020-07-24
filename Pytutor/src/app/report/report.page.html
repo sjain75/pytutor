@@ -12,15 +12,15 @@
       <ion-title size="large">Reports</ion-title>
     </ion-toolbar>
   </ion-header>
-  <ion-grid padding>
+  <ion-grid padding id="reportInputForm">
     <!-- Check if there is a better way to center information... Set to medium?-->
     <ion-row class="ion-justify-content-center">
       <ion-col size='two'>
         <ion-card>
           <ion-card-content>
-            <ion-item id="reportInputForm">
+            <ion-item>
               <ion-label position='floating'>Enter Professor Username</ion-label>
-              <ion-input value ='' clearInput type="text" id="profUsername"></ion-input>
+              <ion-input value ='' clearInput type="text" id="reportProfUsername"></ion-input>
               <ion-button color='tertiary' id="submit" (click)=loadReportPage()>Submit</ion-button>
             </ion-item>
           </ion-card-content>

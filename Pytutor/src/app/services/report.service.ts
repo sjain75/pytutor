@@ -9,9 +9,9 @@ export class ReportService {
 
   public loadReport() {
     var reportpage = <HTMLIFrameElement>document.getElementById("reportpage");
-    var profUsername = <HTMLInputElement>document.getElementById("profUsername");
+    var reportProfUsername = <HTMLInputElement>document.getElementById("reportProfUsername");
     var reportInputForm = document.getElementById("reportInputForm");
-    reportpage.src = `http://pytutor.ddns.net/${profUsername.value}/pages/report.html`;
+    reportpage.src = `http://pytutor.ddns.net/${reportProfUsername.value}/pages/report.html`;
     reportpage.classList.remove("hidden");
     reportInputForm.classList.add("hidden");
   }
