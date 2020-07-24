@@ -8,9 +8,13 @@ export class ReportService {
   professors: Professor[] = [];
 
   public loadReport() {
-    // Look up better way to do this.
+    var reportpage = <HTMLIFrameElement>document.getElementById("reportpage");
     var profUsername = <HTMLInputElement>document.getElementById("profUsername");
-    window.location.replace(`http://pytutor.ddns.net/${profUsername.value}/pages/report.html`);
+    var reportInputForm = document.getElementById("reportInputForm");
+    reportpage.src = `http://pytutor.ddns.net/${profUsername.value}/pages/report.html`;
+    console.log(reportpage.src);
+    reportpage.classList.remove("hidden");
+    reportInputForm.classList.add("hidden");
   }
 
   constructor() { }
