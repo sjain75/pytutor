@@ -9,7 +9,7 @@ export class ReportService {
 
   public loadReport() {
     // Look up better way to do this.
-    let profUsername = document.getElementById("profUsername");
+    var profUsername = <HTMLInputElement>document.getElementById("profUsername");
     window.location.replace(`http://pytutor.ddns.net/${profUsername.value}/pages/report.html`);
   }
 
