@@ -7,9 +7,9 @@ import { ReportService } from '../services/report.service'
   styleUrls: ['report.page.scss']
 })
 export class ReportPage {
-  constructor(public ReportService: ReportService) {}
+  constructor(private ReportService: ReportService) {}
 
-  loadReportPage() {
+  public loadReportPage() {
     this.ReportService.loadReport();
   }
 }
