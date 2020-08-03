@@ -28,6 +28,12 @@ def run_pytutor(py):
 
 def main():
     if len(sys.argv) >= 2:
+        # Creates pytutor_worksheets directory in CWD.
+        try:
+            os.mkdir("./pytutor_worksheets")
+        except OSError:
+            print("Remove me! directory already exists...")
+            
         createTracesPage()
         print("Creating your worksheet now...")
 
@@ -43,7 +49,7 @@ def main():
             if " " in fileName:
                 print("Error! No spaces allowed in file name.")
             else:
-                if os.path.exists("../worksheets/html/" + fileName):
+                if os.path.exists("./pytutor_worksheets/" + fileName):
                     userChoice = input("This file already exists. Would you like to append it to the already existing file? (Y/N)")
                     if userChoice.lower().strip() == "y":
                         append = True
@@ -51,7 +57,7 @@ def main():
                     elif userChoice.lower().strip() == "n":
                         userChoice = input("Are you sure? By selecting yes, you will overwrite the pre-existing file. (Y/N)")
                         if userChoice.lower().strip() == "y":
-                            os.remove("../worksheets/html/" + fileName)
+                            os.remove("./pytutor_worksheets/" + fileName)
                             break
                         else:
                             print("Unknown command!")
@@ -65,18 +71,18 @@ def main():
         # Actual part of worksheet creation
         global answers
         if append:
-            with open ("../worksheets/html/" + fileName) as file:
+            with open ("./pytutor_worksheets/" + fileName) as file:
                 listOfFileLines = file.read().splitlines()
             
-            with open("../worksheets/answers/" + fileName.replace(".html", ".json"), "r") as read_file:
+            with open("./pytutor_worksheets/" + fileName.replace(".html", ".json"), "r") as read_file:
                 answers = json.load(read_file)
 
             listOfFileLines = generateScripts(forTracesPage=False, lines=listOfFileLines)
         else:
-            open("../worksheets/html/" + fileName, 'x')
+            open("./pytutor_worksheets/" + fileName, 'x')
             answers = {"worksheetCode": fileName.replace(".html", ""), "totalNumOfQuestions": 0}
             try:
-                copyfile("../pages/defaultPageLayout.html", "../worksheets/html/" + fileName)
+                copyfile("../pages/defaultPageLayout.html", "./pytutor_worksheets/" + fileName)
             except IOError:
                 print("Error! Check to make sure \"defaultPageLayout.html\" exists within the pages directory")
                 sys.exit(1)
@@ -85,11 +91,11 @@ def main():
             listOfFileLines = generateScripts(forTracesPage=False, lines=listOfFileLines)
         
         # This will write to the original file.
-        with open("../worksheets/html/" + fileName, "w") as file:
+        with open("./pytutor_worksheets/" + fileName, "w") as file:
             for item in listOfFileLines:
                 file.write("%s\n" % item)
 
-        with open("../worksheets/answers/" + fileName.replace(".html", ".json"), "w") as json_file:
+        with open("./pytutor_worksheets/" + fileName.replace(".html", ".json"), "w") as json_file:
             json.dump(answers, json_file)
 
     # If given no additional python files, will print this error. See README for more information.
@@ -122,7 +128,7 @@ def generateScripts(forTracesPage, lines):
 def createTracesPage():
     print("Generating ONLY story/trace questions in html/trace.html...")
     try:
-        copyfile("../pages/defaultPageLayout.html", "../pages/trace.html")
+        copyfile("../pages/defaultPageLayout.html", "./pytutor_worksheets/trace.html")
     except IOError:
         print("Error! Check to make sure \"defaultPageLayout.html\" exists within the pages directory")
         sys.exit(1)
@@ -132,7 +138,7 @@ def createTracesPage():
     listOfFileLines = generateScripts(forTracesPage=True, lines=listOfFileLines)
 
     # Writes to the trace.html file.
-    with open("../pages/trace.html", "w") as file:
+    with open("./pytutor_worksheets/trace.html", "w") as file:
         for item in listOfFileLines:
             file.write("%s\n" % item)
 
@@ -170,7 +176,7 @@ def generateTrace(py, forTracesPage):
 # forTracesPage - boolean signaling whether or not we are generating the trace.html page.
 # return lines - returns the updated file in the form of a list.
 def createWorksheetTitle(fileName, forTracesPage):
-    with open (("../pages/" if forTracesPage else "../worksheets/html/") + fileName) as file:
+    with open (("./pytutor_worksheets/" if forTracesPage else "./pytutor_worksheets/") + fileName) as file:
         lines = file.read().splitlines()
     
     i = 0
@@ -206,7 +212,7 @@ def addToFile(codeList, listOfFileLines, headers):
             indexOfComment += 1
 
     for index, script_code in enumerate(codeList):
-            listOfFileLines.append("<div>\n")
+        listOfFileLines.append("<div>\n")
 
     if headers:
         for scriptIndex in range(0, len(codeList)):
