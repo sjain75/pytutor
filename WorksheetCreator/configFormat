@@ -1,0 +1,34 @@
+JSON:
+{
+	"wsTitle": (string),
+	"prob1": {
+		"stepNumber": (int),
+		"probHeader": (string),
+        // May not include questions, only include if you want manual questions.
+		"manualQuestion1": {
+			"question": (string),
+			"stepNumber": (int),
+			"answer": (string)
+		},
+		"manualQuestion2": {
+			"question": (string),
+			"stepNumber": (int),
+			"answer": (string)
+		}
+	},
+    "prob2": {
+		"stepNumber": (int),
+		"probHeader": (string),
+        // May not include questions, only include if you want manual questions.
+		"manualQuestion1": {
+			"question": (string),
+			"stepNumber": (int),
+			"answer": (string)
+		},
+		"manualQuestion2": {
+			"question": (string),
+			"stepNumber": (int),
+			"answer": (string)
+		}
+	}
+}
