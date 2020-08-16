@@ -27,7 +27,7 @@ Pytutor is a tool to allow python coders to do interactive exercises and collabo
 
 ## Worksheet Creator Usage
 
-Tutorial for using WorksheetCreator/pytutor_jsCreator.py
+Tutorial for using WorksheetCreator/pytutor_jsCreator.py with no config file
 
 - run in command line: "python3 pytutor_jsCreator.py [file1.py] [file2.py]..."
 - file1.py, file2.py can be path locations to the python file.
@@ -35,19 +35,50 @@ Tutorial for using WorksheetCreator/pytutor_jsCreator.py
     Example: python pytutor_jsCreator.py ../testPyFile.py ../testPyFile2.py
 
 - Immediately after running the python command, you can see a page that has only the traces in:
-    /pytutor/pages/trace.html
+    ./pytutor_worksheets/trace.html
 - We can use this only trace page to help us create story questions and where to begin the trace itself.
 
 - Upon following guided prompts in command line, you can check your worksheet in:
-    /pytutor/worksheets/HTML/[worksheetName].html
+    ./pytutor_worksheets/[worksheetName].html
 - To check answers, you can find them in:
-    /pytutor/worksheets/answers/[worksheetName].json
+    ./pytutor_worksheets/[worksheetName].json
 
 Example:
 - if we input our file name to be "ws1", our worksheet will be:
-    /pytutor/worksheets/HTML/ws1.html
+    ./pytutor_worksheets/ws1.html
 - Our answers will be in:
-    /pytutor/worksheets/answers/ws1.json
+    ./pytutor_worksheets/ws1.json
+
+Tutorial for using WorksheetCreator/pytutor_jsCreator.py with config file
+- We assume that we have a pytutor_worksheets directory in CWD (./pytutor_worksheets exists)
+- Config file should match the template in the pytutor/WorksheetCreator/configFormat, save as json
+file titled "config.json"
+
+- Template:
+{
+    "wsTitle": "[titleName]",
+    "[pathToPyFile.py]": {
+        "stepNumber": [intToBeginTrace],
+        "problemName": "[problemName]",
+        "manualQuestion": [{
+            "question": "[manualQuestionProblem]",
+            "stepNumber": [beginningStepNumber],
+            "answer": "[manualQuestionAnswer]"
+        }, {
+            "question": "[manualQuestionProblem]",
+            "stepNumber": [beginningStepNumber],
+            "answer": "[manualQuestionAnswer]"
+        }]
+    }
+}
+- Note: you do not need manual questions. If no manual questions, don't set manualQuestion as a
+key.
+
+- Config file is then located in ./pytutor_worksheets directory
+- run in command line: "python3 pytutor_jsCreator.py config.json"
+
+- Will prompt for worksheet title/name. Upon doing so, if config information is put in correctly,
+the worksheet should be created successfully with the config file info.
 
 ## Attempting worksheets
 
