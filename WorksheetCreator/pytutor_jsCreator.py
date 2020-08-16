@@ -68,21 +68,38 @@ def main():
 
             # Actual worksheet creation.
             if os.path.exists("./pytutor_worksheets/" + fileName):
-                userChoice = input("This file already exists. Would you like to append it to the already existing file? (Y/N)")
-                if userChoice.lower().strip() == "y":
-                    append = True
-                    break
-                elif userChoice.lower().strip() == "n":
-                    userChoice = input("Are you sure? By selecting yes, you will overwrite the pre-existing file. (Y/N)")
+                # check if config exists. If it does exist, we just overwrite previous files.
+                if config != None:
+                    userChoice = input("Warning! Since both the config and worksheet file already exist, we\n"
+                    + " will delete the previous file and rewrite it with the given config and\n"
+                    + " python files provided. Therefore, you may lose previous work if the config\n"
+                    + " and python files differ from the first time you ran this command. Press\n"
+                    + " (Y) if you want to confirm, and (N) if you want to stop.\n")
                     if userChoice.lower().strip() == "y":
                         os.remove("./pytutor_worksheets/" + fileName)
                         break
+                    elif userChoice.lower().strip() == "n":
+                        print("Cancelling request...")
+                        sys.exit(1)
                     else:
                         print("Unknown command!")
                         continue
                 else:
-                    print("Unknown command!")
-                    continue
+                    userChoice = input("This file already exists. Would you like to append it to the already existing file? (Y/N)")
+                    if userChoice.lower().strip() == "y":
+                        append = True
+                        break
+                    elif userChoice.lower().strip() == "n":
+                        userChoice = input("Are you sure? By selecting yes, you will overwrite the pre-existing file. (Y/N)")
+                        if userChoice.lower().strip() == "y":
+                            os.remove("./pytutor_worksheets/" + fileName)
+                            break
+                        else:
+                            print("Unknown command!")
+                            continue
+                    else:
+                        print("Unknown command!")
+                        continue
             else:
                 break
         
@@ -181,7 +198,7 @@ def generateTrace(py, forTracesPage):
     if not(forTracesPage):
         if config is not None and "stepNumber" in config[py]:
             try:
-                numSteps = config[py]["stepNumber"]
+                numSteps = config[py]["stepNumber"] - 1
                 if not isinstance(numSteps, int) or numSteps < 0:
                     raise ValueError
             except ValueError:
