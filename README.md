@@ -1,6 +1,8 @@
-# Pytutor
+<div align="center"><img src="http://pytutor.ddns.net/logo.svg" width="500"></img></div>  
 
+# Pytutor 
 Pytutor is a tool to allow python coders to do interactive exercises and collaborate. It aims to help teachers create interactive particpation activities and collect information about the students' level of understanding. 
+
 
 ## Setup and testing
 
