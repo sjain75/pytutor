@@ -55,22 +55,22 @@ Tutorial for using WorksheetCreator/pytutor_jsCreator.py with config file
 file titled "config.json"
 
 - Template:
-`{
-    "wsTitle": "[titleName]",
-    "[pathToPyFile.py]": {
-        "stepNumber": [intToBeginTrace],
-        "problemName": "[problemName]",
-        "manualQuestion": [{
-            "question": "[manualQuestionProblem]",
-            "stepNumber": [beginningStepNumber],
-            "answer": "[manualQuestionAnswer]"
-        }, {
-            "question": "[manualQuestionProblem]",
-            "stepNumber": [beginningStepNumber],
-            "answer": "[manualQuestionAnswer]"
-        }]
-    }
-}`
+* {
+    * "wsTitle": "[titleName]",
+    * "[pathToPyFile.py]": {
+        * "stepNumber": [intToBeginTrace],
+        * "problemName": "[problemName]",
+        * "manualQuestion": [{
+            * "question": "[manualQuestionProblem]",
+            * "stepNumber": [beginningStepNumber],
+            * "answer": "[manualQuestionAnswer]"
+        * }, {
+            * "question": "[manualQuestionProblem]",
+            * "stepNumber": [beginningStepNumber],
+            * "answer": "[manualQuestionAnswer]"
+        * }]
+    * }
+* }
 - Note: you do not need manual questions. If no manual questions, don't set manualQuestion as a
 key.
 
