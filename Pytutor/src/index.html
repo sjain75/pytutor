@@ -21,18 +21,6 @@
 
 <body>
   <app-root></app-root>
-  
-  <script>
-    function loadHomePage() {
-      var homepage = document.getElementById("homepage");
-      var homeProfUsername = document.getElementById("homeProfUsername");
-      var homeInputForm = document.getElementById("homeInputForm");
-      homepage.src = `http://pytutor.ddns.net/${homeProfUsername.value}/pages/home.html`;
-      homepage.classList.remove("hidden");
-      homeInputForm.classList.add("hidden");
-    }
-
-  </script>
 </body>
 
 </html>

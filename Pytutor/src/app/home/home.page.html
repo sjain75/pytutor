@@ -13,10 +13,21 @@
     </ion-toolbar>
   </ion-header>
 
-  <div id="homeInputForm">
-    <h1>Professor Username:</h1>
-    <input type="text" id="homeProfUsername" value="">
-    <button id="submit" onclick="loadHomePage()">Submit</button>
-  </div>
-  <iframe id="homepage" class="hidden" src="https://www.wisc.edu/" height="99%" width="100%"></iframe>
+  <ion-grid padding id="homeInputForm">
+    <!-- Check if there is a better way to center information... Set to medium?-->
+    <ion-row class="ion-justify-content-center">
+      <ion-col size='two'>
+        <ion-card>
+          <ion-card-content>
+            <ion-item>
+              <ion-label position='floating'>Enter Professor Username</ion-label>
+              <ion-input value ='' clearInput type="text" id="homeProfUsername"></ion-input>
+              <ion-button color='tertiary' id="submit" (click)=loadHomePage()>Submit</ion-button>
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <iframe id="homepage" class="hidden" src="http://pytutor.ddns.net/" height="99%" width="100%"></iframe>
 </ion-content>
