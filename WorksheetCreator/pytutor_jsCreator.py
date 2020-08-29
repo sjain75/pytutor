@@ -49,6 +49,7 @@ def run_pytutor(py):
 
 def main():
     if len(sys.argv) >= 2:
+        # poop:)
         # Creates pytutor_worksheets directory in CWD.
         if not os.path.exists("./pytutor_worksheets"):
             try:
