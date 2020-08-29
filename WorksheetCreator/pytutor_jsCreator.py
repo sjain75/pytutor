@@ -22,15 +22,27 @@ config = None
 # variable config as a dictionary.
 def loadConfig():
     global config
-    with open('./pytutor_worksheets/config.json') as file:
-        config = json.load(file)
+    try:
+        with open('./pytutor_worksheets/config.json') as file:
+            config = json.load(file)
+            return
+    except OSError:
+        print("Error! Make sure that ./pytutor_worksheets/config.json exists.")
+        print("Creating pytutor_worksheets if the directory did not exist before in CWD...")
+        print("To use config.json, add it to the new pytutor_worksheets folder in CWD")
+        exit(1)
+    
 
 # Converts python code to JavaScript. 
 # If the python file does not exist in specified file destination, will throw an error.
 # py - the file path.
 def run_pytutor(py):
     try:
-        js = check_output(["python", PYTUTOR, py])
+        if os.path.exists(py):
+            js = check_output(["python", PYTUTOR, py])
+        else:
+            print("Error! Check your paths to the python files (either in config or in command line)")
+            exit(1)
     except subprocess.CalledProcessError as e:
         js = e.output
     return json.dumps(json.loads(js))
@@ -156,7 +168,8 @@ def generateScripts(forTracesPage, lines):
     global py
     if config:
         pys = list(config.keys())
-        pys.remove("wsTitle")
+        if "wsTitle" in config:
+            pys.remove("wsTitle")
     else:
         pys = sys.argv[1:]
     
