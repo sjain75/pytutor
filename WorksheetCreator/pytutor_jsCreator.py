@@ -317,10 +317,24 @@ def addToFile(codeList, listOfFileLines, headers):
 def generateQuestionStringConfig():
     global config, answers, py
     divQuestions = ""
+    index = 1
     for manualQuestions in config[py]["manualQuestion"]:
-        question = manualQuestions["question"]
-        stepNumber = manualQuestions["stepNumber"]
-        answer = manualQuestions["answer"]
+        try:
+            question = manualQuestions["question"]
+        except KeyError:
+            question = checkEmptyInput("What is the manual question " + str(index) + " for " + py + "?")
+        
+        try:
+            stepNumber = manualQuestions["stepNumber"]
+        except KeyError:
+            stepNumber = checkEmptyInput("What step do you want the question to appear at? (" + py + ", manual question" + index +")")
+        
+        try:
+            answer = manualQuestions["answer"]
+        except KeyError:
+            answer = checkEmptyInput("What is the answer for question " + index + "of trace " + py + "?")
+
+        index += 1
 
         # Check if question at this step already exists.
         if py.replace(".", "_") + "_" + str(stepNumber) in answers:
