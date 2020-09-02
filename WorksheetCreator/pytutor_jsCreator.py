@@ -1,8 +1,29 @@
 import os, sys, json, subprocess
 from shutil import copyfile
 from subprocess import check_output
+from optparse import OptionParser
 
-PYTUTOR = "../resources/OnlinePythonTutor/v5-unity/generate_json_trace.py"
+# Option parser stuff
+parser = OptionParser()
+parser.add_option("-c", "--config", "--c",
+    action="store", type="string", dest="config",
+    help="Will use config.json file in pytutor_worksheets directory instead of manual input. Will\n" +
+        "ask for user input if element in configuration file is missing. Make sure config.json is in\n" +
+        "pytutor_worksheets directory.\n" + 
+        "WARNING: If you specify both a config flag (i.e., -c [config]) AND a file flag (i.e., -f [files],\n" +
+        "the script will process the config rather than prompt manual input.")
+parser.add_option("-f", "--file", "--f",
+    action="store", type="string", dest="files",
+    help="Anything after this flag (and before any other additional flags) are the files to be traced.\n" +
+        "Make sure that the files are the paths (absolute OR relative) to the python files themselves.\n" +
+        'Format: pytutor_jsCreator.py -f "file1.py file2.py\n' +
+        "WARNING: If you specify both a config flag (i.e., -c [config]) AND a file flag (i.e., -f [files],\n" +
+        "the script will process the config rather than prompt manual input.")
+(options, args) = parser.parse_args()
+
+PATH = os.getcwd()
+
+PYTUTOR = PATH + "/../resources/OnlinePythonTutor/v5-unity/generate_json_trace.py"
 
 EMBEDDING = """
 <div id="DIV" class=\"problem parentDiv\"></div>
@@ -23,7 +44,7 @@ config = None
 def loadConfig():
     global config
     try:
-        with open('./pytutor_worksheets/config.json') as file:
+        with open('./pytutor_worksheets/' + options.config) as file:
             config = json.load(file)
             return
     except OSError:
@@ -49,7 +70,6 @@ def run_pytutor(py):
 
 def main():
     if len(sys.argv) >= 2:
-        # poop:)
         # Creates pytutor_worksheets directory in CWD.
         if not os.path.exists("./pytutor_worksheets"):
             try:
@@ -57,7 +77,7 @@ def main():
             except OSError:
                 sys.exit(1)
         
-        if "config.json" in sys.argv:
+        if options.config:
             loadConfig()
 
         createTracesPage()
@@ -131,7 +151,7 @@ def main():
             answers = {"worksheetCode": fileName.replace(".html", ""), "totalNumOfQuestions": 0}
             try:
                 # MAKE SURE TO CHANGE THIS.
-                copyfile("../pages/defaultPageLayout.html", "./pytutor_worksheets/" + fileName)
+                copyfile(PATH + "/defaultPageLayout.html", "./pytutor_worksheets/" + fileName)
             except IOError:
                 print("Error! Check to make sure \"defaultPageLayout.html\" exists within the pages directory")
                 sys.exit(1)
@@ -149,7 +169,9 @@ def main():
 
     # If given no additional python files, will print this error. See README for more information.
     else:
-        print("Error! How to run program: python pytutor_jsCreator.py [file_1.py] [file_2.py]...")
+        print("Error! How to run program: python pytutor_jsCreator.py [file_1.py] [file_2.py]...\n" +
+            "Use pytutor_jsCreator.py -h for more information, or go to the repository: \n" +
+            "https://github.com/sjain75/pytutor")
 
 # Checks if given input string is empty. Will keep on prompting user to input a non-empty string
 # until user enters one.
@@ -171,8 +193,12 @@ def generateScripts(forTracesPage, lines):
         pys = list(config.keys())
         if "wsTitle" in config:
             pys.remove("wsTitle")
+    elif options.files:
+        pys = options.files.split(" ")
     else:
-        pys = sys.argv[1:]
+        print("Warning! Files not specified correctly. Make sure to follow the specific template provided. You can\n" +
+            "find more information by doing 'pytutor_jsCreator.py -h' for more information.")
+        sys.exit(1)
     
     for py in pys:
         lines = addToFile([generateTrace(py, forTracesPage)], lines, not(forTracesPage))
@@ -185,7 +211,7 @@ def createTracesPage():
     print("Generating ONLY story/trace questions in html/trace.html...")
     try:
         #MAKE SURE TO CHANGE THIS.
-        copyfile("../pages/defaultPageLayout.html", "./pytutor_worksheets/trace.html")
+        copyfile(PATH + "/defaultPageLayout.html", "./pytutor_worksheets/trace.html")
     except IOError:
         print("Error! Check to make sure \"defaultPageLayout.html\" exists within the pages directory")
         sys.exit(1)
@@ -295,7 +321,7 @@ def addToFile(codeList, listOfFileLines, headers):
             else:
                 wsProb = checkEmptyInput("What is the problem title?")
             # Appending wsProblem
-            listOfFileLines.append("<h2 class = \"problem\">Worksheet Problem " + str(wsProb) + "</h2>" + "\n")
+            listOfFileLines.append("<h2 class = \"problem\">" + str(wsProb) + "</h2>" + "\n")
             listOfFileLines.append(codeList[scriptIndex])
             # This prompts the user for manual questions (if any).
             if config is not None and "manualQuestion" in config[py]:
