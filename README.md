@@ -29,7 +29,7 @@ Pytutor is a tool to allow python coders to do interactive exercises and collabo
 
 Tutorial for using WorksheetCreator/pytutor_jsCreator.py with no config file
 
-- run in command line: "python3 pytutor_jsCreator.py [file1.py] [file2.py]..."
+- run in command line: "python3 pytutor_jsCreator.py -c [configName].json" OR "python3 pytutor_jsCreator.py -f "file1.py file2.py file3.py"
 - file1.py, file2.py can be path locations to the python file.
 - can input as many python file as necessary.
     Example: python pytutor_jsCreator.py ../testPyFile.py ../testPyFile2.py
@@ -75,7 +75,7 @@ file titled "config.json"
 key.
 
 - Config file is then located in ./pytutor_worksheets directory
-- run in command line: "python3 pytutor_jsCreator.py config.json"
+- run in command line: "python3 pytutor_jsCreator.py -c config.json"
 
 - Will prompt for worksheet title/name. Upon doing so, if config information is put in correctly,
 the worksheet should be created successfully with the config file info.
