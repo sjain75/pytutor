@@ -44,13 +44,11 @@ config = None
 def loadConfig():
     global config
     try:
-        with open('./pytutor_worksheets/' + options.config) as file:
+        with open(options.config) as file:
             config = json.load(file)
             return
     except OSError:
-        print("Error! Make sure that ./pytutor_worksheets/config.json exists.")
-        print("Creating pytutor_worksheets if the directory did not exist before in CWD...")
-        print("To use config.json, add it to the new pytutor_worksheets folder in CWD")
+        print("Error! Make sure that" + options.config + " exists.")
         exit(1)
     
 
@@ -88,8 +86,11 @@ def main():
         # pre-existing file.
         append = False
         while(True):
-            worksheetName = checkEmptyInput("What is the worksheet name?")
-            # Removes all whitespace from worksheetName, stores it into fileName variable
+            if 'wsTitle' in config:
+                worksheetName = config['wsTitle']
+            else:
+                worksheetName = checkEmptyInput("What is the worksheet name?")
+                # Removes all whitespace from worksheetName, stores it into fileName variable
             if " " in worksheetName:
                 fileName = worksheetName.replace(" ", "")
             else:
@@ -368,7 +369,7 @@ def generateQuestionStringConfig():
             continue
         else:
             answers["totalNumOfQuestions"] += 1
-            answers[py.replace(".", "_") + "_" + str(stepNumber)] = answer
+            answers[py.replace(".", "_").replace("/","_").replace("\\","_") + "_" + str(stepNumber)] = answer
 
         divQuestions += "\n<div step = " + str(stepNumber) + " class = \"manualQuestion\">" + question + "</div>"
      
@@ -396,7 +397,7 @@ def generateManualQuestion():
         
         answers["totalNumOfQuestions"] += 1
         # Change this depending on what Sarwagya wants.
-        answers[py.replace(".", "_") + "_" + str(stepNumber)] = answer
+        answers[py.replace(".", "_").replace("/","_").replace("\\","_") + "_" + str(stepNumber)] = answer
         break
     
     question = "<div step = " + str(stepNumber) + " class = \"manualQuestion\">" + question + "</div>"
