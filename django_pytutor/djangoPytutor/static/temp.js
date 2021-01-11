@@ -16,8 +16,7 @@ function convert() {
 	    mode: 'same-origin',  // Do not send CSRF token to another domain.
 		data: JSON.stringify({"code":code})
 	}).then(function(response) {
-	    console.log(response);
-		console.log(response.body);
+	    response.json().then(body => console.log(body));
 
 	});
 

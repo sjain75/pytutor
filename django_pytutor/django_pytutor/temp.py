@@ -10,7 +10,7 @@ def home(request):
 
 def template(request):
 
-    return HttpResponse("1")
+    return HttpResponse("{'hi':1}")
 
 urlpatterns = [
     url(r'^$', home),
