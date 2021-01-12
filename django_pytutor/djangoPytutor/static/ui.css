@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand&family=Roboto+Condensed&family=Source+Code+Pro:wght@300&display=swap');
+
+body {
+    background-color:#34568B;
+    font-family: "Quicksand";
+    text-align: center;
+}
+
+.center-container {
+    display:flex;
+    justify-content: center;
+}
+
+.story-container {
+    border-style: solid;
+    border-width: .5px;
+    width: 800px;
+    height: 400px;
+    display:flex;
+    justify-content: center;
+    position: relative;
+    background-color: #EFC050;
+}
+
+.manual-container {
+    border-style: solid;
+    border-width: .5px;
+    width: 800px;
+    height: 220px;
+    /* display:flex;
+    justify-content: center; */
+    position: relative;
+    background-color: #EFC050;
+}
+
+.manual-question {
+    width: 500px;
+    background-color: #efeff5;
+    font-family: "Source Code Pro";
+    font-size: 12px;
+}
+
+.story-question {
+    width: 500px;
+    height: 300px;
+    position: absolute;
+    top: 60px;
+    background-color: #efeff5;
+    font-family: "Source Code Pro";
+    font-size: 12px;
+}
+
+/*
+    TODO: work on the centering on left vs. right for extra flair, buttons.
+*/
+
+/* .inner-container:nth-child(1) {
+    margin-left: -20px;
+} */
+
+h1 {
+    font-family: "Roboto Condensed";
+}

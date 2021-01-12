@@ -1,0 +1,17 @@
+<html>
+    <head>
+        <title>Pytutor</title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		{% load static %}
+        <script src="{% static 'temp.js' %}" type="text/javascript"></script>
+        <link rel="stylesheet" type="text/css" href="{% static 'ui.css' %}">
+    </head>
+    <body>
+		<textarea id="demoCode">
+		</textarea>
+		{% csrf_token %}
+        <button onclick="convert();">
+            I update object 12345
+        </button>
+    </body>
+</html>
