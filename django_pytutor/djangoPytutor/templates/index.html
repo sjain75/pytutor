@@ -3,48 +3,26 @@
         <title>Pytutor</title>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 		{% load static %}
-        <script src="{% static 'temp.js' %}" type="text/javascript"></script>
+        <script src="{% static 'convert.js' %}" type="text/javascript"></script>
         <script src="{% static 'ui.js' %}" type="text/javascript"></script>
         <link rel="stylesheet" type="text/css" href="{% static 'ui.css' %}">
     </head>
     <body>
         <div class="navbar">
             <h1 class="navbar-title">Pytutor</h1>
+            <a href="http://pytutor.ddns.net/"><img class="logo" src="http://pytutor.ddns.net/logo.svg" alt="Pytutor Home"></a>
         </div>
 		<div class="center-container">
             <div class="inner-container">
                 <div class="question-container">
+                    <div class="question-name-container">
+                        <h2>Enter Question Title Here:</h2>
+                        <textarea class="question-name" id="story-question-title-1"></textarea>
+                    </div>
                     <div class="story-container">
                         <h2>Enter Python Code Here:</h1>
-                        <textarea class="story-question"></textarea>
-                    </div>
-    
-                    <div class="manual-container">
-                        <h2>Enter Manual Questions Here:</h2>
-                        <input class="manual-question"/>
-                        <h2>Enter Answer Here:</h2>
-                        <input class="manual-question"/>
-                    </div>
-    
-                    <div class="manual-container">
-                        <h2>Enter Manual Questions Here:</h2>
-                        <input class="manual-question"/>
-                        <h2>Enter Answer Here:</h2>
-                        <input class="manual-question"/>
-                    </div>
-    
-                    <div class="manual-container">
-                        <h2>Enter Manual Questions Here:</h2>
-                        <input class="manual-question"/>
-                        <h2>Enter Answer Here:</h2>
-                        <input class="manual-question"/>
-                    </div>
-                </div>
-
-                <div class="question-container">
-                    <div class="story-container">
-                        <h2>Enter Python Code Here:</h1>
-                        <textarea class="story-question"></textarea>
+                        <textarea class="story-question" id="story-question-1"></textarea>
+                        <button class="convert-btn" onclick="convert()">Preview</button>
                     </div>
     
                     <div class="manual-container">

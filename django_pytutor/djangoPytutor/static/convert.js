@@ -4,12 +4,15 @@ $(document).ready(function(){
 csrftoken = $('[name=csrfmiddlewaretoken]')[0].value;
 
 request = new Request(
-    "template",
+	// One error is coming from the fact that the convert view 
+	// is not totally functional. Work on this to get it working,
+	// then try to route everything together
+    "convert",
     {headers: {'X-CSRFToken': csrftoken}}
 );
 });
 function convert() {
-	let code = $("#demoCode").val();
+	let code = $("#story-question-1").val();
 
 	fetch(request, {
 	    method: 'POST',
