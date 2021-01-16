@@ -1,52 +1,64 @@
 var request=null;
 var csrftoken=null;
+var count = 0;
 $(document).ready(function(){
-csrftoken = $('[name=csrfmiddlewaretoken]')[0].value;
-
-request = new Request(
-	// One error is coming from the fact that the convert view 
-	// is not totally functional. Work on this to get it working,
-	// then try to route everything together
-    "convert",
-    {headers: {'X-CSRFToken': csrftoken}}
-);
+	csrftoken = $('[name=csrfmiddlewaretoken]')[0].value;
+	$(".convert-btn").on("click", convert);
 });
-function convert() {
-	let code = $("#story-question-1").val();
 
-	fetch(request, {
-	    method: 'POST',
-	    mode: 'same-origin',  // Do not send CSRF token to another domain.
-		data: JSON.stringify({"code":code})
-	}).then(function(response) {
-	    response.json().then(body => console.log(body));
-
-	});
-
-	// $.ajax({
-	//   type: "POST",
-	//   url: "http://127.0.0.1:8000/template",
-	//   data: {CSRF: csrftoken, 'hi':1},
-	//   success: success,
-	//   dataType: "json"
-	// });
-
-/*	$.post({
-	  type: "POST",
-	  url: "http://127.0.0.1:8000/template",
-	  data: JSON.stringify({"code":code}),
-	  contentType: "application/json; charset=utf-8",
-	  dataType: "json"
-	}).done(function(data) {
-		if (data.statusCode == 200) {
-		  console.log("post succeeded, got back %o", data);
-		} else {
-		  console.log("post returned status "+data.statusCode);
-		  console.log("error body %o", data.body);
-		}
-	});*/
+function csrfSafeMethod(method) {
+	// these HTTP methods do not require CSRF protection
+	return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
 
-function success(data){
+$.ajaxSetup({
+	beforeSend: function (xhr, settings) {
+		// if not safe, set csrftoken
+		if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+			xhr.setRequestHeader("X-CSRFToken", csrftoken);
+		}
+	}
+});
+
+function convert() {
+	let code = $($(this).prevAll(".story-question")[0]).val();
+	let thisStory = $(this).parent();
+	$.ajax({
+		method:"POST",
+		url: "convert",
+		data: {
+			// here getdata should be a string so that
+			// in your views.py you can fetch the value using get('getdata')
+			'code': JSON.stringify(code)
+		},
+		dataType: 'json',
+		success: function (response, status) {
+			let newDivId = null;
+			let isNext = thisStory.next(".problem").length;
+			if(isNext){
+				 newDivId = thisStory.next(".problem").attr("id");
+			}
+			else{
+				newDivId = "p"+count+"_py";
+				$(thisStory).after(`<div id="`+newDivId+`" class="problem parentDiv"></div>`)
+				count++;
+			}
+			success(response, newDivId)
+		},
+		error: function (res) {
+			alert(res.status);
+		}
+	});
+}
+
+function success(data, divId){
+
+	addVisualizerToPage(data, divId, {
+										startingInstruction: 0,
+										hideCode: false,
+										lang: "py3",
+										disableHeapNesting: true//,
+										//verticalStack: window.matchMedia("(max-width: 1768px)").matches
+									});
 	  console.log("post succeeded, got back %o", data);
 }

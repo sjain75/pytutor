@@ -5,10 +5,6 @@ import json
 import os, sys, json, subprocess
 from subprocess import check_output
 
-PATH = os.getcwd()
-
-PYTUTOR = PATH + "/../../resources/OnlinePythonTutor/v5-unity/generate_json_trace.py"
-
 EMBEDDING = """
 <div id="DIV" class=\"problem parentDiv\"></div>
 <script type="text/javascript">
@@ -23,10 +19,11 @@ def home(request):
 
 @csrf_protect
 def convert(request):
-    return HttpResponse(run_pytutor("print('Hello')"))
+	return HttpResponse(run_pytutor(json.loads(request.POST.get('code', None))))
+	#return HttpResponse(run_pytutor(request.POST.get('code', None)))
 
 
-# Converts python code to JavaScript. 
+# Converts python code to JavaScript.
 # If the python file does not exist in specified file destination, will throw an error.
 # py - the file path.
 def run_pytutor(py):
@@ -34,4 +31,4 @@ def run_pytutor(py):
         js = check_output(["python", "./jsCreator/generate_json_trace.py", "--code", py])
     except subprocess.CalledProcessError as e:
         js = e.output
-    return json.loads(js)
+    return json.dumps(json.loads(js))

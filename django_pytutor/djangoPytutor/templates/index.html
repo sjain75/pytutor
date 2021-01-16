@@ -6,8 +6,10 @@
         <script src="{% static 'convert.js' %}" type="text/javascript"></script>
         <script src="{% static 'ui.js' %}" type="text/javascript"></script>
         <link rel="stylesheet" type="text/css" href="{% static 'ui.css' %}">
+        <script type="text/javascript" src="http://pytutor.ddns.net/js/pytutor-embed.bundle.js" charset="utf-8"></script>
     </head>
     <body>
+      {% csrf_token %}
         <div class="navbar">
             <h1 class="navbar-title">Pytutor</h1>
             <a href="http://pytutor.ddns.net/"><img class="logo" src="http://pytutor.ddns.net/logo.svg" alt="Pytutor Home"></a>
@@ -23,23 +25,23 @@
                     <div class="story-container">
                         <h2>Enter Python Code Here:</h1>
                         <textarea class="story-question" id="story-question-1"></textarea>
-                        <button class="convert-btn" onclick="convert()">Preview</button>
+                        <button class="convert-btn">Preview</button>
                     </div>
-    
+
                     <div class="manual-container">
                         <h2>Enter Manual Questions Here:</h2>
                         <input class="manual-question"/>
                         <h2>Enter Answer Here:</h2>
                         <input class="manual-question"/>
                     </div>
-    
+
                     <div class="manual-container">
                         <h2>Enter Manual Questions Here:</h2>
                         <input class="manual-question"/>
                         <h2>Enter Answer Here:</h2>
                         <input class="manual-question"/>
                     </div>
-    
+
                     <div class="manual-container">
                         <h2>Enter Manual Questions Here:</h2>
                         <input class="manual-question"/>
