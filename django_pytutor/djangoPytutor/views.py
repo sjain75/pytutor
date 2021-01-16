@@ -22,10 +22,6 @@ def home(request):
     return render(request, "index.html")
 
 @csrf_protect
-def template(request):
-    return HttpResponse(json.dumps({"hi":1}))
-
-@csrf_protect
 def convert(request):
     return HttpResponse(run_pytutor("print('Hello')"))
 
@@ -35,10 +31,7 @@ def convert(request):
 # py - the file path.
 def run_pytutor(py):
     try:
-        if os.path.exists(py):
-            js = check_output(["python", "C:\\Users\\Eric Zhou\\Documents\\Projects\\Pytutor\\pytutor\\resources\\OnlinePythonTutor\\v5-unity\\generate_json_trace.py", "--code", py])
-        else:
-            print("Error! Check your paths to the python files (either in config or in command line)")
+        js = check_output(["python", "./jsCreator/generate_json_trace.py", "--code", py])
     except subprocess.CalledProcessError as e:
         js = e.output
-    return json.dumps(json.loads(js))
+    return json.loads(js)

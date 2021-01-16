@@ -21,6 +21,5 @@ from djangoPytutor import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^$', views.home),
-    url(r'^template$', views.template),
     url(r'^convert$', views.convert)
 ]

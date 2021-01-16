@@ -1,12 +1,12 @@
 $(window).on('load', function () {
     var counter = 1;
-    $(window).on('scroll', function() {
-        if ($(window).scrollTop() > 10) {
-            $('.navbar').addClass('nav-active');
-        } else {
-            $('.navbar').removeClass('nav-active');
-        }
-    })
+    // $(window).on('scroll', function() {
+    //     if ($(window).scrollTop() > 10) {
+    //         $('.navbar').addClass('nav-active');
+    //     } else {
+    //         $('.navbar').removeClass('nav-active');
+    //     }
+    // })
 
     $("#addQuestion").on('click', function () {
         var TEMPLATE =  
