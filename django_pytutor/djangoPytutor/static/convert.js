@@ -1,52 +1,48 @@
 var request=null;
 var csrftoken=null;
+var count = 0;
 $(document).ready(function(){
-csrftoken = $('[name=csrfmiddlewaretoken]')[0].value;
+	csrftoken = $('[name=csrfmiddlewaretoken]')[0].value;
 
-request = new Request(
-	// One error is coming from the fact that the convert view 
-	// is not totally functional. Work on this to get it working,
-	// then try to route everything together
-    "convert",
-    {headers: {'X-CSRFToken': csrftoken}}
-);
+	request = new Request(
+		// One error is coming from the fact that the convert view
+		// is not totally functional. Work on this to get it working,
+		// then try to route everything together
+	    "convert",
+	    {headers: {'X-CSRFToken': csrftoken}}
+	);
+	$(".convert-btn").on("click", convert);
 });
 function convert() {
-	let code = $("#story-question-1").val();
-
+	let code = $($(this).prevAll(".story-question")[0]).val();
+	let thisStory = $(this).parent();
 	fetch(request, {
 	    method: 'POST',
 	    mode: 'same-origin',  // Do not send CSRF token to another domain.
 		data: JSON.stringify({"code":code})
 	}).then(function(response) {
-	    response.json().then(body => console.log(body));
-
-	});
-
-	// $.ajax({
-	//   type: "POST",
-	//   url: "http://127.0.0.1:8000/template",
-	//   data: {CSRF: csrftoken, 'hi':1},
-	//   success: success,
-	//   dataType: "json"
-	// });
-
-/*	$.post({
-	  type: "POST",
-	  url: "http://127.0.0.1:8000/template",
-	  data: JSON.stringify({"code":code}),
-	  contentType: "application/json; charset=utf-8",
-	  dataType: "json"
-	}).done(function(data) {
-		if (data.statusCode == 200) {
-		  console.log("post succeeded, got back %o", data);
-		} else {
-		  console.log("post returned status "+data.statusCode);
-		  console.log("error body %o", data.body);
+		let newDivId = null;
+		let isNext = thisStory.next(".problem").length;
+		if(isNext){
+			 newDivId = thisStory.next(".problem").attr("id");
 		}
-	});*/
+		else{
+			newDivId = "p"+count+"_py";
+			$(thisStory).after(`<div id="`+newDivId+`" class="problem parentDiv"></div>`)
+			count++;
+		}
+		response.json().then(trace => success(trace, newDivId));
+	});
 }
 
-function success(data){
+function success(data, divId){
+
+	addVisualizerToPage(data, divId, {
+										startingInstruction: 0,
+										hideCode: false,
+										lang: "py3",
+										disableHeapNesting: true,
+										verticalStack: window.matchMedia("(max-width: 1768px)").matches
+									});
 	  console.log("post succeeded, got back %o", data);
 }
