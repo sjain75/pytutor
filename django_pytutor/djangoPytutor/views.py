@@ -19,16 +19,7 @@ def home(request):
 
 @csrf_protect
 def convert(request):
-<<<<<<< HEAD
 	return HttpResponse(run_pytutor(json.loads(request.POST.get('code', None))))
-	#return HttpResponse(run_pytutor(request.POST.get('code', None)))
-=======
-	print("//////////////////////////////////////////////////////////////////////////////////////")
-	print(request)
-	print(request.GET.get('code', None))
-	return HttpResponse(run_pytutor(request.POST.get('code', None)))
->>>>>>> 69162234b5905a265fb69a2c8c0a9a0f9a209d53
-
 
 # Converts python code to JavaScript.
 # If the python file does not exist in specified file destination, will throw an error.
