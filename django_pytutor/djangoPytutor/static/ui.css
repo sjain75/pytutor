@@ -143,3 +143,32 @@ body {
     color: white;
     cursor: pointer;
 }
+
+#addQuestion {
+    position: fixed;
+    z-index: 99999;
+    bottom: 2px;
+    right: 2px;
+    height: 50px;
+    font-size: 15px;
+    box-shadow: 5px 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: #efeff5;
+    transition: all 0.4s;
+    font-family: 'Quicksand';
+}
+
+#addQuestion:hover {
+    cursor: pointer;
+    background-color:#646464;
+    color: white;
+}
+
+hr {
+    width: 50rem;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 1px;
+    clear: both;
+    border: none;
+    border-top: 5px solid #646464;
+}
