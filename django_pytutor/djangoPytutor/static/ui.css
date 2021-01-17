@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand&family=Roboto+Condensed&family=Source+Code+Pro:wght@300&display=swap');
 
 body {
-    background-color: #1E1E2F;
+    background-color:#4B8BBE;
     font-family: "Quicksand";
     text-align: center;
     min-width:100%;
@@ -30,7 +30,7 @@ body {
 }
 
 .story-container {
-    background-color:#4B8BBE;
+    background-color: #fff;
     box-shadow: 1px 2px 10px rgba(0, 0, 0, 0.1);
     border-width: .5px;
     width: 800px;
@@ -38,28 +38,31 @@ body {
     display:flex;
     justify-content: center;
     position: relative;
-    /* background-color: #EFC050; */
 }
 
 .manual-container {
-    background-color:#4B8BBE;
     box-shadow: 1px 2px 10px rgba(0, 0, 0, 0.1);
     border-width: .5px;
     width: 800px;
     height: 220px;
+    background-color: #fff;
     /* display:flex;
     justify-content: center; */
     position: relative;
-    /* background-color: #EFC050; */
+}
+
+.story-container > h2 {
+    color: #646464;
 }
 
 .manual-container > h2,
 .question-name-container > h2 {
     padding-top: 10px;
+    color:#646464;
 }
 
 .question-name-container {
-    background-color:#4B8BBE;
+    background-color: #fff;
     box-shadow: 1px 2px 10px rgba(0, 0, 0, 0.1);
     border-width: .5px;
     width: 800px;
@@ -110,24 +113,24 @@ body {
     padding-bottom: 2px;
     position: fixed;
     box-shadow: 1px 2px 10px rgba(0, 0, 0, 0.1);
-    background-color: #FFD43B;
+    background-color: #4B8BBE;
     z-index: 9999;
 }
 
-/* .navbar:hover {
+.navbar:hover {
     background-color: white;
     color:black;
-} */
+}
 
 .navbar-title {
     margin-left: 10px;
     font-family: "Roboto Condensed";
 }
 
-/* .nav-active {
+.nav-active {
     box-shadow: 1px 2px 10px rgba(0, 0, 0, 0.1);
     background-color: #FFD43B;
-} */
+}
 
 .convert-btn {
     position: absolute;

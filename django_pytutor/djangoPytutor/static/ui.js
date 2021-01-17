@@ -1,11 +1,11 @@
 $(window).on('load', function () {
-    // $(window).on('scroll', function() {
-    //     if ($(window).scrollTop() > 10) {
-    //         $('.navbar').addClass('nav-active');
-    //     } else {
-    //         $('.navbar').removeClass('nav-active');
-    //     }
-    // })
+    $(window).on('scroll', function() {
+        if ($(window).scrollTop() > 10) {
+            $('.navbar').addClass('nav-active');
+        } else {
+            $('.navbar').removeClass('nav-active');
+        }
+    })
 
     $("#addQuestion").on('click', function () {
         var TEMPLATE =
@@ -21,6 +21,6 @@ $(window).on('load', function () {
         '                       </div>  ' +
         '                </div>' +
         '                <hr/>';
-        $(".inner-container").append(text);
+        $(".inner-container").append(TEMPLATE);
     })
 })
