@@ -49,6 +49,11 @@ function convert() {
 			alert(res.status);
 		}
 	});
+	let manualButton = thisStory.next(".add-manual-btn");
+	// Why does that work, but not "$(this).parent().next('.add-manual-btn')????"
+	manualButton.addClass("add-manual-display");
+	
+	//TODO: add the manual question converter.
 }
 
 function success(data, divId){

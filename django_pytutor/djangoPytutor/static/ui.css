@@ -117,6 +117,19 @@ body {
     z-index: 9999;
 }
 
+/*
+    Needed a way to stop the previous css style from screwing the new styles up...
+*/
+.ExecutionVisualizer {
+    width: auto !important;
+}
+
+.problem {
+    box-shadow: 1px 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: #646464;
+    margin-top: 10px;
+}
+
 .navbar:hover {
     background-color: white;
     color:black;
@@ -163,7 +176,8 @@ body {
     font-family: 'Quicksand';
 }
 
-#addQuestion:hover {
+#addQuestion:hover,
+.add-manual-btn:hover {
     cursor: pointer;
     background-color:#646464;
     color: white;
@@ -177,4 +191,20 @@ hr {
     clear: both;
     border: none;
     border-top: 5px solid white;
+}
+
+.add-manual-btn {
+    display:none;
+    transition: all 0.4s;
+    box-shadow: 5px 4px 10px rgba(0, 0, 0, 0.1);
+    background-color:#efeff5;
+    height: 30px;
+    transition: all 0.4s;
+    font-family: 'Quicksand';
+    border-style: none;
+    margin-top: 10px;
+}
+
+.add-manual-display {
+    display:block;
 }

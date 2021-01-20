@@ -17,9 +17,10 @@ $(window).on('load', function () {
         '                       <div class="story-container">  '  +
         '                           <h2>Enter Python Code Here:</h1>  '  +
         '                           <textarea class="story-question"></textarea>  '  +
-        '                           <button class="convert-btn" onclick="convert()">Preview</button>  '  +
+        '                           <button class="convert-btn">Preview</button>  '  +
         '                       </div>  ' +
         '                </div>' +
+        '                <button class="add-manual-btn">Add Manual Question Here</button>' +
         '                <hr/>';
         $(".inner-container").append(TEMPLATE);
     })
