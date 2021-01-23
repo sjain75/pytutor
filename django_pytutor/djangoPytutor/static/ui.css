@@ -4,7 +4,7 @@ body {
     background-color:#4B8BBE;
     font-family: "Quicksand";
     text-align: center;
-    min-width:100%;
+    /* min-width:100%; */
     margin: 0 auto;
     color: white;
 }

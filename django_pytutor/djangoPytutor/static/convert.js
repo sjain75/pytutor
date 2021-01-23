@@ -39,6 +39,25 @@ function addManualQuestion() {
 function convert() {
 	let code = $($(this).prevAll(".story-question")[0]).val();
 	let thisStory = $(this).parent();
+	let questionContainer = thisStory.parent();
+	// delete all previous manual questions upon selection, after alert.
+	if (questionContainer.has(".manual-container").length) {
+		// Debug this confirm... Text is not being displayed? Styling issue/overlap?
+		$.confirm({
+			title: "Warning!",
+			content: "There are already manual questions from a previous preview. If you convert the code, the previous questions will be overwritten. Do you still want to create a new trace?",
+			buttons: {
+				confirm: function() {
+					while (questionContainer.has('.manual-container').length != 0) {
+						questionContainer.find(".manual-container").remove();
+					}
+				},
+				cancel: function() {
+					return;
+				}
+			}
+		})
+	}
 	$.ajax({
 		method:"POST",
 		url: "convert",
