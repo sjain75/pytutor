@@ -19,8 +19,8 @@ $(window).on('load', function () {
         '                           <textarea class="story-question"></textarea>  '  +
         '                           <button class="convert-btn">Preview</button>  '  +
         '                       </div>  ' +
+        '                       <button class="add-manual-btn">Add Manual Question Here</button>' +
         '                </div>' +
-        '                <button class="add-manual-btn">Add Manual Question Here</button>' +
         '                <hr/>';
         $(".inner-container").append(TEMPLATE);
     })

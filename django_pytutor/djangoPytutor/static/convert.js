@@ -3,7 +3,8 @@ var csrftoken=null;
 var count = 0;
 $(document).ready(function(){
 	csrftoken = $('[name=csrfmiddlewaretoken]')[0].value;
-	$(".convert-btn").on("click", convert);
+	$(".inner-container").on('click', '.convert-btn', convert);
+	$(".inner-container").on('click', '.add-manual-btn', addManualQuestion);
 });
 
 function csrfSafeMethod(method) {
@@ -19,6 +20,21 @@ $.ajaxSetup({
 		}
 	}
 });
+
+function addManualQuestion() {
+	TEMPLATE = `
+<div class="manual-container">
+    <h2>Enter Manual Question Here for Line ###:</h2>
+    <input class="manual-question"/>
+    <h2>Enter Answer Here:</h2>
+    <input class="manual-question"/>
+</div>
+`;
+	let thisStory = $(this).parent();
+	let step =  $(this).prev(".problem").find("#curInstr").text().split(" ")[1];;
+	// Above should locate correct step number.
+	thisStory.append(TEMPLATE.replace("###", step))
+}
 
 function convert() {
 	let code = $($(this).prevAll(".story-question")[0]).val();
@@ -55,6 +71,8 @@ function convert() {
 	
 	//TODO: add the manual question converter.
 }
+
+
 
 function success(data, divId){
 
