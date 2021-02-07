@@ -7,7 +7,64 @@ $(document).ready(function(){
 	$(".inner-container").on('click', '.add-manual-btn', addManualQuestion);
 	$(".inner-container").on('click', '.del-story-btn', delStoryQuestion);
 	$(".inner-container").on('click', '.del-manual-question', delManualQuestion);
+	$("#config-btn").on('click', convertJson);
 });
+
+/**
+ * This function is the parser function for the Python file in backend. 
+ * Will read into the current HTML document, assembling the file into
+ * a json file that can be read by the Python file.
+ */
+function convertJson() {
+	// Notes:
+	// ws-title: inside of ws-title-input
+	// story questions: inside of question-container classes
+	// manual-questions: inside of manual-container classes
+
+	retJson = {};
+	
+	// Step 1: parse and get the wsTitle
+	retJson['wsTitle'] = $("#ws-title-input").val();
+
+	// Step 2: get all story questions, parse into them. Also, find manual Qs.
+	let storyQuestions = $(".question-container");
+	for (let i = 0; i < storyQuestions.length; ++i) {
+		// Create dictionary to represent each problem
+		let prob = {};
+
+		// Identify trace.
+		let trace = $(storyQuestions[i]).find(".story-question").val();
+		
+		// Identify question name.
+		let traceTitle = $(storyQuestions[i]).find(".question-name").val();
+		prob["problemName"] = traceTitle;
+
+		// get all manual containers, store into iteratable list.
+		let manualContainer = $(storyQuestions[i]).find(".manual-container").toArray();
+		let manualQuestions = []
+		for (let j = 0; j < manualContainer.length; ++j) {
+			// Parses into manual containers, finds the necessary info for manual questions.
+			let question = {}
+			question['question'] = $(manualContainer[j]).find(".question-prompt").val();
+			let stepNumH2 = $(manualContainer[j]).find(".line-num").text().split(" ")
+			question['stepNumber'] = stepNumH2[stepNumH2.length - 1].replace(":","");
+			question['answer'] = $(manualContainer[j]).find(".question-ans").val();
+			
+			// pass finished json parse into manualQuestion list above
+			manualQuestions.push(question);
+		}
+
+		// Add to outer dict that represents each python trace.
+		prob['manualQuestion'] = manualQuestions;
+
+		// Below is temporary TODO
+		prob["trace"] = trace;
+		retJson['pathToPyFile.py_' + i] = prob;
+	}
+
+
+	console.log(retJson);
+}
 
 function csrfSafeMethod(method) {
 	// these HTTP methods do not require CSRF protection
@@ -57,20 +114,26 @@ function delStoryQuestion() {
 function addManualQuestion() {
 	TEMPLATE = `
 <div class="manual-container">
-    <h2>Enter Manual Question Here for Line ###:</h2>
-    <input class="manual-question"/>
+    <h2 class="line-num">Enter Manual Question Here for Line ###:</h2>
+    <input class="manual-question question-prompt"/>
     <h2>Enter Answer Here:</h2>
-	<input class="manual-question"/>
+	<input class="manual-question question-ans"/>
 	<button class="del-manual-question">Delete</button>
 </div>
+
+<hr>
 `;
 	let thisStory = $(this).parent();
 	// check if a question already exists at this step
 	let step =  $(this).prev(".problem").find("#curInstr").text().split(" ")[1];
 	// Above should locate correct step number.
-	for (let i = 0; i < thisStory.has(".manual-container").length; ++i) {
-		// TODO find different value than "has.""
-		if (thisStory.has(".manual-container")[i].find("h2").text().split(" ")[thisStory.has(".manual-container").length - 1] == step) {
+	console.log(thisStory.children('.manual-container').toArray())
+	for (let i = 0; i < thisStory.children(".manual-container").toArray().length; ++i) {
+		// Locate h2 titled "Enter Your Step Number Here ###""
+		let splitLineArr = $(thisStory.children(".manual-container").toArray()[i]).find(".line-num").text().split(" ")
+		// Parse into h2 to find the step num of the current (ith) manual question.
+		if (splitLineArr[splitLineArr.length - 1] == step + ":") {
+			// Check if line's step number already has a manual question.
 			$.alert({
 				title: "Error!",
 				content: "There is already a manual question on step line " + step +"."
@@ -78,6 +141,8 @@ function addManualQuestion() {
 			return;
 		}
 	}
+
+	// Find way to move <hr> above.
 	thisStory.append(TEMPLATE.replace("###", step))
 }
 
