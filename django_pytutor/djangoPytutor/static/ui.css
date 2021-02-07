@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand&family=Roboto+Condensed&family=Source+Code+Pro:wght@300&display=swap');
 
 body {
-    background-color:#4B8BBE;
+    /* background-color:#4B8BBE; Option 3 */
+    background-color:  rgb(120, 135, 160);
     font-family: "Quicksand";
     text-align: center;
     /* min-width:100%; */
     margin: 0 auto;
-    color: white;
 }
 
 .logo:hover {
@@ -30,7 +30,8 @@ body {
 }
 
 .story-container {
-    background-color: #fff;
+    /* background-color: #fff; Option 3 */
+    background-color: rgb(243, 255, 255);
     box-shadow: 1px 2px 10px rgba(0, 0, 0, 0.1);
     border-width: .5px;
     width: 800px;
@@ -45,10 +46,17 @@ body {
     border-width: .5px;
     width: 800px;
     height: 220px;
-    background-color: #fff;
+    /* background-color: #fff; Option 3 */
+    background-color: rgb(243, 255, 255);
     /* display:flex;
     justify-content: center; */
     position: relative;
+}
+
+.del-manual-question {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
 }
 
 .story-container > h2 {
@@ -62,7 +70,8 @@ body {
 }
 
 .question-name-container {
-    background-color: #fff;
+    /* background-color: #fff; Option 3 */
+    background-color: rgb(243, 255, 255);
     box-shadow: 1px 2px 10px rgba(0, 0, 0, 0.1);
     border-width: .5px;
     width: 800px;
@@ -113,7 +122,8 @@ body {
     padding-bottom: 2px;
     position: fixed;
     box-shadow: 1px 2px 10px rgba(0, 0, 0, 0.1);
-    background-color: #4B8BBE;
+    /* background-color: #4B8BBE; OPTION 3*/
+    background-color: rgb(55, 65, 130);
     z-index: 9999;
 }
 
@@ -140,10 +150,10 @@ body {
     font-family: "Roboto Condensed";
 }
 
-.nav-active {
+/* .nav-active {
     box-shadow: 1px 2px 10px rgba(0, 0, 0, 0.1);
     background-color: #FFD43B;
-}
+} Option 3*/
 
 .convert-btn {
     position: absolute;
@@ -177,7 +187,9 @@ body {
 }
 
 #addQuestion:hover,
-.add-manual-btn:hover {
+.add-manual-btn:hover,
+.del-story-btn:hover,
+.del-manual-question:hover {
     cursor: pointer;
     background-color:#646464;
     color: white;
@@ -195,6 +207,11 @@ hr {
 
 .add-manual-btn {
     display:none;
+}
+
+.add-manual-btn ,
+.del-story-btn,
+.del-manual-question {
     transition: all 0.4s;
     box-shadow: 5px 4px 10px rgba(0, 0, 0, 0.1);
     background-color:#efeff5;

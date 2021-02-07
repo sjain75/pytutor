@@ -5,6 +5,8 @@ $(document).ready(function(){
 	csrftoken = $('[name=csrfmiddlewaretoken]')[0].value;
 	$(".inner-container").on('click', '.convert-btn', convert);
 	$(".inner-container").on('click', '.add-manual-btn', addManualQuestion);
+	$(".inner-container").on('click', '.del-story-btn', delStoryQuestion);
+	$(".inner-container").on('click', '.del-manual-question', delManualQuestion);
 });
 
 function csrfSafeMethod(method) {
@@ -21,18 +23,61 @@ $.ajaxSetup({
 	}
 });
 
+function delManualQuestion() {
+	let thisManual = $(this).parent();
+	$.confirm({
+		title:"Warning!",
+		content: "You are about to delete the manual question. Are you sure you want to?",
+		buttons: {
+			confirm: function() {
+				thisManual.remove();
+			},
+			cancel: () => {return}
+		}
+	})
+}
+
+function delStoryQuestion() {
+	let thisStory = $(this).parent();
+	$.confirm({
+		title: "Warning!",
+		content: "You are about to delete this story question. Are you sure you want to?",
+		buttons: {
+			confirm: function() {
+				thisStory.remove();
+			},
+			cancel: function() {
+				return;
+			}
+		}
+	});
+
+}
+
 function addManualQuestion() {
 	TEMPLATE = `
 <div class="manual-container">
     <h2>Enter Manual Question Here for Line ###:</h2>
     <input class="manual-question"/>
     <h2>Enter Answer Here:</h2>
-    <input class="manual-question"/>
+	<input class="manual-question"/>
+	<button class="del-manual-question">Delete</button>
 </div>
 `;
 	let thisStory = $(this).parent();
-	let step =  $(this).prev(".problem").find("#curInstr").text().split(" ")[1];;
+	// check if a question already exists at this step
+	let step =  $(this).prev(".problem").find("#curInstr").text().split(" ")[1];
 	// Above should locate correct step number.
+	for (let i = 0; i < thisStory.has(".manual-container").length; ++i) {
+		// TODO find different value than "has.""
+		if (thisStory.has(".manual-container")[i].find("h2").text().split(" ")[thisStory.has(".manual-container").length - 1] == step) {
+			$.alert({
+				title: "Error!",
+				content: "There is already a manual question on step line " + step +"."
+			})
+			return;
+		}
+	}
 	thisStory.append(TEMPLATE.replace("###", step))
 }
 
@@ -42,7 +87,6 @@ function convert() {
 	let questionContainer = thisStory.parent();
 	// delete all previous manual questions upon selection, after alert.
 	if (questionContainer.has(".manual-container").length) {
-		// Debug this confirm... Text is not being displayed? Styling issue/overlap?
 		$.confirm({
 			title: "Warning!",
 			content: "There are already manual questions from a previous preview. If you convert the code, the previous questions will be overwritten. Do you still want to create a new trace?",

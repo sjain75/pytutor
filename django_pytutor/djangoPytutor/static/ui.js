@@ -10,6 +10,7 @@ $(window).on('load', function () {
     $("#addQuestion").on('click', function () {
         var TEMPLATE =
         '                <div class="question-container">  '  +
+        '                       <button class="del-story-btn">Delete Entire Story Question</button>' +
         '                       <div class="question-name-container">  '  +
         '                           <h2>Enter Question Title Here:</h2>  '  +
         '                           <textarea class="question-name story-question-title" id=""></textarea>  '  +
@@ -20,8 +21,8 @@ $(window).on('load', function () {
         '                           <button class="convert-btn">Preview</button>  '  +
         '                       </div>  ' +
         '                       <button class="add-manual-btn">Add Manual Question Here</button>' +
-        '                </div>' +
-        '                <hr/>';
+        '                       <hr/>'+
+        '                 </div>';
         $(".inner-container").append(TEMPLATE);
     })
 })
