@@ -11,7 +11,7 @@ $(document).ready(function(){
 });
 
 /**
- * This function is the parser function for the Python file in backend. 
+ * This function is the parser function for the Python file in backend.
  * Will read into the current HTML document, assembling the file into
  * a json file that can be read by the Python file.
  */
@@ -22,7 +22,7 @@ function convertJson() {
 	// manual-questions: inside of manual-container classes
 
 	retJson = {};
-	
+
 	// Step 1: parse and get the wsTitle
 	retJson['wsTitle'] = $("#ws-title-input").val();
 
@@ -34,11 +34,11 @@ function convertJson() {
 
 		// Identify trace.
 		let trace = $(storyQuestions[i]).find(".story-question").val();
-		
+
 		// Identify question name.
 		let traceTitle = $(storyQuestions[i]).find(".question-name").val();
 		prob["problemName"] = traceTitle;
-
+		prob["stepNumber"] = 1;
 		// get all manual containers, store into iteratable list.
 		let manualContainer = $(storyQuestions[i]).find(".manual-container").toArray();
 		let manualQuestions = []
@@ -49,7 +49,7 @@ function convertJson() {
 			let stepNumH2 = $(manualContainer[j]).find(".line-num").text().split(" ")
 			question['stepNumber'] = stepNumH2[stepNumH2.length - 1].replace(":","");
 			question['answer'] = $(manualContainer[j]).find(".question-ans").val();
-			
+
 			// pass finished json parse into manualQuestion list above
 			manualQuestions.push(question);
 		}
@@ -62,8 +62,22 @@ function convertJson() {
 		retJson['pathToPyFile.py_' + i] = prob;
 	}
 
-
-	console.log(retJson);
+	$.ajax({
+		method:"POST",
+		url: "saveJson",
+		data: {
+			// here getdata should be a string so that
+			// in your views.py you can fetch the value using get('getdata')
+			'confJson': JSON.stringify(retJson)
+		},
+		dataType: 'json',
+		success: function (response, status) {
+			window.open(response.WsPath, '_blank');
+		},
+		error: function (res) {
+			alert(res.status);
+		}
+	});
 }
 
 function csrfSafeMethod(method) {
@@ -196,7 +210,7 @@ function convert() {
 	let manualButton = thisStory.next(".add-manual-btn");
 	// Why does that work, but not "$(this).parent().next('.add-manual-btn')????"
 	manualButton.addClass("add-manual-display");
-	
+
 	//TODO: add the manual question converter.
 }
 

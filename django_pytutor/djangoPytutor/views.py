@@ -21,6 +21,23 @@ def home(request):
 def convert(request):
 	return HttpResponse(run_pytutor(json.loads(request.POST.get('code', None))))
 
+@csrf_protect
+def saveJson(request):
+	rootPath = "../WorksheetCreator/"
+	with open("config.json", "w") as configFile:
+		confRec = request.POST.get('confJson', None)
+		confRec =(json.loads(confRec))
+		for pyFileName in confRec:
+			if pyFileName!="wsTitle":
+				with open(pyFileName, "w") as pyFile:
+					pyFile.write(confRec[pyFileName]["trace"])
+			else:
+				wsName = confRec[pyFileName].replace(" ","")+".html"
+		configFile.write(json.dumps(confRec))
+
+	print(check_output("echo Y | python3 "+rootPath+"pytutor_jsCreator.py -c config.json", shell=True))
+	return HttpResponse(json.dumps({"WsPath":"/pytutor_worksheets/"+wsName}))
+
 # Converts python code to JavaScript.
 # If the python file does not exist in specified file destination, will throw an error.
 # py - the file path.

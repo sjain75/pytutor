@@ -17,9 +17,13 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url
 from djangoPytutor import views
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^$', views.home),
-    url(r'^convert$', views.convert)
-]
+    url(r'^convert$', views.convert),
+    url(r'^saveJson$', views.saveJson)
+]+ static(settings.WS_URL, document_root=settings.WS_ROOT)
