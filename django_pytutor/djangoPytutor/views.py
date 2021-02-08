@@ -35,7 +35,7 @@ def saveJson(request):
 				wsName = confRec[pyFileName].replace(" ","")+".html"
 		configFile.write(json.dumps(confRec))
 
-	print(check_output("echo Y | python3 "+os.path.join(rootPath,"pytutor_jsCreator.py")+" -c config.json", shell=True))
+	print(check_output("echo Y | python "+os.path.join(rootPath,"pytutor_jsCreator.py")+" -c config.json", shell=True))
 	return HttpResponse(json.dumps({"WsPath":"/pytutor_worksheets/"+wsName}))
 
 # Converts python code to JavaScript.
