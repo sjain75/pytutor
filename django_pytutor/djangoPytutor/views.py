@@ -23,7 +23,7 @@ def convert(request):
 
 @csrf_protect
 def saveJson(request):
-	rootPath = "../WorksheetCreator/"
+	rootPath = os.path.join("..","WorksheetCreator")
 	with open("config.json", "w") as configFile:
 		confRec = request.POST.get('confJson', None)
 		confRec =(json.loads(confRec))
@@ -35,7 +35,7 @@ def saveJson(request):
 				wsName = confRec[pyFileName].replace(" ","")+".html"
 		configFile.write(json.dumps(confRec))
 
-	print(check_output("echo Y | python3 "+rootPath+"pytutor_jsCreator.py -c config.json", shell=True))
+	print(check_output("echo Y | python3 "+os.path.join(rootPath,"pytutor_jsCreator.py")+" -c config.json", shell=True))
 	return HttpResponse(json.dumps({"WsPath":"/pytutor_worksheets/"+wsName}))
 
 # Converts python code to JavaScript.
