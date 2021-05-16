@@ -1,3 +1,4 @@
 .idea/inspectionProfiles/Project_Default.xml
 .vscode
 .DS_Store
+.django_pytutor/djangoPytutor/__pycache__/
